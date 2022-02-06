@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotNetCore.EntityFrameworkCore;
 using System;
+using SchoolProject.Management.Application.Features.Service;
 
 namespace SchoolProject.Management.Application.Features.Schools.Commands.CreateSchool
 {
@@ -15,47 +16,43 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.CreateS
         private readonly IBaseRepository<School> _schoolRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        public CreateSchoolCommandHandler(IMapper mapper, IBaseRepository<School> schoolRepository, IUnitOfWork unitOfWork)
+        private readonly IResponseHandlingService _responseHandlingService;
+        public CreateSchoolCommandHandler(IMapper mapper, IBaseRepository<School> schoolRepository, IUnitOfWork unitOfWork, IResponseHandlingService responseHandlingService)
         {
             _mapper = mapper;
             _schoolRepository = schoolRepository;
             _unitOfWork = unitOfWork;
+            _responseHandlingService = responseHandlingService;
         }
 
         public async Task<CreateSchoolCommandResponse> Handle(CreateSchoolCommand request, CancellationToken cancellationToken)
         {
             var createSchoolCommandResponse = new CreateSchoolCommandResponse();
-
             var validator = new CreateSchoolCommandValidator();
+            await CreateSchoolResponseHandling(request, createSchoolCommandResponse, validator);
+            return createSchoolCommandResponse;
+        }
+
+        private async Task CreateSchoolResponseHandling(CreateSchoolCommand request, CreateSchoolCommandResponse createSchoolCommandResponse, CreateSchoolCommandValidator validator)
+        {
             try
             {
                 var validationResult = await validator.ValidateAsync(request);
-
-                if (validationResult.Errors.Count > 0)
-                {
-                    createSchoolCommandResponse.Success = false;
-                    createSchoolCommandResponse.ValidationErrors = new List<string>();
-                    foreach (var error in validationResult.Errors)
-                    {
-                        createSchoolCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-                    }
-                }
+                _responseHandlingService.ValidateRequestResult(createSchoolCommandResponse, validationResult);
                 if (createSchoolCommandResponse.Success)
                 {
                     var school = _mapper.Map<School>(request.School);
 
                     await _schoolRepository.AddAsync(school);
-                    if (await _unitOfWork.SaveChangesAsync() > 0)
-                        createSchoolCommandResponse.Message = "ok";
-                    else
-                        createSchoolCommandResponse.Message = "Not ok";
+                    if (await _unitOfWork.SaveChangesAsync() <= 0)
+                        createSchoolCommandResponse.Success = false;
                 }
             }
             catch (Exception ex)
             {
+                createSchoolCommandResponse.Success = false;
                 createSchoolCommandResponse.Message = $"ERROR : {ex.InnerException?.Source} : {ex.InnerException?.Message}";
             }
-            return createSchoolCommandResponse;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using SchoolProject.Management.Application.Features.Service;
 using System.Reflection;
 
 namespace SchoolProject.Management.Application
@@ -11,7 +12,7 @@ namespace SchoolProject.Management.Application
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
-
+            services.AddScoped<IResponseHandlingService, ResponseHandlingService>();
             return services;
         }
     }
