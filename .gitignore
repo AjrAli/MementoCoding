@@ -326,6 +326,7 @@ ASALocalRun/
 # Custom
 
 # Log folders
+Logs
 logs
 
 # Developer specific appsettings
