@@ -1,0 +1,6 @@
+D:\SchoolProject\School.Management\School.Management.Api\obj\Debug\net5.0\School.Management.Api.csprojAssemblyReference.cache
+D:\SchoolProject\School.Management\School.Management.Api\obj\Debug\net5.0\School.Management.Api.GeneratedMSBuildEditorConfig.editorconfig
+D:\SchoolProject\School.Management\School.Management.Api\obj\Debug\net5.0\School.Management.Api.AssemblyInfoInputs.cache
+D:\SchoolProject\School.Management\School.Management.Api\obj\Debug\net5.0\School.Management.Api.AssemblyInfo.cs
+D:\SchoolProject\School.Management\School.Management.Api\obj\Debug\net5.0\School.Management.Api.csproj.CoreCompileInputs.cache
+D:\SchoolProject\School.Management\School.Management.Api\obj\Debug\net5.0\School.Management.Api.MvcApplicationPartsAssemblyInfo.cache

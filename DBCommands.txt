@@ -1,0 +1,4 @@
+1 ) add-migration DBCreation -Context SchoolProject.Management.Persistence.Context.SchoolManagementDbContext -Project SchoolProject.Management.Persistence -StartupProject SchoolProject.Management.Api
+2 ) update-database -Context SchoolProject.Management.Persistence.Context.SchoolManagementDbContext -Project SchoolProject.Management.Persistence -StartupProject SchoolProject.Management.Api
+3 ) add-migration DBCreation -Context SchoolProject.Management.Identity.SchoolIdentityDbContext -Project SchoolProject.Management.Identity -StartupProject SchoolProject.Management.Api
+4 ) update-database -Context SchoolProject.Management.Identity.SchoolIdentityDbContext -Project SchoolProject.Management.Identity -StartupProject SchoolProject.Management.Api

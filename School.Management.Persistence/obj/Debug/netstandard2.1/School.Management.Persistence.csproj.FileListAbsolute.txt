@@ -1,0 +1,4 @@
+D:\SchoolProject\School.Management\School.Management.Persistence\obj\Debug\netstandard2.1\School.Management.Persistence.csprojAssemblyReference.cache
+D:\SchoolProject\School.Management\School.Management.Persistence\obj\Debug\netstandard2.1\School.Management.Persistence.AssemblyInfoInputs.cache
+D:\SchoolProject\School.Management\School.Management.Persistence\obj\Debug\netstandard2.1\School.Management.Persistence.AssemblyInfo.cs
+D:\SchoolProject\School.Management\School.Management.Persistence\obj\Debug\netstandard2.1\School.Management.Persistence.csproj.CoreCompileInputs.cache

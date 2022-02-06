@@ -1,0 +1,2 @@
+2021-07-27 23:40:26.695 +02:00 [INF] Application Starting
+2021-07-27 23:40:26.942 +02:00 [WRN] Failed to determine the https port for redirect.

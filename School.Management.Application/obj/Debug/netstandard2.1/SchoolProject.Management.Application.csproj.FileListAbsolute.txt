@@ -1,0 +1,12 @@
+D:\SchoolProject\School.Management\School.Management.Application\bin\Debug\netstandard2.1\SchoolProject.Management.Application.deps.json
+D:\SchoolProject\School.Management\School.Management.Application\bin\Debug\netstandard2.1\SchoolProject.Management.Application.dll
+D:\SchoolProject\School.Management\School.Management.Application\bin\Debug\netstandard2.1\SchoolProject.Management.Application.pdb
+D:\SchoolProject\School.Management\School.Management.Application\bin\Debug\netstandard2.1\SchoolProject.Management.Domain.dll
+D:\SchoolProject\School.Management\School.Management.Application\bin\Debug\netstandard2.1\SchoolProject.Management.Domain.pdb
+D:\SchoolProject\School.Management\School.Management.Application\obj\Debug\netstandard2.1\SchoolProject.Management.Application.csproj.AssemblyReference.cache
+D:\SchoolProject\School.Management\School.Management.Application\obj\Debug\netstandard2.1\SchoolProject.Management.Application.AssemblyInfoInputs.cache
+D:\SchoolProject\School.Management\School.Management.Application\obj\Debug\netstandard2.1\SchoolProject.Management.Application.AssemblyInfo.cs
+D:\SchoolProject\School.Management\School.Management.Application\obj\Debug\netstandard2.1\SchoolProject.Management.Application.csproj.CoreCompileInputs.cache
+D:\SchoolProject\School.Management\School.Management.Application\obj\Debug\netstandard2.1\SchoolProject.Management.Application.csproj.CopyComplete
+D:\SchoolProject\School.Management\School.Management.Application\obj\Debug\netstandard2.1\SchoolProject.Management.Application.dll
+D:\SchoolProject\School.Management\School.Management.Application\obj\Debug\netstandard2.1\SchoolProject.Management.Application.pdb

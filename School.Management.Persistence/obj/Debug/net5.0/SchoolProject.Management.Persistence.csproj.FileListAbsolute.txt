@@ -1,0 +1,5 @@
+D:\SchoolProjectNew\SchoolProject\School.Management\School.Management.Persistence\obj\Debug\net5.0\SchoolProject.Management.Persistence.csproj.AssemblyReference.cache
+D:\SchoolProjectNew\SchoolProject\School.Management\School.Management.Persistence\obj\Debug\net5.0\SchoolProject.Management.Persistence.GeneratedMSBuildEditorConfig.editorconfig
+D:\SchoolProjectNew\SchoolProject\School.Management\School.Management.Persistence\obj\Debug\net5.0\SchoolProject.Management.Persistence.AssemblyInfoInputs.cache
+D:\SchoolProjectNew\SchoolProject\School.Management\School.Management.Persistence\obj\Debug\net5.0\SchoolProject.Management.Persistence.AssemblyInfo.cs
+D:\SchoolProjectNew\SchoolProject\School.Management\School.Management.Persistence\obj\Debug\net5.0\SchoolProject.Management.Persistence.csproj.CoreCompileInputs.cache

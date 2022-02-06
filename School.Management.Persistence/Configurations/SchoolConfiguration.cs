@@ -1,0 +1,24 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SchoolProject.Management.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SchoolProject.Management.Persistence.Configurations
+{
+    public class SchoolConfiguration : BaseEntityConfiguration<School>
+    {
+        public override void Configure(EntityTypeBuilder<School> builder)
+        {
+            base.Configure(builder);
+
+            builder.ToTable("Schools");
+
+            builder.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            builder.Property(e => e.Description).IsRequired().HasMaxLength(500);
+            builder.Property(e => e.Adress).IsRequired().HasMaxLength(100);
+            builder.Property(e => e.Town).IsRequired().HasMaxLength(100);
+        }
+    }
+}
