@@ -1,4 +1,0 @@
-D:\SchoolProject\School.Management\School.Management.Application\obj\Debug\netstandard2.1\School.Management.Application.csprojAssemblyReference.cache
-D:\SchoolProject\School.Management\School.Management.Application\obj\Debug\netstandard2.1\School.Management.Application.AssemblyInfoInputs.cache
-D:\SchoolProject\School.Management\School.Management.Application\obj\Debug\netstandard2.1\School.Management.Application.AssemblyInfo.cs
-D:\SchoolProject\School.Management\School.Management.Application\obj\Debug\netstandard2.1\School.Management.Application.csproj.CoreCompileInputs.cache

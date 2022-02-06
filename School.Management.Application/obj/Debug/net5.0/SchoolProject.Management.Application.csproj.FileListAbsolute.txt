@@ -1,5 +1,0 @@
-D:\SchoolProjectNew\SchoolProject\School.Management\School.Management.Application\obj\Debug\net5.0\SchoolProject.Management.Application.csproj.AssemblyReference.cache
-D:\SchoolProjectNew\SchoolProject\School.Management\School.Management.Application\obj\Debug\net5.0\SchoolProject.Management.Application.GeneratedMSBuildEditorConfig.editorconfig
-D:\SchoolProjectNew\SchoolProject\School.Management\School.Management.Application\obj\Debug\net5.0\SchoolProject.Management.Application.AssemblyInfoInputs.cache
-D:\SchoolProjectNew\SchoolProject\School.Management\School.Management.Application\obj\Debug\net5.0\SchoolProject.Management.Application.AssemblyInfo.cs
-D:\SchoolProjectNew\SchoolProject\School.Management\School.Management.Application\obj\Debug\net5.0\SchoolProject.Management.Application.csproj.CoreCompileInputs.cache

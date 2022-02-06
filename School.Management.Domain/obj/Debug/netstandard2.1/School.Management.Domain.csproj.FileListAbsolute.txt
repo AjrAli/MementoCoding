@@ -1,8 +1,0 @@
-D:\SchoolProject\School.Management\School.Management.Domain\bin\Debug\netstandard2.1\School.Management.Domain.deps.json
-D:\SchoolProject\School.Management\School.Management.Domain\bin\Debug\netstandard2.1\School.Management.Domain.dll
-D:\SchoolProject\School.Management\School.Management.Domain\bin\Debug\netstandard2.1\School.Management.Domain.pdb
-D:\SchoolProject\School.Management\School.Management.Domain\obj\Debug\netstandard2.1\School.Management.Domain.AssemblyInfoInputs.cache
-D:\SchoolProject\School.Management\School.Management.Domain\obj\Debug\netstandard2.1\School.Management.Domain.AssemblyInfo.cs
-D:\SchoolProject\School.Management\School.Management.Domain\obj\Debug\netstandard2.1\School.Management.Domain.csproj.CoreCompileInputs.cache
-D:\SchoolProject\School.Management\School.Management.Domain\obj\Debug\netstandard2.1\School.Management.Domain.dll
-D:\SchoolProject\School.Management\School.Management.Domain\obj\Debug\netstandard2.1\School.Management.Domain.pdb
