@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotNetCore.EntityFrameworkCore;
 
+
 namespace SchoolProject.Management.Application.Features.Students.Commands.DeleteStudent
 {
     public class DeleteStudentCommandHandler : IRequestHandler<DeleteStudentCommand, DeleteStudentCommandResponse>
@@ -28,6 +29,12 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Delete
         public async Task<DeleteStudentCommandResponse> Handle(DeleteStudentCommand request, CancellationToken cancellationToken)
         {
             var deleteStudentCommandResponse = new DeleteStudentCommandResponse();
+            await DeleteStudentResponseHandling(request, deleteStudentCommandResponse);
+            return deleteStudentCommandResponse;
+        }
+
+        private async Task DeleteStudentResponseHandling(DeleteStudentCommand request, DeleteStudentCommandResponse deleteStudentCommandResponse)
+        {
             try
             {
                 long Id = (long)request.StudentId;
@@ -38,16 +45,14 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Delete
 
 
                 await _studentRepository.DeleteAsync(studentToDelete);
-                if (await _unitOfWork.SaveChangesAsync() > 0)
-                    deleteStudentCommandResponse.Message = "ok";
-                else
-                    deleteStudentCommandResponse.Message = "Not ok";
+                if (await _unitOfWork.SaveChangesAsync() <= 0)
+                    deleteStudentCommandResponse.Success = false;
             }
             catch (Exception ex)
             {
+                deleteStudentCommandResponse.Success = false;
                 deleteStudentCommandResponse.Message = $"ERROR : {ex.InnerException?.Source} : {ex.InnerException?.Message}";
             }
-            return deleteStudentCommandResponse;
         }
     }
 }

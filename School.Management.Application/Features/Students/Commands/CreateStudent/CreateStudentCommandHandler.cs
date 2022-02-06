@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotNetCore.EntityFrameworkCore;
 using System;
+using FluentValidation.Results;
+using SchoolProject.Management.Application.Features.Service;
 
 namespace SchoolProject.Management.Application.Features.Students.Commands.CreateStudent
 {
@@ -15,57 +17,43 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Create
         private readonly IBaseRepository<Student> _studentRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        public CreateStudentCommandHandler(IMapper mapper, IBaseRepository<Student> studentRepository, IUnitOfWork unitOfWork)
+        private readonly IResponseHandlingService _responseHandlingService;
+        public CreateStudentCommandHandler(IMapper mapper, IBaseRepository<Student> studentRepository, IUnitOfWork unitOfWork, IResponseHandlingService responseHandlingService)
         {
             _mapper = mapper;
             _studentRepository = studentRepository;
             _unitOfWork = unitOfWork;
+            _responseHandlingService = responseHandlingService;
         }
 
         public async Task<CreateStudentCommandResponse> Handle(CreateStudentCommand request, CancellationToken cancellationToken)
         {
             var createStudentCommandResponse = new CreateStudentCommandResponse();
             var validator = new CreateStudentCommandValidator();
-            await ResponseHandling(request, createStudentCommandResponse, validator);
+            await CreateStudentResponseHandling(request, createStudentCommandResponse, validator);
             return createStudentCommandResponse;
         }
 
-        private async Task ResponseHandling(CreateStudentCommand request, CreateStudentCommandResponse createStudentCommandResponse, CreateStudentCommandValidator validator)
+        private async Task CreateStudentResponseHandling(CreateStudentCommand request, CreateStudentCommandResponse createStudentCommandResponse, CreateStudentCommandValidator validator)
         {
             try
             {
-                await ValidateRequest(request, createStudentCommandResponse, validator);
+                var validationResult = await validator.ValidateAsync(request);
+                _responseHandlingService.ValidateRequestResult(createStudentCommandResponse, validationResult);
                 if (createStudentCommandResponse.Success)
                 {
-
-
                     var student = _mapper.Map<Student>(request.Student);
                     await _studentRepository.AddAsync(student);
-                    if (await _unitOfWork.SaveChangesAsync() > 0)
-                        createStudentCommandResponse.Message = "ok";
-                    else
-                        createStudentCommandResponse.Message = "Not ok";
+                    if (await _unitOfWork.SaveChangesAsync() <= 0)
+                        createStudentCommandResponse.Success = false;
                 }
             }
             catch (Exception ex)
             {
+                createStudentCommandResponse.Success = false;
                 createStudentCommandResponse.Message = $"ERROR : {ex.InnerException?.Source} : {ex.InnerException?.Message}";
             }
         }
 
-        private static async Task ValidateRequest(CreateStudentCommand request, CreateStudentCommandResponse createStudentCommandResponse, CreateStudentCommandValidator validator)
-        {
-            var validationResult = await validator.ValidateAsync(request);
-
-            if (validationResult.Errors.Count > 0)
-            {
-                createStudentCommandResponse.Success = false;
-                createStudentCommandResponse.ValidationErrors = new List<string>();
-                foreach (var error in validationResult.Errors)
-                {
-                    createStudentCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-                }
-            }
-        }
     }
 }

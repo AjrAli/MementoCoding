@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNetCore.EntityFrameworkCore;
+
+
 namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteSchool
 {
     public class DeleteSchoolCommandHandler : IRequestHandler<DeleteSchoolCommand, DeleteSchoolCommandResponse>
@@ -30,6 +32,12 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
         public async Task<DeleteSchoolCommandResponse> Handle(DeleteSchoolCommand request, CancellationToken cancellationToken)
         {
             var deleteSchoolCommandResponse = new DeleteSchoolCommandResponse();
+            await DeleteSchoolResponseHandling(request, deleteSchoolCommandResponse);
+            return deleteSchoolCommandResponse;
+        }
+
+        private async Task DeleteSchoolResponseHandling(DeleteSchoolCommand request, DeleteSchoolCommandResponse deleteSchoolCommandResponse)
+        {
             try
             {
                 long Id = (long)request.SchoolId;
@@ -42,15 +50,12 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
                 {
 
                     await _schoolRepository.DeleteAsync(schoolToDelete);
-                    if (await _unitOfWork.SaveChangesAsync() > 0)
-                        deleteSchoolCommandResponse.Message = "ok";
-                    else
-                        deleteSchoolCommandResponse.Message = "Not ok";
-
-
+                    if (await _unitOfWork.SaveChangesAsync() <= 0)
+                        deleteSchoolCommandResponse.Success = false;
                 }
                 else
                 {
+                    deleteSchoolCommandResponse.Success = false;
                     deleteSchoolCommandResponse.Message = "We can't delete a school that still have Students, first delete all students!";
                 }
             }
@@ -58,7 +63,6 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
             {
                 deleteSchoolCommandResponse.Message = $"ERROR : {ex.InnerException?.Source} : {ex.InnerException?.Message}";
             }
-            return deleteSchoolCommandResponse;
         }
     }
 }
