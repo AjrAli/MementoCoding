@@ -339,3 +339,4 @@ Connectionstring.config
 
 # Include the publish profile used in the CI build
 !**/PublishProfiles/ci-build-profile.pubxml
+School.Management.Api/Logs/log-20220206.txt
