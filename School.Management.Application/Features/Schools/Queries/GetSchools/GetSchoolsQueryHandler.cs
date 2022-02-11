@@ -34,7 +34,7 @@ namespace SchoolProject.Management.Application.Features.Schools.Queries.GetSchoo
             getSchoolsQueryResponse.SchoolsDto = _mapper.Map<List<GetSchoolsDto>>(allSchools);
             foreach (var school in allSchools)
             {
-                getSchoolsQueryResponse.SchoolsDto[index].Haschildren = (await _studentRepository.ListAsync()).ToList().Any(x => x.SchoolId == school.Id);
+                getSchoolsQueryResponse.SchoolsDto[index].Haschildren = (await _studentRepository.ListAsync()).Any(x => x.SchoolId == school.Id);
                 index++;
             }
 

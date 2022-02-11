@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SchoolProject.Management.Application.Contracts.Persistence
 {
-    public interface IBaseRepository<T> : IRepository<T>, ICommandRepository<T>, IQueryRepository<T> where T : class
+    public interface IBaseRepository<T> : IRepository<T> where T : class
     {
     }
 }
