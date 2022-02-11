@@ -16,12 +16,10 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Delete
     public class DeleteStudentCommandHandler : IRequestHandler<DeleteStudentCommand, DeleteStudentCommandResponse>
     {
         private readonly IBaseRepository<Student> _studentRepository;
-        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteStudentCommandHandler(IMapper mapper, IBaseRepository<Student> studentRepository, IUnitOfWork unitOfWork)
+        public DeleteStudentCommandHandler( IBaseRepository<Student> studentRepository, IUnitOfWork unitOfWork)
         {
-            _mapper = mapper;
             _studentRepository = studentRepository;
             _unitOfWork = unitOfWork;
         }
@@ -41,7 +39,7 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Delete
                 var studentToDelete = await _studentRepository.GetAsync(Id);
 
                 if (studentToDelete == null)
-                    throw new NotFoundException(nameof(Student), request.StudentId); ;
+                    throw new NotFoundException(nameof(Student), request.StudentId);
 
 
                 await _studentRepository.DeleteAsync(studentToDelete);
