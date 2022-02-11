@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SchoolProject.Management.Application.Contracts.Identity;
+using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Application.Models.Authentication;
 using SchoolProject.Management.Identity.Entity;
 using SchoolProject.Management.Identity.JwtModel;
@@ -36,14 +37,14 @@ namespace SchoolProject.Management.Identity.Services
 
             if (user == null)
             {
-                throw new Exception($"User with {username} not found.");
+                throw new NotFoundException(nameof(username), username);
             }
 
             var result = await _signInManager.PasswordSignInAsync(user.UserName, password, false, lockoutOnFailure: false);
 
             if (!result.Succeeded)
             {
-                throw new Exception($"Credentials for '{username} aren't valid'.");
+                throw new ValidationException($"Credentials for '{username} aren't valid'.");
             }
 
             JwtSecurityToken jwtSecurityToken = await GenerateToken(user);

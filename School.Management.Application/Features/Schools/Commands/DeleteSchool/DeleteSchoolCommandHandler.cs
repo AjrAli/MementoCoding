@@ -17,13 +17,11 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
     {
         private readonly IBaseRepository<School> _schoolRepository;
         private readonly IBaseRepository<Student> _studentRepository;
-        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        public DeleteSchoolCommandHandler(IMapper mapper, IBaseRepository<School> schoolRepository,
+        public DeleteSchoolCommandHandler(IBaseRepository<School> schoolRepository,
                                                           IBaseRepository<Student> studentRepository,
                                                           IUnitOfWork unitOfWork)
         {
-            _mapper = mapper;
             _schoolRepository = schoolRepository;
             _studentRepository = studentRepository;
             _unitOfWork = unitOfWork;
@@ -44,7 +42,7 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
                 var schoolToDelete = await _schoolRepository.GetAsync(Id);
 
                 if (schoolToDelete == null)
-                    throw new NotFoundException(nameof(School), request.SchoolId); ;
+                    throw new NotFoundException(nameof(School), request.SchoolId);
 
                 if (!(_studentRepository.Any(x => x.SchoolId == schoolToDelete.Id)))
                 {

@@ -24,10 +24,5 @@ namespace SchoolProject.Management.Persistence.Repositories.Students
             return await _dbContext.Set<Student>().Include(navigationPropertyPath).FirstOrDefaultAsync(predicate);
 
         }
-        public async Task<bool> IsStudentOlder(long Id)
-        {
-            bool isOlder = false;
-            return isOlder;
-        }
     }
 }

@@ -8,11 +8,6 @@ namespace SchoolProject.Management.Application.Features.Response
         {
             Success = true;
         }
-        public BaseResponse(string message = null)
-        {
-            Success = true;
-            Message = message;
-        }
 
         public BaseResponse(string message, bool success)
         {

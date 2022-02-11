@@ -28,7 +28,7 @@ namespace SchoolProject.Management.Api.Middleware
             }
         }
 
-        private Task ConvertException(HttpContext context, Exception exception)
+        private static Task ConvertException(HttpContext context, Exception exception)
         {
             HttpStatusCode httpStatusCode = HttpStatusCode.InternalServerError;
 
@@ -40,7 +40,7 @@ namespace SchoolProject.Management.Api.Middleware
             {
                 case ValidationException validationException:
                     httpStatusCode = HttpStatusCode.BadRequest;
-                    result = JsonConvert.SerializeObject(validationException.ValdationErrors);
+                    result = JsonConvert.SerializeObject(validationException.ValidationErrors);
                     break;
                 case BadRequestException badRequestException:
                     httpStatusCode = HttpStatusCode.BadRequest;
@@ -48,9 +48,11 @@ namespace SchoolProject.Management.Api.Middleware
                     break;
                 case NotFoundException notFoundException:
                     httpStatusCode = HttpStatusCode.NotFound;
+                    result = notFoundException.Message;
                     break;
                 case Exception ex:
                     httpStatusCode = HttpStatusCode.BadRequest;
+                    result = ex.Message;
                     break;
             }
 

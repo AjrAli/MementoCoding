@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SchoolProject.Management.Api
 {
-    public class Program
+    public static class Program
     {
         public async static Task Main(string[] args)
         {
@@ -29,7 +29,7 @@ namespace SchoolProject.Management.Api
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+                //var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
                 try
                 {

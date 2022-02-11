@@ -10,6 +10,5 @@ namespace SchoolProject.Management.Application.Contracts.Persistence
     {
         Task<IReadOnlyList<Student>> GetAllWithIncludeAsync(Expression<Func<Student, object>> navigationPropertyPath);
         Task<Student> GetByIdWithIncludeAsync(Expression<Func<Student, bool>> predicate, Expression<Func<Student, object>> navigationPropertyPath);
-        Task<bool> IsStudentOlder(long Id);
     }
 }
