@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SchoolProject.Management.Application.Features.Students
+﻿namespace SchoolProject.Management.Application.Features.Students
 {
     public class StudentDto
     {

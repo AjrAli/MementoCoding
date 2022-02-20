@@ -1,6 +1,5 @@
 ﻿
 using SchoolProject.Management.Domain.Common;
-using System;
 using System.Collections.Generic;
 
 namespace SchoolProject.Management.Domain.Entities

@@ -1,10 +1,5 @@
-﻿using SchoolProject.Management.Application.Features.Response;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation.Results;
+﻿using FluentValidation.Results;
+using SchoolProject.Management.Application.Features.Response;
 namespace SchoolProject.Management.Application.Features.Service
 {
     public interface IResponseHandlingService

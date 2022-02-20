@@ -1,8 +1,4 @@
-﻿using MediatR;
-using SchoolProject.Management.Application.Features.Response;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SchoolProject.Management.Application.Features.Response;
 
 namespace SchoolProject.Management.Application.Features.Students.Commands.UpdateStudent
 {

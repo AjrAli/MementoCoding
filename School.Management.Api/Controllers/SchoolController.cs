@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SchoolProject.Management.Application.Features.Schools.Commands.CreateSchool;
@@ -8,7 +6,6 @@ using SchoolProject.Management.Application.Features.Schools.Commands.DeleteSchoo
 using SchoolProject.Management.Application.Features.Schools.Commands.UpdateSchool;
 using SchoolProject.Management.Application.Features.Schools.Queries.GetSchool;
 using SchoolProject.Management.Application.Features.Schools.Queries.GetSchools;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SchoolProject.Management.Api.Controllers

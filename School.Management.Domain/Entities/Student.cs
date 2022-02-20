@@ -1,6 +1,5 @@
 ﻿
 using SchoolProject.Management.Domain.Common;
-using System;
 
 namespace SchoolProject.Management.Domain.Entities
 {

@@ -1,20 +1,20 @@
 
-using SchoolProject.Management.Api.Middleware;
-using SchoolProject.Management.Api.Services;
-using SchoolProject.Management.Api.Utility;
-using SchoolProject.Management.Application;
-using SchoolProject.Management.Application.Contracts;
-using SchoolProject.Management.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
-using SchoolProject.Management.Identity;
+using SchoolProject.Management.Api.Middleware;
+using SchoolProject.Management.Api.Services;
+using SchoolProject.Management.Api.Utility;
+using SchoolProject.Management.Application;
+using SchoolProject.Management.Application.Contracts;
 using SchoolProject.Management.Application.Contracts.Identity;
+using SchoolProject.Management.Identity;
 using SchoolProject.Management.Identity.Services;
+using SchoolProject.Management.Persistence;
+using System.Collections.Generic;
 
 namespace SchoolProject.Management.Api
 {

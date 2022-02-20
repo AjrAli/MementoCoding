@@ -1,14 +1,11 @@
-﻿using AutoMapper;
+﻿using DotNetCore.EntityFrameworkCore;
 using MediatR;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Domain.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNetCore.EntityFrameworkCore;
 
 
 namespace SchoolProject.Management.Application.Features.Students.Commands.DeleteStudent

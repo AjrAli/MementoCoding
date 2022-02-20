@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SchoolProject.Management.Application.Features.Dto
+﻿namespace SchoolProject.Management.Application.Features.Dto
 {
     public interface IBaseDto
     {

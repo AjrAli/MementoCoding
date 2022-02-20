@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using MediatR;
+﻿using MediatR;
 
 namespace SchoolProject.Management.Application.Features.Schools.Commands.UpdateSchool
 {

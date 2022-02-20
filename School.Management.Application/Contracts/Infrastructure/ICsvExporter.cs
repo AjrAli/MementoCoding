@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SchoolProject.Management.Application.Contracts.Infrastructure
+﻿namespace SchoolProject.Management.Application.Contracts.Infrastructure
 {
     public interface ICsvExporter
     {
