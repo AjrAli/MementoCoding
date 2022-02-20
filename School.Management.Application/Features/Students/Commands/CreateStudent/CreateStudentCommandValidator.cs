@@ -1,8 +1,4 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using SchoolProject.Management.Domain.Entities;
 
 namespace SchoolProject.Management.Application.Features.Students.Commands.CreateStudent
 {

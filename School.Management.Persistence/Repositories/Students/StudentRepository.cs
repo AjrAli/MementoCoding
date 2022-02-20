@@ -4,7 +4,6 @@ using SchoolProject.Management.Domain.Entities;
 using SchoolProject.Management.Persistence.Context;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 namespace SchoolProject.Management.Persistence.Repositories.Students

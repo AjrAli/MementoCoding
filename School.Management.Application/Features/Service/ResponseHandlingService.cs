@@ -1,10 +1,6 @@
-﻿using SchoolProject.Management.Application.Features.Response;
-using System;
+﻿using FluentValidation.Results;
+using SchoolProject.Management.Application.Features.Response;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation.Results;
 
 namespace SchoolProject.Management.Application.Features.Service
 {

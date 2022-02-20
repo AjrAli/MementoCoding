@@ -1,13 +1,7 @@
-﻿using SchoolProject.Management.Application.Contracts.Persistence;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SchoolProject.Management.Persistence.Context;
-using System.Linq.Expressions;
-using DotNetCore.EntityFrameworkCore;
+﻿using DotNetCore.EntityFrameworkCore;
 using DotNetCore.Repositories;
+using SchoolProject.Management.Application.Contracts.Persistence;
+using SchoolProject.Management.Persistence.Context;
 
 namespace SchoolProject.Management.Persistence.Repositories
 {

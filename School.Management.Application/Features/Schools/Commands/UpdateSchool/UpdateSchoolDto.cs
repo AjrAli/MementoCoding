@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SchoolProject.Management.Application.Features.Schools.Commands.UpdateSchool
+﻿namespace SchoolProject.Management.Application.Features.Schools.Commands.UpdateSchool
 {
     public class UpdateSchoolDto : SchoolDto
     {

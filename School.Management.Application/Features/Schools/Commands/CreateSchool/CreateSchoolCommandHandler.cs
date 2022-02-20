@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
-using SchoolProject.Management.Application.Contracts.Persistence;
-using SchoolProject.Management.Domain.Entities;
+using DotNetCore.EntityFrameworkCore;
 using MediatR;
-using System.Collections.Generic;
+using SchoolProject.Management.Application.Contracts.Persistence;
+using SchoolProject.Management.Application.Features.Service;
+using SchoolProject.Management.Domain.Entities;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNetCore.EntityFrameworkCore;
-using System;
-using SchoolProject.Management.Application.Features.Service;
 
 namespace SchoolProject.Management.Application.Features.Schools.Commands.CreateSchool
 {

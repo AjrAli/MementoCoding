@@ -1,12 +1,11 @@
-﻿using SchoolProject.Management.Application.Contracts;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using SchoolProject.Management.Application.Contracts;
 using SchoolProject.Management.Domain.Common;
 using SchoolProject.Management.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
+using SchoolProject.Management.Persistence.Configurations;
 using System.Threading;
 using System.Threading.Tasks;
-using SchoolProject.Management.Persistence.Configurations;
-using Microsoft.Extensions.Logging;
 
 namespace SchoolProject.Management.Persistence.Context
 {

@@ -2,9 +2,7 @@
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Domain.Entities;
 using SchoolProject.Management.Persistence.Context;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SchoolProject.Management.Persistence.Repositories.Schools

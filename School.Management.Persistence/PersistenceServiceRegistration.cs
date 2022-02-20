@@ -1,13 +1,12 @@
-﻿using SchoolProject.Management.Application.Contracts.Persistence;
+﻿using DotNetCore.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Persistence.Context;
 using SchoolProject.Management.Persistence.Repositories;
-using SchoolProject.Management.Persistence.Repositories.Students;
 using SchoolProject.Management.Persistence.Repositories.Schools;
-using Microsoft.Extensions.Logging;
-using DotNetCore.EntityFrameworkCore;
+using SchoolProject.Management.Persistence.Repositories.Students;
 
 namespace SchoolProject.Management.Persistence
 {
