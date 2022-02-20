@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31005.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D5153C37-95F3-40DE-AA78-AD0996C7B4AD}"
 EndProject
@@ -24,6 +24,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolProject.Management.Identity", "SchoolProject.Management.Identity\SchoolProject.Management.Identity.csproj", "{0C620563-807A-4266-AEF4-8047D85E9A03}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolProject.Management.Domain", "School.Management.Domain\SchoolProject.Management.Domain.csproj", "{F9803997-7D0C-4762-A22B-374F19759E7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolProject.Management.Api.Tests", "SchoolProject.Management.Api.Tests\SchoolProject.Management.Api.Tests.csproj", "{F1CA814A-7D6C-4813-A859-619D2D0B9353}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{F9803997-7D0C-4762-A22B-374F19759E7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9803997-7D0C-4762-A22B-374F19759E7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9803997-7D0C-4762-A22B-374F19759E7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1CA814A-7D6C-4813-A859-619D2D0B9353}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1CA814A-7D6C-4813-A859-619D2D0B9353}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1CA814A-7D6C-4813-A859-619D2D0B9353}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1CA814A-7D6C-4813-A859-619D2D0B9353}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +71,7 @@ Global
 		{A85CAB51-4F75-48C5-9A3F-B0416265FEB2} = {D6E63167-9485-4C93-A390-7BC5D12AA05C}
 		{0C620563-807A-4266-AEF4-8047D85E9A03} = {D272405E-B75B-4C98-A9D1-52D681489B57}
 		{F9803997-7D0C-4762-A22B-374F19759E7F} = {D272405E-B75B-4C98-A9D1-52D681489B57}
+		{F1CA814A-7D6C-4813-A859-619D2D0B9353} = {94957E6A-1264-444B-B248-153D9A1F821E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5B8E0A62-2F0D-4EAF-9AB8-59B2F895BAFA}
