@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-
+#nullable disable
 namespace SchoolProject.Management.Application.Features.Students.Commands.CreateStudent
 {
     public class CreateStudentCommandValidator : AbstractValidator<CreateStudentCommand>

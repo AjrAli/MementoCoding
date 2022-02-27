@@ -4,10 +4,7 @@ namespace SchoolProject.Management.Application.Features.Response
 {
     public class BaseResponse
     {
-        public BaseResponse()
-        {
-            Success = true;
-        }
+        public BaseResponse() => Success = true;
 
         public BaseResponse(string message, bool success)
         {
@@ -16,7 +13,7 @@ namespace SchoolProject.Management.Application.Features.Response
         }
 
         public bool Success { get; set; }
-        public string Message { get; set; }
-        public List<string> ValidationErrors { get; set; }
+        public string? Message { get; set; }
+        public List<string>? ValidationErrors { get; set; }
     }
 }

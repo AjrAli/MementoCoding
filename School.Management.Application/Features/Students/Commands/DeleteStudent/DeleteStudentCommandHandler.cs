@@ -32,11 +32,11 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Delete
         {
             try
             {
-                long Id = (long)request.StudentId;
+                long Id = (request?.StudentId != null) ? (long)request!.StudentId : 0;
                 var studentToDelete = await _studentRepository.GetAsync(Id);
 
                 if (studentToDelete == null)
-                    throw new NotFoundException(nameof(Student), request.StudentId);
+                    throw new NotFoundException(nameof(Student), Id);
 
 
                 await _studentRepository.DeleteAsync(studentToDelete);

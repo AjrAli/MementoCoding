@@ -5,6 +5,8 @@ using SchoolProject.Management.Application.Features.Students.Queries.GetStudent;
 using SchoolProject.Management.Application.Features.Students.Queries.GetStudents;
 using SchoolProject.Management.Domain.Entities;
 
+
+#nullable disable
 namespace SchoolProject.Management.Application.Profiles.Students
 {
     public class StudentMappingProfile : Profile

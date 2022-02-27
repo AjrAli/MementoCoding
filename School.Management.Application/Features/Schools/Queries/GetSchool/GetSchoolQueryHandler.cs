@@ -26,11 +26,11 @@ namespace SchoolProject.Management.Application.Features.Schools.Queries.GetSchoo
         public async Task<GetSchoolQueryResponse> Handle(GetSchoolQuery request, CancellationToken cancellationToken)
         {
             var getSchoolQueryResponse = new GetSchoolQueryResponse();
-            long Id = (long) request.SchoolId;
+            long Id = (request?.SchoolId != null) ? (long)request!.SchoolId : 0;
             var school = await _schoolRepository.GetAsync(Id);
             if (school == null)
             {
-                throw new NotFoundException(nameof(School), request.SchoolId);
+                throw new NotFoundException(nameof(School), Id);
             }
             getSchoolQueryResponse.SchoolDto = _mapper.Map<GetSchoolDto>(school);
             getSchoolQueryResponse.SchoolDto.Haschildren = _studentRepository.Any(x => x.SchoolId == school.Id);

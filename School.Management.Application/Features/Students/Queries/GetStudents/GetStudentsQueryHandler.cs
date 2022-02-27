@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+
+#nullable disable
 namespace SchoolProject.Management.Application.Features.Students.Queries.GetStudents
 {
     public class GetStudentsQueryHandler : IRequestHandler<GetStudentsQuery, GetStudentsQueryResponse>
@@ -23,7 +25,7 @@ namespace SchoolProject.Management.Application.Features.Students.Queries.GetStud
         public async Task<GetStudentsQueryResponse> Handle(GetStudentsQuery request, CancellationToken cancellationToken)
         {
             var getStudentsQueryResponse = new GetStudentsQueryResponse();
-            var allStudents = (await _studentRepository.GetAllWithIncludeAsync(x => x.School)).OrderBy(x => x.LastName).ToList();
+            var allStudents = (await _studentRepository.GetAllWithIncludeAsync(navigationPropertyPath: x => x.School)).OrderBy(x => x.LastName).ToList();
             getStudentsQueryResponse.StudentsDto = _mapper.Map<List<GetStudentsDto>>(allStudents);
             return getStudentsQueryResponse;
         }

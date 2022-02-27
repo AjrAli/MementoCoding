@@ -46,7 +46,7 @@ namespace SchoolProject.Management.Identity.Services
                 throw new ValidationException($"Credentials for '{username} aren't valid'.");
             }
 
-            JwtSecurityToken jwtSecurityToken = await GenerateToken(user);
+            JwtSecurityToken? jwtSecurityToken = await GenerateToken(user);
 
             AuthenticationResponse response = new AuthenticationResponse
             {
@@ -59,7 +59,7 @@ namespace SchoolProject.Management.Identity.Services
             return response;
         }
 
-        private async Task<JwtSecurityToken> GenerateToken(ApplicationUser user)
+        private async Task<JwtSecurityToken?> GenerateToken(ApplicationUser user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
 
@@ -71,16 +71,20 @@ namespace SchoolProject.Management.Identity.Services
             }
             .Union(userClaims);
 
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
-            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+            if(_jwtSettings.Key != null)
+            {
+                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
+                var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
-            var jwtSecurityToken = new JwtSecurityToken(
-                issuer: _jwtSettings.Issuer,
-                audience: _jwtSettings.Audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddDays(1).AddMinutes(-5),
-                signingCredentials: signingCredentials);
-            return jwtSecurityToken;
+                var jwtSecurityToken = new JwtSecurityToken(
+                    issuer: _jwtSettings.Issuer,
+                    audience: _jwtSettings.Audience,
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddDays(1).AddMinutes(-5),
+                    signingCredentials: signingCredentials);
+                return jwtSecurityToken;
+            }
+            return null;
         }
     }
 }

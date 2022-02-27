@@ -38,15 +38,15 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.UpdateS
         {
             try
             {
-                var schoolToUpdate = await _schoolRepository.GetAsync(request.School.Id);
+                var schoolToUpdate = await _schoolRepository.GetAsync(request?.School?.Id);
                 if (schoolToUpdate == null)
-                    throw new NotFoundException(nameof(School), request.School.Id);
+                    throw new NotFoundException(nameof(School), request?.School?.Id ?? 0);
 
                 var validationResult = await validator.ValidateAsync(request);
                 _responseHandlingService.ValidateRequestResult(updateSchoolCommandResponse, validationResult);
                 if (updateSchoolCommandResponse.Success)
                 {
-                    _mapper.Map(request.School, schoolToUpdate);
+                    _mapper.Map(request?.School, schoolToUpdate);
 
                     await _schoolRepository.UpdateAsync(schoolToUpdate);
                     if (await _unitOfWork.SaveChangesAsync() <= 0)

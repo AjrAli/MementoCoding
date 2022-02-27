@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 
+#nullable disable
 namespace SchoolProject.Management.Application.Features.Schools.Commands.CreateSchool
 {
     public class CreateSchoolCommandValidator : AbstractValidator<CreateSchoolCommand>

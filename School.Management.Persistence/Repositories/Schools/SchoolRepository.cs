@@ -5,6 +5,7 @@ using SchoolProject.Management.Persistence.Context;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+#nullable disable
 namespace SchoolProject.Management.Persistence.Repositories.Schools
 {
     public class SchoolRepository : BaseRepository<School>, ISchoolRepository
@@ -15,7 +16,7 @@ namespace SchoolProject.Management.Persistence.Repositories.Schools
 
         public async Task<List<School>> GetSchoolsWithStudents()
         {
-            var allSchools = await _dbContext.Schools.Include(x => x.Students).ToListAsync();
+            var allSchools = await _dbContext.Schools?.Include(x => x.Students).ToListAsync();
             return allSchools;
         }
     }
