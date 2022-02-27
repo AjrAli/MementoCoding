@@ -11,6 +11,6 @@ namespace SchoolProject.Management.Api.Services
             UserId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        public string UserId { get; }
+        public string? UserId { get; }
     }
 }

@@ -5,7 +5,7 @@ namespace SchoolProject.Management.Application.Features.Students.Queries.GetStud
 {
     public class GetStudentsQueryResponse : BaseResponse
     {
-        public List<GetStudentsDto> StudentsDto { get; set; }
+        public List<GetStudentsDto>? StudentsDto { get; set; }
         public GetStudentsQueryResponse() : base()
         {
 

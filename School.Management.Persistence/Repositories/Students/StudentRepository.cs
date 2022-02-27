@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
+#nullable disable
 namespace SchoolProject.Management.Persistence.Repositories.Students
 {
     public class StudentRepository : BaseRepository<Student>, IStudentRepository

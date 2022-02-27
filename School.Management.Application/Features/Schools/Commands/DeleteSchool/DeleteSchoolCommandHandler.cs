@@ -35,11 +35,11 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
         {
             try
             {
-                long Id = (long)request.SchoolId;
+                long Id = (request?.SchoolId != null) ? (long)request!.SchoolId : 0;
                 var schoolToDelete = await _schoolRepository.GetAsync(Id);
 
                 if (schoolToDelete == null)
-                    throw new NotFoundException(nameof(School), request.SchoolId);
+                    throw new NotFoundException(nameof(School), Id);
 
                 if (!(_studentRepository.Any(x => x.SchoolId == schoolToDelete.Id)))
                 {

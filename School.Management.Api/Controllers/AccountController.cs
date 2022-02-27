@@ -22,12 +22,15 @@ namespace SchoolProject.Management.Api.Controllers
         public async Task<ActionResult<AuthenticationResponse>> AuthenticateAsync(string username, string password)
         {
             var response = await _authenticationService.AuthenticateAsync(username, password);
-            Response.Cookies.Append("X-Access-Token", response.Token, new CookieOptions() 
+            if(response != null && response.Token != null)
             {
-                Expires = DateTimeOffset.UtcNow.AddDays(1).AddMinutes(-5),
-                HttpOnly = true, 
-                SameSite = SameSiteMode.Strict 
-            });
+                Response.Cookies.Append("X-Access-Token", response.Token, new CookieOptions()
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(1).AddMinutes(-5),
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.Strict
+                });
+            }
             return Ok(response);
         }
     }

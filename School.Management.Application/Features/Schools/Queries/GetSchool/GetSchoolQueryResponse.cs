@@ -4,7 +4,7 @@ namespace SchoolProject.Management.Application.Features.Schools.Queries.GetSchoo
 {
     public class GetSchoolQueryResponse : BaseResponse
     {
-        public GetSchoolDto SchoolDto { get; set; }
+        public GetSchoolDto? SchoolDto { get; set; }
         public GetSchoolQueryResponse() : base()
         {
 

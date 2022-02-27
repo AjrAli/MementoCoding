@@ -6,6 +6,6 @@ namespace SchoolProject.Management.Application.Features.Schools.Queries.GetSchoo
     {
         public long Id { get; set; }
         public bool Haschildren { get; set; }
-        public string Parentname { get; set; }
+        public string? Parentname { get; set; }
     }
 }

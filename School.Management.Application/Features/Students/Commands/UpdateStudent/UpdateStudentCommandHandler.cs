@@ -39,15 +39,15 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Update
         {
             try
             {
-                var studentToUpdate = await _studentRepository.GetAsync(request.Student.Id);
+                var studentToUpdate = await _studentRepository.GetAsync(request?.Student?.Id);
                 if (studentToUpdate == null)
-                    throw new NotFoundException(nameof(Student), request.Student.Id);
+                    throw new NotFoundException(nameof(Student), request?.Student?.Id ?? 0);
 
                 var validationResult = await validator.ValidateAsync(request);
                 _responseHandlingService.ValidateRequestResult(updateStudentCommandResponse, validationResult);
                 if (updateStudentCommandResponse.Success)
                 {
-                    _mapper.Map(request.Student, studentToUpdate);
+                    _mapper.Map(request?.Student, studentToUpdate);
                     await _studentRepository.UpdateAsync(studentToUpdate);
                     if (await _unitOfWork.SaveChangesAsync() <= 0)
                         updateStudentCommandResponse.Success = false;

@@ -11,7 +11,7 @@ namespace SchoolProject.Management.Persistence.Context
 {
     public class SchoolManagementDbContext : DbContext
     {
-        private readonly ILoggedInUserService _loggedInUserService;
+        private readonly ILoggedInUserService? _loggedInUserService;
         private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
         public SchoolManagementDbContext(DbContextOptions<SchoolManagementDbContext> options)
             : base(options)
@@ -25,8 +25,8 @@ namespace SchoolProject.Management.Persistence.Context
         }
 
 
-        public DbSet<Student> Students { get; set; }
-        public DbSet<School> Schools { get; set; }
+        public DbSet<Student>? Students { get; set; }
+        public DbSet<School>? Schools { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -48,11 +48,11 @@ namespace SchoolProject.Management.Persistence.Context
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedBy = _loggedInUserService.UserId;
-                        entry.Entity.LastModifiedBy = _loggedInUserService.UserId;
+                        entry.Entity.CreatedBy = _loggedInUserService?.UserId ?? "";
+                        entry.Entity.LastModifiedBy = _loggedInUserService?.UserId ?? "";
                         break;
                     case EntityState.Modified:
-                        entry.Entity.LastModifiedBy = _loggedInUserService.UserId;
+                        entry.Entity.LastModifiedBy = _loggedInUserService?.UserId ?? "";
                         break;
                 }
             }

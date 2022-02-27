@@ -25,7 +25,7 @@ namespace SchoolProject.Management.Api.Controllers
 
         
         [HttpGet]
-        [Route("{SchoolId}")]
+        [Route("{schoolId}")]
         public async Task<IActionResult> GetSchool(long? schoolId)
         {
             var data = await _mediator.Send(new GetSchoolQuery

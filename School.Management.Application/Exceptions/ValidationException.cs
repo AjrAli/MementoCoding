@@ -12,7 +12,7 @@ namespace SchoolProject.Management.Application.Exceptions
     public class ValidationException : ApplicationException
     {
 
-        private readonly IList<string> _validationErrors;
+        private readonly IList<string>? _validationErrors;
 
         public ValidationException(ValidationResult validationResult)
         {
@@ -53,11 +53,11 @@ namespace SchoolProject.Management.Application.Exceptions
         protected ValidationException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            _validationErrors = (IList<string>)info.GetValue("ValidationErrors", typeof(IList<string>));
+            _validationErrors = info.GetValue("ValidationErrors", typeof(IList<string>)) as IList<string>;
         }
 
 
-        public IList<string> ValidationErrors
+        public IList<string>? ValidationErrors
         {
             get { return _validationErrors; }
         }
