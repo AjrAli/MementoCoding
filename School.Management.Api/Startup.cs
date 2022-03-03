@@ -14,6 +14,7 @@ using SchoolProject.Management.Application.Contracts.Identity;
 using SchoolProject.Management.Identity;
 using SchoolProject.Management.Identity.Services;
 using SchoolProject.Management.Persistence;
+using Serilog;
 using System.Collections.Generic;
 
 namespace SchoolProject.Management.Api
@@ -28,6 +29,7 @@ namespace SchoolProject.Management.Api
         public void ConfigureServices(IServiceCollection services)
         {
             AddSwagger(services);
+            services.AddSingleton<ILogger>(Log.Logger);
             services.AddApplicationServices();
             services.AddPersistenceServices(Configuration);
             services.AddIdentityServices(Configuration);
@@ -94,11 +96,10 @@ namespace SchoolProject.Management.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseSerilogRequestLogging();
             app.UseRouting();
 
             app.UseAuthentication();
-
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

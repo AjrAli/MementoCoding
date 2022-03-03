@@ -32,7 +32,7 @@ namespace SchoolProject.Management.Api.Controllers
             {
                 SchoolId = schoolId
             });
-            if (data.SchoolDto == null)
+            if (data?.SchoolDto == null)
                 return NotFound();
             return Ok(data);
         }
