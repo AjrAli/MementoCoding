@@ -6,7 +6,7 @@ namespace SchoolProject.Management.Application.Features.Service
 {
     public class ResponseHandlingService : IResponseHandlingService
     {
-        public void ValidateRequestResult(BaseResponse baseResponse, ValidationResult validationResult)
+        public void ValidateRequestResult(IBaseResponse baseResponse, ValidationResult validationResult)
         {
             if (validationResult.Errors.Count > 0)
             {

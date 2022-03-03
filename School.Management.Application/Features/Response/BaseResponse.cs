@@ -2,7 +2,7 @@
 
 namespace SchoolProject.Management.Application.Features.Response
 {
-    public class BaseResponse
+    public class BaseResponse : IBaseResponse
     {
         public BaseResponse() => Success = true;
 
