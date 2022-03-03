@@ -37,7 +37,7 @@ namespace SchoolProject.Management.Api.Tests.Controllers
         private StudentDto? _studentDto;
         private List<StudentDto>? _allStudentDto;
         private IBaseResponse? _studentResponse;
-        private static TestContext _testContext;
+        private static TestContext? _testContext;
 
         [ClassInitialize]
         public static void SetupTests(TestContext testContext)
@@ -107,7 +107,7 @@ namespace SchoolProject.Management.Api.Tests.Controllers
         {
             foreach (var difference in differences)
             {
-                _testContext.WriteLine($"Value 1 : {difference.Value1} and  Value 2 : {difference.Value2} aren't equal!");
+                _testContext?.WriteLine($"Value 1 : {difference.Value1} and  Value 2 : {difference.Value2} aren't equal!");
             }
         }
 
