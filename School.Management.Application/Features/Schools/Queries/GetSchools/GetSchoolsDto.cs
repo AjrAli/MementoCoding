@@ -2,9 +2,8 @@
 
 namespace SchoolProject.Management.Application.Features.Schools.Queries.GetSchools
 {
-    public class GetSchoolsDto : SchoolDto, IBaseDto
+    public class GetSchoolsDto : SchoolDto
     {
-        public long Id { get; set; }
         public bool Haschildren { get; set; }
         public string? Parentname { get; set; }
     }
