@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using SchoolProject.Management.Application.Features.Students.Commands.CreateStudent;
-using SchoolProject.Management.Application.Features.Students.Commands.UpdateStudent;
+using SchoolProject.Management.Application.Features.Students;
 using SchoolProject.Management.Application.Features.Students.Queries.GetStudent;
 using SchoolProject.Management.Application.Features.Students.Queries.GetStudents;
 using SchoolProject.Management.Domain.Entities;
@@ -14,10 +13,9 @@ namespace SchoolProject.Management.Application.Profiles.Students
         public StudentMappingProfile()
         {
 
-            CreateMap<Student, CreateStudentDto>().ReverseMap();
-            CreateMap<Student, UpdateStudentDto>();
-            CreateMap<UpdateStudentDto, Student>(MemberList.None);
-            CreateMap<UpdateStudentDto, Student>()
+            CreateMap<Student, StudentDto>();
+            CreateMap<StudentDto, Student>(MemberList.None);
+            CreateMap<StudentDto, Student>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(source => source.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(source => source.LastName))
                 .ForMember(dest => dest.Adress, opt => opt.MapFrom(source => source.Adress))
@@ -39,7 +37,6 @@ namespace SchoolProject.Management.Application.Profiles.Students
                 .ForMember(dest => dest.Adress, opt => opt.MapFrom(source => source.Adress))
                 .ForMember(dest => dest.Age, opt => opt.MapFrom(source => source.Age))
                 .ForMember(dest => dest.SchoolId, opt => opt.MapFrom(source => source.SchoolId));
-
             CreateMap<Student, GetStudentsDto>(MemberList.None);
             CreateMap<Student, GetStudentsDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(source => source.Id))
@@ -51,6 +48,24 @@ namespace SchoolProject.Management.Application.Profiles.Students
                 .ForMember(dest => dest.Parentname, opt => opt.MapFrom(source => source.School.Name));
             CreateMap<GetStudentsDto, Student>(MemberList.None);
             CreateMap<GetStudentsDto, Student>()
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(source => source.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(source => source.LastName))
+                .ForMember(dest => dest.Adress, opt => opt.MapFrom(source => source.Adress))
+                .ForMember(dest => dest.Age, opt => opt.MapFrom(source => source.Age))
+                .ForMember(dest => dest.SchoolId, opt => opt.MapFrom(source => source.SchoolId));
+            CreateMap<StudentDto, GetStudentsDto>();
+            CreateMap<GetStudentsDto, StudentDto>(MemberList.None);
+            CreateMap<GetStudentsDto, StudentDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(source => source.Id))
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(source => source.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(source => source.LastName))
+                .ForMember(dest => dest.Adress, opt => opt.MapFrom(source => source.Adress))
+                .ForMember(dest => dest.Age, opt => opt.MapFrom(source => source.Age))
+                .ForMember(dest => dest.SchoolId, opt => opt.MapFrom(source => source.SchoolId));
+            CreateMap<StudentDto, GetStudentDto>();
+            CreateMap<GetStudentDto, StudentDto>(MemberList.None);
+            CreateMap<GetStudentDto, StudentDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(source => source.Id))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(source => source.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(source => source.LastName))
                 .ForMember(dest => dest.Adress, opt => opt.MapFrom(source => source.Adress))

@@ -4,6 +4,6 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.UpdateS
 {
     public class UpdateSchoolCommand : IRequest<UpdateSchoolCommandResponse>
     {
-        public UpdateSchoolDto? School { get; set; }
+        public SchoolDto? School { get; set; }
     }
 }

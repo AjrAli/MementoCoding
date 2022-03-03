@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SchoolProject.Management.Application.Features.Students;
 using SchoolProject.Management.Application.Features.Students.Commands.CreateStudent;
 using SchoolProject.Management.Application.Features.Students.Commands.DeleteStudent;
 using SchoolProject.Management.Application.Features.Students.Commands.UpdateStudent;
@@ -46,7 +47,7 @@ namespace SchoolProject.Management.Api.Controllers
 
         [HttpPost]
         [Route("CreateStudent")]
-        public async Task<IActionResult> CreateStudent([FromBody] CreateStudentDto createStudentDto)
+        public async Task<IActionResult> CreateStudent([FromBody] StudentDto createStudentDto)
         {
             if (!ModelState.IsValid)
             {
@@ -79,7 +80,7 @@ namespace SchoolProject.Management.Api.Controllers
         }
         [HttpPost]
         [Route("UpdateStudent")]
-        public async Task<IActionResult> UpdateStudent([FromBody] UpdateStudentDto updateStudentDto)
+        public async Task<IActionResult> UpdateStudent([FromBody] StudentDto updateStudentDto)
         {
             if (!ModelState.IsValid)
             {

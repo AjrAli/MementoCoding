@@ -3,6 +3,6 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Create
 {
     public class CreateStudentCommand : IRequest<CreateStudentCommandResponse>
     {
-        public CreateStudentDto? Student { get; set; }
+        public StudentDto? Student { get; set; }
     }
 }
