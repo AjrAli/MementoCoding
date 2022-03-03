@@ -31,7 +31,7 @@ namespace SchoolProject.Management.Api.Controllers
             {
                 StudentId = studentId
             });
-            if (data.StudentDto == null)
+            if (data?.StudentDto == null)
                 return NotFound();
             return Ok(data);
         }

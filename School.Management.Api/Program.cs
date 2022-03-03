@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SchoolProject.Management.Identity.Entity;
 using Serilog;
+using Serilog.Events;
 using System;
 using System.Threading.Tasks;
 
@@ -14,15 +15,11 @@ namespace SchoolProject.Management.Api
     {
         public async static Task Main(string[] args)
         {
-            var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-
             Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(config)
-                .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
-                .CreateLogger();
-
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                        .Enrich.FromLogContext()
+                        .WriteTo.Console()
+                        .CreateBootstrapLogger();
             var host = CreateHostBuilder(args).Build();
 
             using (var scope = host.Services.CreateScope())
@@ -35,11 +32,16 @@ namespace SchoolProject.Management.Api
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
                     await Identity.Seed.CreateFirstUser.SeedAsync(userManager);
-                    Log.Information("Application Starting");
+                    Log.Information("Starting web host");
+                    CreateHostBuilder(args).Build().Run();
                 }
                 catch (Exception ex)
                 {
-                    Log.Warning(ex, "An error occured while starting the application");
+                    Log.Fatal(ex, "An error occured while starting the application");
+                }
+                finally
+                {
+                    Log.CloseAndFlush();
                 }
             }
 
@@ -48,7 +50,9 @@ namespace SchoolProject.Management.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-             .UseSerilog()
+             .UseSerilog((ctx, lc) => lc
+                .WriteTo.Console()
+                .ReadFrom.Configuration(ctx.Configuration))
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
