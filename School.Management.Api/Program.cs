@@ -15,10 +15,14 @@ namespace SchoolProject.Management.Api
     {
         public async static Task Main(string[] args)
         {
+            var config = new ConfigurationBuilder()
+                        .AddJsonFile("appsettings.json")
+                        .Build();
             Log.Logger = new LoggerConfiguration()
                         .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                         .Enrich.FromLogContext()
                         .WriteTo.Console()
+                        .ReadFrom.Configuration(config)
                         .CreateBootstrapLogger();
             var host = CreateHostBuilder(args).Build();
 
@@ -50,9 +54,7 @@ namespace SchoolProject.Management.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-             .UseSerilog((ctx, lc) => lc
-                .WriteTo.Console()
-                .ReadFrom.Configuration(ctx.Configuration))
+             .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
