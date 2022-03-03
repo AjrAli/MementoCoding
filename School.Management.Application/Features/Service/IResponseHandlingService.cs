@@ -4,6 +4,6 @@ namespace SchoolProject.Management.Application.Features.Service
 {
     public interface IResponseHandlingService
     {
-        void ValidateRequestResult(BaseResponse baseResponse, ValidationResult validationResult);
+        void ValidateRequestResult(IBaseResponse baseResponse, ValidationResult validationResult);
     }
 }
