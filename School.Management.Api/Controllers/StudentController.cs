@@ -1,12 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Application.Features.Students;
 using SchoolProject.Management.Application.Features.Students.Commands.CreateStudent;
 using SchoolProject.Management.Application.Features.Students.Commands.DeleteStudent;
 using SchoolProject.Management.Application.Features.Students.Commands.UpdateStudent;
 using SchoolProject.Management.Application.Features.Students.Queries.GetStudent;
 using SchoolProject.Management.Application.Features.Students.Queries.GetStudents;
+using System;
 using System.Threading.Tasks;
 
 namespace SchoolProject.Management.Api.Controllers
@@ -28,20 +30,39 @@ namespace SchoolProject.Management.Api.Controllers
         [Route("{studentId}")]
         public async Task<IActionResult> GetStudent(long? studentId)
         {
-            var data = await _mediator.Send(new GetStudentQuery
+            GetStudentQueryResponse? dataReponse = null;
+            try
             {
-                StudentId = studentId
-            });
-            if (data?.StudentDto == null)
-                return NotFound();
-            return Ok(data);
+                dataReponse = await _mediator.Send(new GetStudentQuery
+                {
+                    StudentId = studentId
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                if (dataReponse?.StudentDto == null)
+                    return NotFound();
+            }
+            return Ok(dataReponse);
         }
 
         [HttpGet]
         [Route("")]
         public async Task<IActionResult> GetStudents()
         {
-            return Ok(await _mediator.Send(new GetStudentsQuery()));
+            GetStudentsQueryResponse? dataReponse = null;
+            try
+            {
+                dataReponse = await _mediator.Send(new GetStudentsQuery());
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                if (dataReponse?.StudentsDto == null)
+                    return NotFound();
+            }
+            return Ok(dataReponse);
         }
 
 
@@ -54,12 +75,20 @@ namespace SchoolProject.Management.Api.Controllers
                 _logger.LogInformation("Provided model is not valid");
                 return BadRequest(ModelState);
             }
-
-            return Ok(await _mediator.Send(new CreateStudentCommand
+            CreateStudentCommandResponse? dataReponse;
+            try
             {
-                Student = createStudentDto
-            }));
-
+                dataReponse = await _mediator.Send(new CreateStudentCommand
+                {
+                    Student = createStudentDto
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex.Message);
+                return BadRequest();
+            }
+            return Ok(dataReponse);
         }
 
         [HttpPost]
@@ -72,10 +101,20 @@ namespace SchoolProject.Management.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            return Ok(await _mediator.Send(new DeleteStudentCommand
+            DeleteStudentCommandResponse? dataReponse;
+            try
             {
-                StudentId = studentId
-            }));
+                dataReponse = await _mediator.Send(new DeleteStudentCommand
+                {
+                    StudentId = studentId
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex.Message);
+                return BadRequest();
+            }
+            return Ok(dataReponse);
 
         }
         [HttpPost]
@@ -87,11 +126,20 @@ namespace SchoolProject.Management.Api.Controllers
                 _logger.LogInformation("Provided model is not valid");
                 return BadRequest(ModelState);
             }
-            return Ok(await _mediator.Send(new UpdateStudentCommand
+            UpdateStudentCommandResponse? dataReponse;
+            try
             {
-                Student = updateStudentDto
-            }));
-
+                dataReponse = await _mediator.Send(new UpdateStudentCommand
+                {
+                    Student = updateStudentDto
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex.Message);
+                return BadRequest();
+            }
+            return Ok(dataReponse);
         }
     }
 }

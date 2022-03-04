@@ -9,6 +9,9 @@ namespace SchoolProject.Management.Application.Exceptions
     // "Type X in Assembly Y is not marked as serializable."
     public class NotFoundException : ApplicationException
     {
+        public NotFoundException(string message) : base(message)
+        {
+        }
         public NotFoundException(string name, object key)
             : base($"{name} ({key}) is not found")
         {

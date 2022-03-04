@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using SchoolProject.Management.Application.Contracts.Persistence;
+using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,11 @@ namespace SchoolProject.Management.Application.Features.Schools.Queries.GetSchoo
         {
             var getSchoolsQueryResponse = new GetSchoolsQueryResponse();
             int index = 0;
-            var allSchools = (await _schoolRepository.ListAsync()).OrderBy(x => x.Name).ToList();
+            var allSchools = (await _schoolRepository.ListAsync())?.OrderBy(x => x.Name)?.ToList();
+            if (allSchools == null)
+            {
+                throw new NotFoundException($"No schools found");
+            }
             getSchoolsQueryResponse.SchoolsDto = _mapper.Map<List<GetSchoolsDto>>(allSchools);
             foreach (var school in allSchools)
             {

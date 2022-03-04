@@ -8,7 +8,7 @@ namespace SchoolProject.Management.Application.Contracts.Persistence
 {
     public interface IStudentRepository : IBaseRepository<Student>
     {
-        Task<IReadOnlyList<Student>> GetAllWithIncludeAsync(Expression<Func<Student, object>> navigationPropertyPath);
-        Task<Student> GetByIdWithIncludeAsync(Expression<Func<Student, bool>> predicate, Expression<Func<Student, object>> navigationPropertyPath);
+        Task<IReadOnlyList<Student>?> GetAllWithIncludeAsync(Expression<Func<Student, object>> navigationPropertyPath);
+        Task<Student?> GetByIdWithIncludeAsync(Expression<Func<Student, bool>> predicate, Expression<Func<Student, object>> navigationPropertyPath);
     }
 }
