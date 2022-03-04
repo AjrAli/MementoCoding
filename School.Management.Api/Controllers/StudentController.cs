@@ -83,7 +83,7 @@ namespace SchoolProject.Management.Api.Controllers
                     Student = createStudentDto
                 });
             }
-            catch (Exception ex)
+            catch (BadRequestException ex)
             {
                 _logger.LogWarning(ex.Message);
                 return BadRequest();
@@ -109,7 +109,7 @@ namespace SchoolProject.Management.Api.Controllers
                     StudentId = studentId
                 });
             }
-            catch (Exception ex)
+            catch (BadRequestException ex)
             {
                 _logger.LogWarning(ex.Message);
                 return BadRequest();
@@ -134,7 +134,7 @@ namespace SchoolProject.Management.Api.Controllers
                     Student = updateStudentDto
                 });
             }
-            catch (Exception ex)
+            catch (BadRequestException ex)
             {
                 _logger.LogWarning(ex.Message);
                 return BadRequest();

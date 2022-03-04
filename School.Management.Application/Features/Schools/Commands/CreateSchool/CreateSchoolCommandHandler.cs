@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using DotNetCore.EntityFrameworkCore;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using SchoolProject.Management.Application.Contracts.Persistence;
+using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Application.Features.Service;
 using SchoolProject.Management.Domain.Entities;
 using System;
@@ -14,11 +16,17 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.CreateS
     {
         private readonly IBaseRepository<School> _schoolRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<CreateSchoolCommand> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IResponseHandlingService _responseHandlingService;
-        public CreateSchoolCommandHandler(IMapper mapper, IBaseRepository<School> schoolRepository, IUnitOfWork unitOfWork, IResponseHandlingService responseHandlingService)
+        public CreateSchoolCommandHandler(IMapper mapper,
+                                          ILogger<CreateSchoolCommand> logger,
+                                          IBaseRepository<School> schoolRepository,
+                                          IUnitOfWork unitOfWork,
+                                          IResponseHandlingService responseHandlingService)
         {
             _mapper = mapper;
+            _logger = logger;
             _schoolRepository = schoolRepository;
             _unitOfWork = unitOfWork;
             _responseHandlingService = responseHandlingService;
@@ -50,7 +58,9 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.CreateS
             catch (Exception ex)
             {
                 createSchoolCommandResponse.Success = false;
-                createSchoolCommandResponse.Message = $"ERROR : {ex.InnerException?.Source} : {ex.InnerException?.Message}";
+                _logger.LogWarning($"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}");
+                createSchoolCommandResponse.Message = $"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}";
+                throw new BadRequestException("Create school failed!");
             }
         }
     }
