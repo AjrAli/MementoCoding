@@ -1,12 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Application.Features.Schools;
 using SchoolProject.Management.Application.Features.Schools.Commands.CreateSchool;
 using SchoolProject.Management.Application.Features.Schools.Commands.DeleteSchool;
 using SchoolProject.Management.Application.Features.Schools.Commands.UpdateSchool;
 using SchoolProject.Management.Application.Features.Schools.Queries.GetSchool;
 using SchoolProject.Management.Application.Features.Schools.Queries.GetSchools;
+using System;
 using System.Threading.Tasks;
 
 namespace SchoolProject.Management.Api.Controllers
@@ -24,24 +26,43 @@ namespace SchoolProject.Management.Api.Controllers
             _logger = logger;
         }
 
-        
+
         [HttpGet]
         [Route("{schoolId}")]
         public async Task<IActionResult> GetSchool(long? schoolId)
         {
-            var data = await _mediator.Send(new GetSchoolQuery
+            GetSchoolQueryResponse? dataReponse = null;
+            try
             {
-                SchoolId = schoolId
-            });
-            if (data?.SchoolDto == null)
-                return NotFound();
-            return Ok(data);
+                dataReponse = await _mediator.Send(new GetSchoolQuery
+                {
+                    SchoolId = schoolId
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                if (dataReponse?.SchoolDto == null)
+                    return NotFound();
+            }
+            return Ok(dataReponse);
         }
         [HttpGet]
         [Route("")]
         public async Task<IActionResult> GetSchools()
         {
-            return Ok(await _mediator.Send(new GetSchoolsQuery()));
+            GetSchoolsQueryResponse? dataReponse = null;
+            try
+            {
+                dataReponse = await _mediator.Send(new GetSchoolsQuery());
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                if (dataReponse?.SchoolsDto == null)
+                    return NotFound();
+            }
+            return Ok(dataReponse);
         }
 
 
@@ -55,11 +76,20 @@ namespace SchoolProject.Management.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            return Ok(await _mediator.Send(new CreateSchoolCommand
+            CreateSchoolCommandResponse? dataReponse;
+            try
             {
-                School = createSchoolDto
-            }));
-
+                dataReponse = await _mediator.Send(new CreateSchoolCommand
+                {
+                    School = createSchoolDto
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex.Message);
+                return BadRequest();
+            }
+            return Ok(dataReponse);
         }
 
         [HttpPost]
@@ -72,11 +102,20 @@ namespace SchoolProject.Management.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            return Ok(await _mediator.Send(new DeleteSchoolCommand
+            DeleteSchoolCommandResponse? dataReponse;
+            try
             {
-                SchoolId = schoolId
-            }));
-
+                dataReponse = await _mediator.Send(new DeleteSchoolCommand
+                {
+                    SchoolId = schoolId
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex.Message);
+                return BadRequest();
+            }
+            return Ok(dataReponse);
         }
         [HttpPost]
         [Route("UpdateSchool")]
@@ -87,11 +126,20 @@ namespace SchoolProject.Management.Api.Controllers
                 _logger.LogInformation("Provided model is not valid");
                 return BadRequest(ModelState);
             }
-            return Ok(await _mediator.Send(new UpdateSchoolCommand
+            UpdateSchoolCommandResponse? dataReponse;
+            try
             {
-                School = updateSchoolDto
-            }));
-
+                dataReponse = await _mediator.Send(new UpdateSchoolCommand
+                {
+                    School = updateSchoolDto
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex.Message);
+                return BadRequest();
+            }
+            return Ok(dataReponse);
         }
     }
 }
