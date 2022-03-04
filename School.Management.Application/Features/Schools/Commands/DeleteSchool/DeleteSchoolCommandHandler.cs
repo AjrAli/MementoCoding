@@ -1,5 +1,6 @@
 ﻿using DotNetCore.EntityFrameworkCore;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Domain.Entities;
@@ -15,10 +16,13 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
         private readonly IBaseRepository<School> _schoolRepository;
         private readonly IBaseRepository<Student> _studentRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<DeleteSchoolCommand> _logger;
         public DeleteSchoolCommandHandler(IBaseRepository<School> schoolRepository,
-                                                          IBaseRepository<Student> studentRepository,
-                                                          IUnitOfWork unitOfWork)
+                                          ILogger<DeleteSchoolCommand> logger,
+                                          IBaseRepository<Student> studentRepository,
+                                          IUnitOfWork unitOfWork)
         {
+            _logger = logger;
             _schoolRepository = schoolRepository;
             _studentRepository = studentRepository;
             _unitOfWork = unitOfWork;
@@ -56,7 +60,10 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
             }
             catch (Exception ex)
             {
-                deleteSchoolCommandResponse.Message = $"ERROR : {ex.InnerException?.Source} : {ex.InnerException?.Message}";
+                deleteSchoolCommandResponse.Success = false;
+                _logger.LogWarning($"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}");
+                deleteSchoolCommandResponse.Message = $"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}";
+                throw new BadRequestException("Delete school failed!");
             }
         }
     }

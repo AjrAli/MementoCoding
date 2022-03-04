@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DotNetCore.EntityFrameworkCore;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Application.Features.Service;
@@ -17,10 +18,16 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.UpdateS
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IResponseHandlingService _responseHandlingService;
+        private readonly ILogger<UpdateSchoolCommand> _logger;
 
-        public UpdateSchoolCommandHandler(IMapper mapper, IBaseRepository<School> schoolRepository, IUnitOfWork unitOfWork, IResponseHandlingService responseHandlingService)
+        public UpdateSchoolCommandHandler(IMapper mapper,
+                                          ILogger<UpdateSchoolCommand> logger,
+                                          IBaseRepository<School> schoolRepository,
+                                          IUnitOfWork unitOfWork,
+                                          IResponseHandlingService responseHandlingService)
         {
             _mapper = mapper;
+            _logger = logger;
             _schoolRepository = schoolRepository;
             _unitOfWork = unitOfWork;
             _responseHandlingService = responseHandlingService;
@@ -57,7 +64,9 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.UpdateS
             catch (Exception ex)
             {
                 updateSchoolCommandResponse.Success = false;
-                updateSchoolCommandResponse.Message = $"ERROR : {ex.InnerException?.Source} : {ex.InnerException?.Message}";
+                _logger.LogWarning($"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}");
+                updateSchoolCommandResponse.Message = $"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}";
+                throw new BadRequestException("Update school failed!");
             }
         }
     }

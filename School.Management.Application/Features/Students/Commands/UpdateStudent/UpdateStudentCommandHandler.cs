@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DotNetCore.EntityFrameworkCore;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Application.Features.Service;
@@ -19,9 +20,15 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Update
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IResponseHandlingService _responseHandlingService;
-        public UpdateStudentCommandHandler(IMapper mapper, IBaseRepository<Student> studentRepository, IUnitOfWork unitOfWork, IResponseHandlingService responseHandlingService)
+        private readonly ILogger<UpdateStudentCommand> _logger;
+        public UpdateStudentCommandHandler(IMapper mapper,
+                                           ILogger<UpdateStudentCommand> logger,
+                                           IBaseRepository<Student> studentRepository,
+                                           IUnitOfWork unitOfWork,
+                                           IResponseHandlingService responseHandlingService)
         {
             _mapper = mapper;
+            _logger = logger;
             _studentRepository = studentRepository;
             _unitOfWork = unitOfWork;
             _responseHandlingService = responseHandlingService;
@@ -56,7 +63,9 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Update
             catch (Exception ex)
             {
                 updateStudentCommandResponse.Success = false;
-                updateStudentCommandResponse.Message = $"ERROR : {ex.InnerException?.Source} : {ex.InnerException?.Message}";
+                _logger.LogWarning($"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}");
+                updateStudentCommandResponse.Message = $"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}";
+                throw new BadRequestException("Update student failed!");
             }
         }
     }

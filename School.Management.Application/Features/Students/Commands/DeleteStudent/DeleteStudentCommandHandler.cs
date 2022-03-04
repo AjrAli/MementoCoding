@@ -1,5 +1,6 @@
 ﻿using DotNetCore.EntityFrameworkCore;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Domain.Entities;
@@ -14,11 +15,13 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Delete
     {
         private readonly IBaseRepository<Student> _studentRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<DeleteStudentCommand> _logger;
 
-        public DeleteStudentCommandHandler( IBaseRepository<Student> studentRepository, IUnitOfWork unitOfWork)
+        public DeleteStudentCommandHandler( IBaseRepository<Student> studentRepository, IUnitOfWork unitOfWork, ILogger<DeleteStudentCommand> logger)
         {
             _studentRepository = studentRepository;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<DeleteStudentCommandResponse> Handle(DeleteStudentCommand request, CancellationToken cancellationToken)
@@ -46,7 +49,9 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Delete
             catch (Exception ex)
             {
                 deleteStudentCommandResponse.Success = false;
-                deleteStudentCommandResponse.Message = $"ERROR : {ex.InnerException?.Source} : {ex.InnerException?.Message}";
+                _logger.LogWarning($"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}");
+                deleteStudentCommandResponse.Message = $"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}";
+                throw new BadRequestException("Delete student failed!");
             }
         }
     }

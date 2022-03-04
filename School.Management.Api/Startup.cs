@@ -29,7 +29,6 @@ namespace SchoolProject.Management.Api
         public void ConfigureServices(IServiceCollection services)
         {
             AddSwagger(services);
-            services.AddSingleton<ILogger>(Log.Logger);
             services.AddApplicationServices();
             services.AddPersistenceServices(Configuration);
             services.AddIdentityServices(Configuration);
