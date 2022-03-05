@@ -42,7 +42,7 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Delete
                     throw new NotFoundException(nameof(Student), Id);
 
 
-                await _studentRepository.DeleteAsync(studentToDelete);
+                await _studentRepository.DeleteAsync(studentToDelete.Id);
                 if (await _unitOfWork.SaveChangesAsync() <= 0)
                     deleteStudentCommandResponse.Success = false;
             }

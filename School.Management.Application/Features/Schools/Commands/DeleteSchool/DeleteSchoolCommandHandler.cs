@@ -48,7 +48,7 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
                 if (!(_studentRepository.Any(x => x.SchoolId == schoolToDelete.Id)))
                 {
 
-                    await _schoolRepository.DeleteAsync(schoolToDelete);
+                    await _schoolRepository.DeleteAsync(schoolToDelete.Id);
                     if (await _unitOfWork.SaveChangesAsync() <= 0)
                         deleteSchoolCommandResponse.Success = false;
                 }
