@@ -1,4 +1,6 @@
 ﻿using FluentValidation.Results;
+using MediatR;
+using Microsoft.Extensions.Logging;
 using SchoolProject.Management.Application.Features.Response;
 using System.Collections.Generic;
 
@@ -6,7 +8,7 @@ namespace SchoolProject.Management.Application.Features.Service
 {
     public class ResponseHandlingService : IResponseHandlingService
     {
-        public void ValidateRequestResult(IBaseResponse baseResponse, ValidationResult validationResult)
+        public void ValidateRequestResult(ILogger logger, IBaseResponse baseResponse, ValidationResult validationResult)
         {
             if (validationResult.Errors.Count > 0)
             {
@@ -14,6 +16,7 @@ namespace SchoolProject.Management.Application.Features.Service
                 baseResponse.ValidationErrors = new List<string>();
                 foreach (var error in validationResult.Errors)
                 {
+                    logger.LogError(error.ErrorMessage);
                     baseResponse.ValidationErrors.Add(error.ErrorMessage);
                 }
             }

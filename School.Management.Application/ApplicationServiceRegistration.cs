@@ -1,5 +1,7 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using SchoolProject.Management.Application.Features.PipelineBehaviours;
 using SchoolProject.Management.Application.Features.Service;
 using System.Reflection;
 
@@ -11,7 +13,9 @@ namespace SchoolProject.Management.Application
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddScoped<IResponseHandlingService, ResponseHandlingService>();
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
             return services;
         }
     }

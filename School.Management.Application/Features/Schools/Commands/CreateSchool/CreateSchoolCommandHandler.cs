@@ -18,42 +18,32 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.CreateS
         private readonly IMapper _mapper;
         private readonly ILogger<CreateSchoolCommand> _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IResponseHandlingService _responseHandlingService;
         public CreateSchoolCommandHandler(IMapper mapper,
                                           ILogger<CreateSchoolCommand> logger,
                                           IBaseRepository<School> schoolRepository,
-                                          IUnitOfWork unitOfWork,
-                                          IResponseHandlingService responseHandlingService)
+                                          IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _logger = logger;
             _schoolRepository = schoolRepository;
             _unitOfWork = unitOfWork;
-            _responseHandlingService = responseHandlingService;
         }
 
         public async Task<CreateSchoolCommandResponse> Handle(CreateSchoolCommand request, CancellationToken cancellationToken)
         {
             var createSchoolCommandResponse = new CreateSchoolCommandResponse();
-            var validator = new CreateSchoolCommandValidator();
-            await CreateSchoolResponseHandling(request, createSchoolCommandResponse, validator);
+            await CreateSchoolResponseHandling(request, createSchoolCommandResponse);
             return createSchoolCommandResponse;
         }
 
-        private async Task CreateSchoolResponseHandling(CreateSchoolCommand request, CreateSchoolCommandResponse createSchoolCommandResponse, CreateSchoolCommandValidator validator)
+        private async Task CreateSchoolResponseHandling(CreateSchoolCommand request, CreateSchoolCommandResponse createSchoolCommandResponse)
         {
             try
             {
-                var validationResult = await validator.ValidateAsync(request);
-                _responseHandlingService.ValidateRequestResult(createSchoolCommandResponse, validationResult);
-                if (createSchoolCommandResponse.Success)
-                {
-                    var school = _mapper.Map<School>(request.School);
-
-                    await _schoolRepository.AddAsync(school);
-                    if (await _unitOfWork.SaveChangesAsync() <= 0)
-                        createSchoolCommandResponse.Success = false;
-                }
+                var school = _mapper.Map<School>(request.School);
+                await _schoolRepository.AddAsync(school);
+                if (await _unitOfWork.SaveChangesAsync() <= 0)
+                    createSchoolCommandResponse.Success = false;
             }
             catch (Exception ex)
             {
