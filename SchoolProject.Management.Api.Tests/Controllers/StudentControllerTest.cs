@@ -49,10 +49,7 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             long studentIdRequested = 0;
             _studentDto = InitStudentDto(studentIdRequested);
             _studentResponse = InitGetStudentQueryResponse();
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<GetStudentQuery>(), default)).Returns(
-                async (GetStudentQuery q, CancellationToken token) =>
-                await InitGetStudentQueryHandler(q.StudentId).Handle(q, token));
+            Mock<IMediator> mediatorMock = MockMediatorGetStudentQuery();
             var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
 
             //Act
@@ -66,12 +63,9 @@ namespace SchoolProject.Management.Api.Tests.Controllers
         public async Task CheckWhenGetStudentsReturnNullListStudentDto()
         {
             //Arrange
-            _allStudentDto = InitListOfStudentDto(true);
+            _allStudentDto = InitListOfStudentDto(false);
             _studentResponse = InitGetStudentsQueryResponse();
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<GetStudentsQuery>(), default)).Returns(
-                async (GetStudentsQuery q, CancellationToken token) =>
-                await InitGetNullListStudentsQueryHandler().Handle(q, token));
+            Mock<IMediator> mediatorMock = MockMediatorGetStudentsQuery(false);
             var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
 
             //Act
@@ -88,36 +82,19 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             long studentIdRequested = 3;
             _studentDto = InitStudentDto(studentIdRequested);
             _studentResponse = InitGetStudentQueryResponse();
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.Is<GetStudentQuery>(x => x.StudentId == studentIdRequested), default)).Returns(
-                async (GetStudentQuery q, CancellationToken token) =>
-                await InitGetStudentQueryHandler(q.StudentId).Handle(q, token));
+            Mock<IMediator> mediatorMock = MockMediatorGetStudentQuery();
             var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudent(studentIdRequested);
 
             //Assert
-            Assert.IsNotNull(resultStudentCall);
-            Assert.IsTrue(resultStudentCall is OkObjectResult);
-            var okObjectResultFromStudent = resultStudentCall as OkObjectResult;
-            Assert.IsNotNull(okObjectResultFromStudent);
-            var modelQueryResponse = okObjectResultFromStudent.Value as GetStudentQueryResponse;
-            Assert.IsNotNull(modelQueryResponse);
-            var modelDto = modelQueryResponse.StudentDto;
+            var modelDto = (((resultStudentCall as OkObjectResult)?.Value) as GetStudentQueryResponse)?.StudentDto;
             Assert.IsNotNull(modelDto);
-            var comparerDto = new ObjectsComparer.Comparer<GetStudentDto>();
-
-            var studentResponse = _studentResponse as GetStudentQueryResponse;
-            Assert.IsNotNull(studentResponse);
-            Assert.IsNotNull(studentResponse?.StudentDto);
-            if (studentResponse != null && studentResponse.StudentDto != null)
-            {
-                bool resultCompare = comparerDto.Compare(studentResponse.StudentDto, modelDto, out var differences);
-                WriteOnConsoleDifferencesIfNotEqual(differences);
-                Assert.IsTrue(resultCompare);
-            }
+            bool resultCompare = CompareStudentDtoReceivedByTheExpected(modelDto);
+            Assert.IsTrue(resultCompare);
         }
+
 
         [TestMethod]
         public async Task CheckIfGetStudentsReturnCorrectListOfStudentDto()
@@ -125,35 +102,53 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             //Arrange
             _allStudentDto = InitListOfStudentDto(true);
             _studentResponse = InitGetStudentsQueryResponse();
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<GetStudentsQuery>(), default)).Returns(
-                async (GetStudentsQuery q, CancellationToken token) =>
-                await InitGetStudentsQueryHandler().Handle(q, token));
+            Mock<IMediator> mediatorMock = MockMediatorGetStudentsQuery(true);
             var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudents();
 
             //Assert
-            Assert.IsNotNull(resultStudentCall);
-            Assert.IsTrue(resultStudentCall is OkObjectResult);
-            var okObjectResultFromStudent = resultStudentCall as OkObjectResult;
-            Assert.IsNotNull(okObjectResultFromStudent);
-            var modelQueryResponse = okObjectResultFromStudent.Value as GetStudentsQueryResponse;
-            Assert.IsNotNull(modelQueryResponse);
-            var modelAllDto = modelQueryResponse.StudentsDto;
+            var modelAllDto = (((resultStudentCall as OkObjectResult)?.Value) as GetStudentsQueryResponse)?.StudentsDto;
             Assert.IsNotNull(modelAllDto);
+            bool resultCompare = CompareListOfStudentDtoReceivedByListExpected(modelAllDto);
+            Assert.IsTrue(resultCompare);
+
+        }
+
+        private Mock<IMediator> MockMediatorGetStudentsQuery(bool isListExpected)
+        {
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.Send(It.IsAny<GetStudentsQuery>(), default)).Returns(
+                async (GetStudentsQuery q, CancellationToken token) =>
+                await InitGetStudentsQueryHandler(isListExpected).Handle(q, token));
+            return mediatorMock;
+        }
+
+        private Mock<IMediator> MockMediatorGetStudentQuery()
+        {
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.Send(It.IsAny<GetStudentQuery>(), default)).Returns(
+                async (GetStudentQuery q, CancellationToken token) =>
+                await InitGetStudentQueryHandler(q.StudentId).Handle(q, token));
+            return mediatorMock;
+        }
+
+        private bool CompareStudentDtoReceivedByTheExpected(GetStudentDto modelDto)
+        {
+            var comparerDto = new ObjectsComparer.Comparer<GetStudentDto>();
+            var studentResponse = _studentResponse as GetStudentQueryResponse;
+            bool resultCompare = comparerDto.Compare(studentResponse?.StudentDto!, modelDto, out var differences);
+            WriteOnConsoleDifferencesIfNotEqual(differences);
+            return resultCompare;
+        }
+        private bool CompareListOfStudentDtoReceivedByListExpected(List<GetStudentsDto> modelAllDto)
+        {
             var comparerDto = new ObjectsComparer.Comparer<List<GetStudentsDto>>();
             var studentsResponse = _studentResponse as GetStudentsQueryResponse;
-            Assert.IsNotNull(studentsResponse);
-            Assert.IsNotNull(studentsResponse?.StudentsDto);
-            if (studentsResponse != null && studentsResponse.StudentsDto != null)
-            {
-                bool resultCompare = comparerDto.Compare(studentsResponse.StudentsDto, modelAllDto, out var differences);
-                WriteOnConsoleDifferencesIfNotEqual(differences);
-                Assert.IsTrue(resultCompare);
-            }
-
+            bool resultCompare = comparerDto.Compare(studentsResponse?.StudentsDto!, modelAllDto, out var differences);
+            WriteOnConsoleDifferencesIfNotEqual(differences);
+            return resultCompare;
         }
 
         private static void WriteOnConsoleDifferencesIfNotEqual(IEnumerable<Difference> differences)
@@ -172,16 +167,10 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             return new GetStudentQueryHandler(_mapper, mockStudentRepo.Object);
         }
 
-        private GetStudentsQueryHandler InitGetStudentsQueryHandler()
+        private GetStudentsQueryHandler InitGetStudentsQueryHandler(bool isListExpected)
         {
             var mockStudentRepo = new Mock<IStudentRepository>();
-            mockStudentRepo.Setup(x => x.GetAllWithIncludeAsync(It.IsAny<Expression<Func<Student, object>>>())).ReturnsAsync(InitListOfStudentEntity(true));
-            return new GetStudentsQueryHandler(_mapper, mockStudentRepo.Object);
-        }
-        private GetStudentsQueryHandler InitGetNullListStudentsQueryHandler()
-        {
-            var mockStudentRepo = new Mock<IStudentRepository>();
-            mockStudentRepo.Setup(x => x.GetAllWithIncludeAsync(It.IsAny<Expression<Func<Student, object>>>())).ReturnsAsync(InitListOfStudentEntity(false));
+            mockStudentRepo.Setup(x => x.GetAllWithIncludeAsync(It.IsAny<Expression<Func<Student, object>>>())).ReturnsAsync(InitListOfStudentEntity(isListExpected));
             return new GetStudentsQueryHandler(_mapper, mockStudentRepo.Object);
         }
         private GetStudentsQueryResponse InitGetStudentsQueryResponse()
