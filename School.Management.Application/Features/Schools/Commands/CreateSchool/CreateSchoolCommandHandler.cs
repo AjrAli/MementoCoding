@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
+using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Application.Features.Service;
 using SchoolProject.Management.Domain.Entities;
 using System;
@@ -18,20 +19,23 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.CreateS
         private readonly IMapper _mapper;
         private readonly ILogger<CreateSchoolCommand> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IResponseFactory<CreateSchoolCommandResponse> _responseFactory;
         public CreateSchoolCommandHandler(IMapper mapper,
                                           ILogger<CreateSchoolCommand> logger,
                                           IBaseRepository<School> schoolRepository,
-                                          IUnitOfWork unitOfWork)
+                                          IUnitOfWork unitOfWork,
+                                          IResponseFactory<CreateSchoolCommandResponse> responseFactory)
         {
             _mapper = mapper;
             _logger = logger;
             _schoolRepository = schoolRepository;
             _unitOfWork = unitOfWork;
+            _responseFactory = responseFactory;
         }
 
         public async Task<CreateSchoolCommandResponse> Handle(CreateSchoolCommand request, CancellationToken cancellationToken)
         {
-            var createSchoolCommandResponse = new CreateSchoolCommandResponse();
+            var createSchoolCommandResponse = _responseFactory.CreateResponse();
             await CreateSchoolResponseHandling(request, createSchoolCommandResponse);
             return createSchoolCommandResponse;
         }

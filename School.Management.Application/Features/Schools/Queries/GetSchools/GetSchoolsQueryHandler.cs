@@ -2,6 +2,7 @@
 using MediatR;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
+using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,19 +16,21 @@ namespace SchoolProject.Management.Application.Features.Schools.Queries.GetSchoo
         private readonly IBaseRepository<School> _schoolRepository;
         private readonly IBaseRepository<Student> _studentRepository;
         private readonly IMapper _mapper;
-
+        private readonly IResponseFactory<GetSchoolsQueryResponse> _responseFactory;
         public GetSchoolsQueryHandler(IMapper mapper,
                                       IBaseRepository<School> schoolRepository,
-                                      IBaseRepository<Student> studentRepository)
+                                      IBaseRepository<Student> studentRepository,
+                                      IResponseFactory<GetSchoolsQueryResponse> responseFactory)
         {
             _mapper = mapper;
             _schoolRepository = schoolRepository;
             _studentRepository = studentRepository;
+            _responseFactory = responseFactory;
         }
 
         public async Task<GetSchoolsQueryResponse> Handle(GetSchoolsQuery request, CancellationToken cancellationToken)
         {
-            var getSchoolsQueryResponse = new GetSchoolsQueryResponse();
+            var getSchoolsQueryResponse = _responseFactory.CreateResponse();
             int index = 0;
             var allSchools = (await _schoolRepository.ListAsync())?.OrderBy(x => x.Name)?.ToList();
             if (allSchools == null)
