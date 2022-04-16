@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
+using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Domain.Entities;
 using System;
 using System.Threading;
@@ -17,20 +18,23 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
         private readonly IBaseRepository<Student> _studentRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<DeleteSchoolCommand> _logger;
+        private readonly IResponseFactory<DeleteSchoolCommandResponse> _responseFactory;
         public DeleteSchoolCommandHandler(IBaseRepository<School> schoolRepository,
                                           ILogger<DeleteSchoolCommand> logger,
                                           IBaseRepository<Student> studentRepository,
-                                          IUnitOfWork unitOfWork)
+                                          IUnitOfWork unitOfWork,
+                                          IResponseFactory<DeleteSchoolCommandResponse> responseFactory)
         {
             _logger = logger;
             _schoolRepository = schoolRepository;
             _studentRepository = studentRepository;
             _unitOfWork = unitOfWork;
+            _responseFactory = responseFactory;
         }
 
         public async Task<DeleteSchoolCommandResponse> Handle(DeleteSchoolCommand request, CancellationToken cancellationToken)
         {
-            var deleteSchoolCommandResponse = new DeleteSchoolCommandResponse();
+            var deleteSchoolCommandResponse = _responseFactory.CreateResponse();
             await DeleteSchoolResponseHandling(request, deleteSchoolCommandResponse);
             return deleteSchoolCommandResponse;
         }

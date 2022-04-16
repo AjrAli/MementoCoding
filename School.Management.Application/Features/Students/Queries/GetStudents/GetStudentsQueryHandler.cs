@@ -2,6 +2,7 @@
 using MediatR;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
+using SchoolProject.Management.Application.Features.Response;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -15,17 +16,20 @@ namespace SchoolProject.Management.Application.Features.Students.Queries.GetStud
     {
         private readonly IStudentRepository _studentRepository;
         private readonly IMapper _mapper;
+        private readonly IResponseFactory<GetStudentsQueryResponse> _responseFactory;
 
         public GetStudentsQueryHandler(IMapper mapper,
-                                      IStudentRepository studentRepository)
+                                      IStudentRepository studentRepository,
+                                      IResponseFactory<GetStudentsQueryResponse> responseFactory)
         {
             _mapper = mapper;
             _studentRepository = studentRepository;
+            _responseFactory = responseFactory;
         }
 
         public async Task<GetStudentsQueryResponse> Handle(GetStudentsQuery request, CancellationToken cancellationToken)
         {
-            var getStudentsQueryResponse = new GetStudentsQueryResponse();
+            var getStudentsQueryResponse = _responseFactory.CreateResponse();
             var allStudents = (await _studentRepository.GetAllWithIncludeAsync(navigationPropertyPath: x => x.School))?.OrderBy(x => x.LastName)?.ToList();
             if (allStudents == null)
             {
