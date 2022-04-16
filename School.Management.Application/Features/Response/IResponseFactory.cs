@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SchoolProject.Management.Application.Features.Response
 {
-    public interface IResponseFactory<T> where T : class, new()
+    public interface IResponseFactory<T> where T : BaseResponse, new()
     {
         T CreateResponse();
     }
