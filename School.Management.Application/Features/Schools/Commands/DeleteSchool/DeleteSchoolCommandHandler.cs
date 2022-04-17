@@ -64,10 +64,10 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
             }
             catch (Exception ex)
             {
+                var exception = new BadRequestException("Delete school failed!", ex);
                 deleteSchoolCommandResponse.Success = false;
-                _logger.LogWarning($"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}");
-                deleteSchoolCommandResponse.Message = $"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}";
-                throw new BadRequestException("Delete school failed!");
+                deleteSchoolCommandResponse.Message = exception.ResponseException;
+                throw exception;
             }
         }
     }

@@ -30,8 +30,7 @@ namespace SchoolProject.Management.Application.Features.PipelineBehaviours
                 if (failures != null && failures?.Count > 0)
                 {
                     var realResponseType = typeof(TResponse);
-                    IBaseResponse? errorResponse = Activator.CreateInstance(realResponseType) as IBaseResponse;
-                    if(errorResponse != null)
+                    if (Activator.CreateInstance(realResponseType) is IBaseResponse errorResponse)
                     {
                         errorResponse.Success = false;
                         errorResponse.ValidationErrors = new List<string>();
@@ -40,7 +39,7 @@ namespace SchoolProject.Management.Application.Features.PipelineBehaviours
                             _logger?.LogError(error.ErrorMessage);
                             errorResponse.ValidationErrors.Add(error.ErrorMessage);
                         }
-                        return (TResponse) errorResponse;
+                        return (TResponse)errorResponse;
                     }
                 }
             }

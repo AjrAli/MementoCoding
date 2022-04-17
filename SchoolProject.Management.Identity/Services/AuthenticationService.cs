@@ -48,7 +48,7 @@ namespace SchoolProject.Management.Identity.Services
 
             JwtSecurityToken? jwtSecurityToken = await GenerateToken(user);
 
-            AuthenticationResponse response = new AuthenticationResponse
+            AuthenticationResponse response = new()
             {
                 Id = user.Id,
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),

@@ -16,18 +16,15 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Create
     {
         private readonly IBaseRepository<Student> _studentRepository;
         private readonly IMapper _mapper;
-        private readonly ILogger<CreateStudentCommand> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IResponseFactory<CreateStudentCommandResponse> _responseFactory;
 
         public CreateStudentCommandHandler(IMapper mapper,
-                                           ILogger<CreateStudentCommand> logger,
                                            IBaseRepository<Student> studentRepository,
                                            IUnitOfWork unitOfWork,
                                            IResponseFactory<CreateStudentCommandResponse> responseFactory)
         {
             _mapper = mapper;
-            _logger = logger;
             _studentRepository = studentRepository;
             _unitOfWork = unitOfWork;
             _responseFactory = responseFactory;
@@ -51,10 +48,10 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Create
             }
             catch (Exception ex)
             {
+                var exception = new BadRequestException("Create student failed!", ex);
                 createStudentCommandResponse.Success = false;
-                _logger.LogWarning($"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}");
-                createStudentCommandResponse.Message = $"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}";
-                throw new BadRequestException("Create student failed!");
+                createStudentCommandResponse.Message = exception.ResponseException;
+                throw exception;
             }
         }
 
