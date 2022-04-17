@@ -162,16 +162,20 @@ namespace SchoolProject.Management.Api.Tests.Controllers
         private GetStudentQueryHandler InitGetStudentQueryHandler(long? id)
         {
             var mockStudentRepo = new Mock<IStudentRepository>();
+            var mockResponseFactory = new Mock<IResponseFactory<GetStudentQueryResponse>>();
             mockStudentRepo.Setup(x => x.GetByIdWithIncludeAsync(It.IsAny<Expression<Func<Student, bool>>>(),
                 It.IsAny<Expression<Func<Student, object>>>())).ReturnsAsync(InitStudentEntity(id));
-            return new GetStudentQueryHandler(_mapper, mockStudentRepo.Object);
+            mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new GetStudentQueryResponse());
+            return new GetStudentQueryHandler(_mapper, mockStudentRepo.Object, mockResponseFactory.Object);
         }
 
         private GetStudentsQueryHandler InitGetStudentsQueryHandler(bool isListExpected)
         {
             var mockStudentRepo = new Mock<IStudentRepository>();
+            var mockResponseFactory = new Mock<IResponseFactory<GetStudentsQueryResponse>>();
             mockStudentRepo.Setup(x => x.GetAllWithIncludeAsync(It.IsAny<Expression<Func<Student, object>>>())).ReturnsAsync(InitListOfStudentEntity(isListExpected));
-            return new GetStudentsQueryHandler(_mapper, mockStudentRepo.Object);
+            mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new GetStudentsQueryResponse());
+            return new GetStudentsQueryHandler(_mapper, mockStudentRepo.Object, mockResponseFactory.Object);
         }
         private GetStudentsQueryResponse InitGetStudentsQueryResponse()
         {
