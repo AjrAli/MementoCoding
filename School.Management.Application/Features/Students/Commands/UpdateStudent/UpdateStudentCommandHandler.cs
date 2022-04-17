@@ -56,10 +56,10 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Update
             }
             catch (Exception ex)
             {
+                var exception = new BadRequestException("Update student failed!", ex);
                 updateStudentCommandResponse.Success = false;
-                _logger.LogWarning($"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}");
-                updateStudentCommandResponse.Message = $"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}";
-                throw new BadRequestException("Update student failed!");
+                updateStudentCommandResponse.Message = exception.ResponseException;
+                throw exception;
             }
         }
     }

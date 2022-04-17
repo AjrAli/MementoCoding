@@ -55,10 +55,10 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.UpdateS
             }
             catch (Exception ex)
             {
+                var exception = new BadRequestException("Update school failed!", ex);
                 updateSchoolCommandResponse.Success = false;
-                _logger.LogWarning($"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}");
-                updateSchoolCommandResponse.Message = $"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}";
-                throw new BadRequestException("Update school failed!");
+                updateSchoolCommandResponse.Message = exception.ResponseException;
+                throw exception;
             }
         }
     }

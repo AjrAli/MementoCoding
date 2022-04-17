@@ -44,7 +44,7 @@ namespace SchoolProject.Management.Api.Middleware
                     break;
                 case BadRequestException badRequestException:
                     httpStatusCode = HttpStatusCode.BadRequest;
-                    result = badRequestException.Message;
+                    result = badRequestException.ResponseException;
                     break;
                 case NotFoundException notFoundException:
                     httpStatusCode = HttpStatusCode.NotFound;

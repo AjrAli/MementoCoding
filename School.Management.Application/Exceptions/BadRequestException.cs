@@ -3,20 +3,15 @@ using System.Runtime.Serialization;
 
 namespace SchoolProject.Management.Application.Exceptions
 {
-    [Serializable]
-    // Important: This attribute is NOT inherited from Exception, and MUST be specified 
-    // otherwise serialization will fail with a SerializationException stating that
-    // "Type X in Assembly Y is not marked as serializable."
-    public class BadRequestException: ApplicationException
-    {
-        public BadRequestException(string message): base(message)
-        {
 
-        }
-        // Without this constructor, deserialization will fail
-        protected BadRequestException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
+    public class BadRequestException: Exception
+    {
+        private readonly string _responseException;
+
+        public BadRequestException(string message, Exception? exception) : base(message)
         {
+            _responseException = $"ERROR : {exception?.Message} {exception?.InnerException?.Source} : {exception?.InnerException?.Message}";
         }
+        public string ResponseException { get { return _responseException; } }
     }
 }

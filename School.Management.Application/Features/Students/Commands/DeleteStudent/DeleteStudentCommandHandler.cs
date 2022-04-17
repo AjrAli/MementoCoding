@@ -53,10 +53,10 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Delete
             }
             catch (Exception ex)
             {
+                var exception = new BadRequestException("Delete student failed!", ex);
                 deleteStudentCommandResponse.Success = false;
-                _logger.LogWarning($"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}");
-                deleteStudentCommandResponse.Message = $"ERROR : {ex.Message} {ex.InnerException?.Source} : {ex.InnerException?.Message}";
-                throw new BadRequestException("Delete student failed!");
+                deleteStudentCommandResponse.Message = exception.ResponseException;
+                throw exception;
             }
         }
     }

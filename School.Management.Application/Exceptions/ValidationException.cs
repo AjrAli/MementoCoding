@@ -6,10 +6,7 @@ using System.Runtime.Serialization;
 namespace SchoolProject.Management.Application.Exceptions
 {
     [Serializable]
-    // Important: This attribute is NOT inherited from Exception, and MUST be specified 
-    // otherwise serialization will fail with a SerializationException stating that
-    // "Type X in Assembly Y is not marked as serializable."
-    public class ValidationException : ApplicationException
+    public class ValidationException : Exception
     {
 
         private readonly IList<string>? _validationErrors;
@@ -46,16 +43,11 @@ namespace SchoolProject.Management.Application.Exceptions
         {
             _validationErrors = validationErrors;
         }
-
-
-        // Constructor should be protected for unsealed classes, private for sealed classes.
-        // (The Serializer invokes this constructor through reflection, so it can be private)
         protected ValidationException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
+        : base(info, context)
         {
             _validationErrors = info.GetValue("ValidationErrors", typeof(IList<string>)) as IList<string>;
         }
-
 
         public IList<string>? ValidationErrors
         {
