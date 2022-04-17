@@ -16,12 +16,6 @@ namespace SchoolProject.Management.Persistence
         {
             services.AddDbContext<SchoolManagementDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("SchoolManagementDbConnectionString")));
-
-            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-            services.AddScoped<IUnitOfWork, UnitOfWork<SchoolManagementDbContext>>();
-
-            services.AddScoped<ISchoolRepository, SchoolRepository>();
-            services.AddScoped<IStudentRepository, StudentRepository>();
             return services;
         }
     }
