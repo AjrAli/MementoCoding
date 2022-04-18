@@ -10,12 +10,12 @@ using Microsoft.Extensions.Logging;
 
 namespace SchoolProject.Management.Application.Features.PipelineBehaviours
 {
-    public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;
         private readonly ILogger<IRequest<TResponse>> _logger;
-        public ValidationBehaviour(IEnumerable<IValidator<TRequest>> validators, ILogger<IRequest<TResponse>> logger)
+        public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators, ILogger<IRequest<TResponse>> logger)
         {
             _validators = validators;
             _logger = logger;

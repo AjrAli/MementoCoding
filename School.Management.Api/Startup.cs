@@ -33,10 +33,7 @@ namespace SchoolProject.Management.Api
             services.AddApplicationServices();
             services.AddPersistenceServices(Configuration);
             services.AddIdentityServices(Configuration);
-            services.AddTransient<IAuthenticationService, AuthenticationService>();
-            services.AddScoped<ILoggedInUserService, LoggedInUserService>();
             services.AddControllers();
-
             services.AddCors(options =>
             {
                 options.AddPolicy("Open", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
@@ -49,6 +46,8 @@ namespace SchoolProject.Management.Api
             // call builder.Populate(), that happens in AutofacServiceProviderFactory
             // for you.
             builder.RegisterModule(new PersistencetModule());
+            builder.RegisterModule(new ApplicationModule());
+            builder.RegisterModule(new IdentityModule());
         }
 
         private static void AddSwagger(IServiceCollection services)

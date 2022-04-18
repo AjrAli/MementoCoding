@@ -5,6 +5,7 @@ using SchoolProject.Management.Application.Features.PipelineBehaviours;
 using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Application.Features.Service;
 using System.Reflection;
+using System.Linq;
 
 namespace SchoolProject.Management.Application
 {
@@ -15,9 +16,6 @@ namespace SchoolProject.Management.Application
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
-            services.AddTransient(typeof(IResponseFactory<>), typeof(ResponseFactory<>));
             return services;
         }
     }

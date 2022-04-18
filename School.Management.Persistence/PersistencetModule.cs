@@ -17,13 +17,13 @@ namespace SchoolProject.Management.Persistence
         protected override void Load(ContainerBuilder builder)
         {
             var dataAccess = Assembly.GetExecutingAssembly();
-
             builder.RegisterType<UnitOfWork<SchoolManagementDbContext>>()
                    .As<IUnitOfWork>()
                    .InstancePerLifetimeScope();
             builder.RegisterAssemblyTypes(dataAccess)
                    .Where(t => t.Name.EndsWith("Repository"))
-                   .AsImplementedInterfaces();
+                   .AsImplementedInterfaces()
+                   .InstancePerLifetimeScope();
         }
     }
 }
