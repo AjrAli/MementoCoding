@@ -70,11 +70,6 @@ namespace SchoolProject.Management.Api.Controllers
         [Route("CreateStudent")]
         public async Task<IActionResult> CreateStudent([FromBody] StudentDto createStudentDto)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogInformation("Provided model is not valid");
-                return BadRequest(ModelState);
-            }
             CreateStudentCommandResponse? dataReponse;
             try
             {
@@ -95,12 +90,6 @@ namespace SchoolProject.Management.Api.Controllers
         [Route("DeleteStudent")]
         public async Task<IActionResult> DeleteStudent([FromBody] long studentId)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogInformation("Provided model is not valid");
-                return BadRequest(ModelState);
-            }
-
             DeleteStudentCommandResponse? dataReponse;
             try
             {
@@ -121,11 +110,6 @@ namespace SchoolProject.Management.Api.Controllers
         [Route("UpdateStudent")]
         public async Task<IActionResult> UpdateStudent([FromBody] StudentDto updateStudentDto)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogInformation("Provided model is not valid");
-                return BadRequest(ModelState);
-            }
             UpdateStudentCommandResponse? dataReponse;
             try
             {
