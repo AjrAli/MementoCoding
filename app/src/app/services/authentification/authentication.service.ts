@@ -12,7 +12,8 @@ export class AuthenticationService {
   constructor(private http: HttpClient) {}
 
   authenticate(username: string, password: string): Observable<AuthenticationResponse> {
-    return this.http.get<AuthenticationResponse>(`${this.apiUrl}/authenticate?username=${username}&password=${password}`);
+    const body = { username, password };
+    return this.http.post<AuthenticationResponse>(`${this.apiUrl}/authenticate`, body);
   }
 
   setToken(token: string) {

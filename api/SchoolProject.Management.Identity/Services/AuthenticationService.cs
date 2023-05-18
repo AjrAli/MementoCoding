@@ -30,7 +30,7 @@ namespace SchoolProject.Management.Identity.Services
             _signInManager = signInManager;
         }
 
-        public async Task<AuthenticationResponse> AuthenticateAsync(string username, string password)
+        public async Task<AuthenticationResponse> AuthenticateAsync(string username = "", string password = "")
         {
             var user = await _userManager.FindByNameAsync(username);
 
