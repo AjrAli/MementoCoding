@@ -9,7 +9,9 @@ import { environment } from '../../environments/environment';
 export class AuthenticationService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    localStorage.removeItem('authToken');
+  }
 
   authenticate(username: string, password: string): Observable<AuthenticationResponse> {
     const body = { username, password };
