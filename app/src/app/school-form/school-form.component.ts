@@ -17,17 +17,17 @@ export class SchoolFormComponent {
     description: ''
   };
 
-  constructor(private router: Router, private schoolService: SchoolService) {}
+  constructor(private router: Router, private schoolService: SchoolService) { }
 
   addSchool(): void {
-    this.schoolService.createSchool(this.school).subscribe(
-      () => {
-        this.router.navigate(['/schools']);
-      },
-      (error) => {
-        console.error('Add school error:', error);
+
+    this.schoolService.createSchool(this.school).subscribe({
+      next: () => this.router.navigate(['/schools']),
+      error: (e) => {
+        console.error('Add school error:', e);
         alert('Failed to add school. Please try again later.');
-      }
-    );
+      },
+      complete: () => console.info('complete')
+    });
   }
 }
