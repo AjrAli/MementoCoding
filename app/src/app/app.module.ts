@@ -17,6 +17,7 @@ import { TableComponent } from './components/table/table.component';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { HomeComponent } from './home/home.component';
 import { MenuComponent } from './menu/menu.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { MenuComponent } from './menu/menu.component';
     HttpClientModule,
     NgxPaginationModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgbModule
   ],
   providers: [SchoolService, StudentService, AuthenticationService],
   bootstrap: [AppComponent]
