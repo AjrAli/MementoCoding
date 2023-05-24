@@ -11,9 +11,4 @@ export class AppComponent {
   title = 'school-management';
   constructor(private router: Router, private authenticationService: AuthenticationService) {}
 
-  logout(): void {
-    console.debug(localStorage);
-    localStorage.removeItem('token');
-    this.router.navigate(['/login']);
-  }
 }

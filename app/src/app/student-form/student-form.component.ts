@@ -27,7 +27,7 @@ export class StudentFormComponent {
     private router: Router,
     private studentService: StudentService,
     private schoolService: SchoolService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.fetchSchools();
@@ -40,14 +40,13 @@ export class StudentFormComponent {
   }
 
   addStudent(): void {
-    this.studentService.createStudent(this.student).subscribe(
-      () => {
-        this.router.navigate(['/students']);
-      },
-      (error) => {
-        console.error('Add student error:', error);
+    this.studentService.createStudent(this.student).subscribe({
+      next: () => this.router.navigate(['/students']),
+      error: (e) => {
+        console.error('Add student error:', e);
         alert('Failed to add student. Please try again later.');
-      }
-    );
+      },
+      complete: () => console.info('complete')
+    });
   }
 }

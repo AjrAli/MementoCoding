@@ -9,10 +9,13 @@ import { environment } from '../../environments/environment';
 export class AuthenticationService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    localStorage.removeItem('authToken');
+  }
 
   authenticate(username: string, password: string): Observable<AuthenticationResponse> {
-    return this.http.get<AuthenticationResponse>(`${this.apiUrl}/authenticate?username=${username}&password=${password}`);
+    const body = { username, password };
+    return this.http.post<AuthenticationResponse>(`${this.apiUrl}/authenticate`, body);
   }
 
   setToken(token: string) {

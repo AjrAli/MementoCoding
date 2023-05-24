@@ -15,6 +15,9 @@ import { AuthenticationService } from './services/authentification/authenticatio
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableComponent } from './components/table/table.component';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { HomeComponent } from './home/home.component';
+import { MenuComponent } from './menu/menu.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -24,7 +27,9 @@ import { NgxPaginationModule } from 'ngx-pagination';
     StudentsComponent,
     SchoolFormComponent,
     StudentFormComponent,
-    TableComponent
+    TableComponent,
+    HomeComponent,
+    MenuComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +37,8 @@ import { NgxPaginationModule } from 'ngx-pagination';
     HttpClientModule,
     NgxPaginationModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgbModule
   ],
   providers: [SchoolService, StudentService, AuthenticationService],
   bootstrap: [AppComponent]
