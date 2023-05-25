@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SchoolDto } from '../dto/school/schooldto';
-import { StudentDto } from '../dto/student/studentdto';
-import { SchoolService } from '../services/school/school.service';
-import { StudentService } from '../services/student/student.service';
+import { SchoolDto } from '../../dto/school/schooldto';
+import { StudentDto } from '../../dto/student/studentdto';
+import { SchoolService } from '../../services/school/school.service';
+import { StudentService } from '../../services/student/student.service';
 
 @Component({
   selector: 'app-student-form',
