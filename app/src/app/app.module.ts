@@ -20,6 +20,8 @@ import { MenuComponent } from './menu/menu.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SchoolModalComponent } from './modals/school/school-modal/school-modal.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ConfirmModalComponent } from './modals/confirm-modal/confirm-modal.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     TableComponent,
     HomeComponent,
     MenuComponent,
-    SchoolModalComponent
+    SchoolModalComponent,
+    ConfirmModalComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +45,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     FormsModule,
     ReactiveFormsModule,
     NgbModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FontAwesomeModule
   ],
   providers: [SchoolService, StudentService, AuthenticationService],
   bootstrap: [AppComponent]

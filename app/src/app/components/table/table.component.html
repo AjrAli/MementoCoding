@@ -3,11 +3,20 @@
     <thead>
       <tr>
         <th *ngFor="let header of headers">{{ header }}</th>
+        <th> Action </th>
       </tr>
+
     </thead>
     <tbody>
       <tr *ngFor="let item of data">
         <td *ngFor="let header of headers">{{ item[header] }}</td>
+        <td>
+          <button type="button" class="btn btn-danger" (click)="doReturnDTOToDelete(item)">
+            <fa-icon [icon]="faTimes"></fa-icon>
+          </button>
+          
+
+        </td>
       </tr>
     </tbody>
   </table>

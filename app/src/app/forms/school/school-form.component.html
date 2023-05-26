@@ -1,34 +1,53 @@
-<div class="container mt-4">
+<div class="container mt-12">
   <div class="row">
-    <div class="col-md-6">
-      <h2>Add School</h2>
+    <div class="col-md-12">
+      <div class="row mb-4">
+        <h3>Add School</h3>
+      </div>
       <form [formGroup]="schoolForm" (ngSubmit)="addSchool()">
-        <div class="form-group">
-          <label for="name">Name</label>
-          <input type="text" class="form-control" formControlName="name" required />
-          <div *ngIf="schoolForm.get('name')!.invalid && (schoolForm.get('name')!.dirty || schoolForm.get('name')!.touched)" class="text-danger">
+        <div class="form-group row mb-1">
+          <label class="col-md-4" for="name">Name</label>
+          <div class="col-md-8">
+            <input type="text" class="form-control" formControlName="name" required />
+          </div>
+          <div
+            *ngIf="schoolForm.get('name')!.invalid && (schoolForm.get('name')!.dirty || schoolForm.get('name')!.touched)"
+            class="text-danger">
             Name is required.
           </div>
         </div>
-        <div class="form-group">
-          <label for="adress">Adress</label>
-          <input type="text" class="form-control" formControlName="adress" required />
-          <div *ngIf="schoolForm.get('adress')!.invalid && (schoolForm.get('adress')!.dirty || schoolForm.get('adress')!.touched)" class="text-danger">
+        <div class="form-group row mb-1">
+          <label class="col-md-4" for="adress">Adress</label>
+          <div class="col-md-8">
+            <input type="text" class="form-control" formControlName="adress" required />
+          </div>
+          <div
+            *ngIf="schoolForm.get('adress')!.invalid && (schoolForm.get('adress')!.dirty || schoolForm.get('adress')!.touched)"
+            class="text-danger">
             Adress is required.
           </div>
         </div>
-        <div class="form-group">
-          <label for="town">Town</label>
-          <input type="text" class="form-control" formControlName="town" required />
-          <div *ngIf="schoolForm.get('town')!.invalid && (schoolForm.get('town')!.dirty || schoolForm.get('town')!.touched)" class="text-danger">
+        <div class="form-group row mb-1">
+          <label class="col-md-4" for="town">Town</label>
+          <div class="col-md-8">
+            <input type="text" class="form-control" formControlName="town" required />
+          </div>
+          <div
+            *ngIf="schoolForm.get('town')!.invalid && (schoolForm.get('town')!.dirty || schoolForm.get('town')!.touched)"
+            class="text-danger">
             Town is required.
           </div>
         </div>
-        <div class="form-group">
-          <label for="description">Description</label>
-          <textarea class="form-control" formControlName="description" rows="3"> </textarea>
+        <div class="form-group row mb-4">
+          <label class="col-md-4" for="description">Description</label>
+          <div class="col-md-8">
+            <textarea class="form-control" formControlName="description" rows="3"> </textarea>
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary" [disabled]="!schoolForm.valid">Add School</button>
+        <div class="row">
+          <button type="submit" class="btn btn-primary" [disabled]="!schoolForm.valid">Add School</button>
+        </div>
+
       </form>
     </div>
   </div>

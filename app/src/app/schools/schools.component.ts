@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { SchoolService } from '../services/school/school.service';
-import { SchoolDto } from '../dto/school/schooldto' ;
+import { SchoolDto } from '../dto/school/schooldto';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SchoolModalComponent } from '../modals/school/school-modal/school-modal.component';
+import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-schools',
@@ -18,7 +19,7 @@ export class SchoolsComponent implements OnInit {
     town: '',
     description: ''
   };
-  constructor(private schoolService: SchoolService, 
+  constructor(private schoolService: SchoolService,
     private _modalService: NgbModal,
     private changeDetectorRef: ChangeDetectorRef) { }
 
@@ -71,13 +72,28 @@ export class SchoolsComponent implements OnInit {
     });
   }
 
-  open() {
+  openAddModal() {
     const modalRef = this._modalService.open(SchoolModalComponent);
     modalRef.componentInstance.school = this.newSchool;
     modalRef.componentInstance.passBackSchoolToMainSchool.subscribe((receivedSchool: SchoolDto) => {
       this.createSchool(receivedSchool);
       this.changeDetectorRef.detectChanges();
       modalRef.close();
+    });
+  }
+  handleReturnSchoolToDelete(schoolReturn: object){
+    let school = schoolReturn as SchoolDto;
+    const modalRef = this._modalService.open(ConfirmModalComponent);
+    modalRef.componentInstance.name = school.name;
+    modalRef.result.then((result) => {
+      if(result === 'yes'){
+        this.deleteSchool(school.id);
+      } else {
+        console.log('Action annulée');
+      }
+    }).catch((error) => {
+      // La boîte de dialogue a été fermée avec une erreur
+      console.log('Erreur :', error);
     });
   }
 }
