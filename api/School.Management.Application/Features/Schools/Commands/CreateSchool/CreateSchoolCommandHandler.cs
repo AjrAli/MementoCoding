@@ -50,7 +50,7 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.CreateS
             {
                 var exception = new BadRequestException("Create school failed!", ex);
                 createSchoolCommandResponse.Success = false;
-                createSchoolCommandResponse.Message = exception.ResponseException;
+                createSchoolCommandResponse.Message = exception.ExceptionStr;
                 throw exception;
             }
         }

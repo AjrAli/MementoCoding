@@ -66,7 +66,7 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
             {
                 var exception = new BadRequestException("Delete school failed!", ex);
                 deleteSchoolCommandResponse.Success = false;
-                deleteSchoolCommandResponse.Message = exception.ResponseException;
+                deleteSchoolCommandResponse.Message = exception.ExceptionStr;
                 throw exception;
             }
         }

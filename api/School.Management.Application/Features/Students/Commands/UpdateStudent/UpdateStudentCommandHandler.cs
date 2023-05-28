@@ -58,7 +58,7 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Update
             {
                 var exception = new BadRequestException("Update student failed!", ex);
                 updateStudentCommandResponse.Success = false;
-                updateStudentCommandResponse.Message = exception.ResponseException;
+                updateStudentCommandResponse.Message = exception.ExceptionStr;
                 throw exception;
             }
         }

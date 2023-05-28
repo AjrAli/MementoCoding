@@ -55,7 +55,7 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Delete
             {
                 var exception = new BadRequestException("Delete student failed!", ex);
                 deleteStudentCommandResponse.Success = false;
-                deleteStudentCommandResponse.Message = exception.ResponseException;
+                deleteStudentCommandResponse.Message = exception.ExceptionStr;
                 throw exception;
             }
         }
