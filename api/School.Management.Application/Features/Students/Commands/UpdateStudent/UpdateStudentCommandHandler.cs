@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Application.Features.Response;
+using SchoolProject.Management.Application.Features.Schools.Commands.DeleteSchool;
 using SchoolProject.Management.Domain.Entities;
 using System;
 using System.Threading;
@@ -56,9 +57,9 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Update
             }
             catch (Exception ex)
             {
-                var exception = new BadRequestException("Update student failed!", ex);
+                var exception = new BadRequestException($"Update student failed : {ex}");
                 updateStudentCommandResponse.Success = false;
-                updateStudentCommandResponse.Message = exception.ExceptionStr;
+                updateStudentCommandResponse.Message = exception.Message;
                 throw exception;
             }
         }

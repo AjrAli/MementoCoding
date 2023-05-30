@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Application.Features.Response;
+using SchoolProject.Management.Application.Features.Schools.Commands.UpdateSchool;
 using SchoolProject.Management.Domain.Entities;
 using System;
 using System.Threading;
@@ -48,9 +49,9 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Create
             }
             catch (Exception ex)
             {
-                var exception = new BadRequestException("Create student failed!", ex);
+                var exception = new BadRequestException($"Create student failed : {ex}");
                 createStudentCommandResponse.Success = false;
-                createStudentCommandResponse.Message = exception.ExceptionStr;
+                createStudentCommandResponse.Message = exception.Message;
                 throw exception;
             }
         }

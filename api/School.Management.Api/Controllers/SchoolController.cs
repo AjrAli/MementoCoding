@@ -80,7 +80,7 @@ namespace SchoolProject.Management.Api.Controllers
             }
             catch (BadRequestException ex)
             {
-                _logger.LogWarning(ex.ExceptionStr);
+                _logger.LogWarning(ex.Message);
                 var errorResponse = ex.CreateErrorResponse();
                 return BadRequest(errorResponse);
             }
@@ -101,7 +101,7 @@ namespace SchoolProject.Management.Api.Controllers
             }
             catch (BadRequestException ex)
             {
-                _logger.LogWarning(ex.ExceptionStr);
+                _logger.LogWarning(ex.Message);
                 var errorResponse = ex.CreateErrorResponse();
                 return BadRequest(errorResponse);
             }
@@ -121,7 +121,7 @@ namespace SchoolProject.Management.Api.Controllers
             }
             catch (BadRequestException ex)
             {
-                _logger.LogWarning(ex.ExceptionStr);
+                _logger.LogWarning(ex.Message);
                 var errorResponse = ex.CreateErrorResponse();
                 return BadRequest(errorResponse);
             }

@@ -6,6 +6,7 @@ using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Application.Features.Service;
+using SchoolProject.Management.Application.Features.Students.Commands.UpdateStudent;
 using SchoolProject.Management.Domain.Entities;
 using System;
 using System.Threading;
@@ -48,9 +49,9 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.CreateS
             }
             catch (Exception ex)
             {
-                var exception = new BadRequestException("Create school failed!", ex);
+                var exception = new BadRequestException($"Create school failed : {ex}");
                 createSchoolCommandResponse.Success = false;
-                createSchoolCommandResponse.Message = exception.ExceptionStr;
+                createSchoolCommandResponse.Message = exception.Message;
                 throw exception;
             }
         }
