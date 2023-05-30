@@ -1,4 +1,0 @@
-interface ErrorResponse {
-  message: string;
-  validationErrors: string[];
-}
