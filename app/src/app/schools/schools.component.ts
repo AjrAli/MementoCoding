@@ -1,9 +1,11 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { SchoolService } from '../services/school/school.service';
 import { SchoolDto } from '../dto/school/schooldto';
+import { GetSchoolDto } from '../dto/school/getschooldto';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SchoolModalComponent } from '../modals/school/school-modal/school-modal.component';
 import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.component';
+import { ErrorResponse } from '../dto/error/error-response';
 
 @Component({
   selector: 'app-schools',
@@ -11,7 +13,7 @@ import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.com
   styleUrls: ['./schools.component.css']
 })
 export class SchoolsComponent implements OnInit {
-  schools: SchoolDto[] = [];
+  schools: GetSchoolDto[] = [];
   newSchool: SchoolDto = {
     id: 0,
     name: '',
@@ -81,12 +83,20 @@ export class SchoolsComponent implements OnInit {
       modalRef.close();
     });
   }
-  handleReturnSchoolToDelete(schoolReturn: object){
-    let school = schoolReturn as SchoolDto;
+  handleReturnSchoolToDelete(schoolReturn: object) {
+    let school = schoolReturn as GetSchoolDto;
     const modalRef = this._modalService.open(ConfirmModalComponent);
     modalRef.componentInstance.name = school.name;
+    if (school.haschildren) {
+      const errorMessage: ErrorResponse = {
+        message: '',
+        validationErrors: []
+      };
+      modalRef.componentInstance.errorMessage = errorMessage;
+      modalRef.componentInstance.errorMessage.message = `Impossible de supprimer ${school.name} car il contient des élèves! `;
+    }
     modalRef.result.then((result) => {
-      if(result === 'yes'){
+      if (result === 'yes' && !school.haschildren) {
         this.deleteSchool(school.id);
       } else {
         console.log('Action annulée');

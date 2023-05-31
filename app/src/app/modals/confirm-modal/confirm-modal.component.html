@@ -8,9 +8,12 @@
         <strong>Are you sure you want to delete
             <span class="text-primary">"{{name}}"</span>?</strong>
     </p>
+    <div *ngIf="errorMessage" class="row  mb-3 text-danger">
+        {{errorMessage.message}}
+    </div>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="modal.close('yes')">
+    <button type="button" class="btn btn-danger" [disabled]="errorMessage.message" (click)="modal.close('yes')">
         Yes
     </button>
     <button type="button" class="btn btn-primary" (click)="modal.dismiss('cancel click')">
