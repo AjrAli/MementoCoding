@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Application.Features.Response;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime.Intrinsics.X86;
 using System.Threading.Tasks;
 
 namespace SchoolProject.Management.Api.Middleware
@@ -61,8 +63,16 @@ namespace SchoolProject.Management.Api.Middleware
 
             context.Response.StatusCode = (int)httpStatusCode;
 
-            var jsonResult = JsonConvert.SerializeObject(result);
-            return context.Response.WriteAsync(jsonResult);
+            DefaultContractResolver contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            };
+            string json = JsonConvert.SerializeObject(result, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver,
+                Formatting = Formatting.Indented
+            });
+            return context.Response.WriteAsync(json);
         }
     }
 }

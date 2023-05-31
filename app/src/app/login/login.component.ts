@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthenticationService } from '../services/authentification/authentication.service';
 import { Router } from '@angular/router';
-import { ErrorResponse, harmonizeErrorResponse } from '../dto/error/error-response';
+import { ErrorResponse } from '../dto/error/error-response';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -25,7 +25,7 @@ export class LoginComponent {
       },
       error: (e) => {
         if (e.status === 400 || e.status === 404) {
-          this.errorMessage = harmonizeErrorResponse(e.error as ErrorResponse);
+          this.errorMessage = e.error as ErrorResponse;
           console.error(this.errorMessage);
         } else {
           console.error('Error:', e);
