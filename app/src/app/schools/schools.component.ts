@@ -93,7 +93,7 @@ export class SchoolsComponent implements OnInit {
         validationErrors: []
       };
       modalRef.componentInstance.errorMessage = errorMessage;
-      modalRef.componentInstance.errorMessage.message = `Impossible de supprimer ${school.name} car il contient des élèves! `;
+      modalRef.componentInstance.errorMessage.message = `(Impossible to delete ${school.name}, some students are linked to it!)`;
     }
     modalRef.result.then((result) => {
       if (result === 'yes' && !school.haschildren) {
@@ -104,6 +104,16 @@ export class SchoolsComponent implements OnInit {
     }).catch((error) => {
       // La boîte de dialogue a été fermée avec une erreur
       console.log('Erreur :', error);
+    });
+  }
+  handleReturnSchoolToUpdate(schoolReturn: object) {
+    let school = schoolReturn as SchoolDto;
+    const modalRef = this._modalService.open(SchoolModalComponent);
+    modalRef.componentInstance.school = school;
+    modalRef.componentInstance.passBackSchoolToMainSchool.subscribe((receivedSchool: SchoolDto) => {
+      this.updateSchool(receivedSchool);
+      this.changeDetectorRef.detectChanges();
+      modalRef.close();
     });
   }
 }

@@ -8,8 +8,10 @@
         <strong>Are you sure you want to delete
             <span class="text-primary">"{{name}}"</span>?</strong>
     </p>
-    <div *ngIf="errorMessage" class="row  mb-3 text-danger">
-        {{errorMessage.message}}
+    <div *ngIf="errorMessage" class="row  mb-3">
+        <p>
+            <strong><span class="text-danger">{{errorMessage.message}}</span></strong>
+        </p>
     </div>
 </div>
 <div class="modal-footer">

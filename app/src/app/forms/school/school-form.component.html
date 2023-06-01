@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-12">
       <div class="row mb-4">
-        <h3>Add School</h3>
+        <h3>{{title}}</h3>
       </div>
       <form [formGroup]="schoolForm" (ngSubmit)="addSchool()">
         <div class="form-group row mb-1">
@@ -45,7 +45,7 @@
           </div>
         </div>
         <div class="row">
-          <button type="submit" class="btn btn-primary" [disabled]="!schoolForm.valid">Add School</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!schoolForm.valid">{{title}}</button>
         </div>
 
       </form>

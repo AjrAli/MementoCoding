@@ -1,9 +1,11 @@
 <div class="container mt-4">
   <h1>School</h1>
   <button class="btn btn-outline-primary me-2" (click)="openAddModal()">
-     Add a new School
+    Add a new School
   </button>
-  <app-table (returnDTOToDelete)="handleReturnSchoolToDelete($event)" [headers]="['id', 'name', 'adress', 'town', 'description']" [data]="schools">
+  <app-table (returnDTOToUpdate)="handleReturnSchoolToUpdate($event)"
+    (returnDTOToDelete)="handleReturnSchoolToDelete($event)" [headers]="['id', 'name', 'adress', 'town', 'description']"
+    [data]="schools">
   </app-table>
 
 

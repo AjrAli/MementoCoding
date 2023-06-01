@@ -11,10 +11,12 @@
       <tr *ngFor="let item of data">
         <td *ngFor="let header of headers">{{ item[header] }}</td>
         <td>
+          <button type="button" class="btn btn-primary" (click)="doReturnDTOToUpdate(item)">
+            <fa-icon [icon]="faPencil"></fa-icon>
+          </button>
           <button type="button" class="btn btn-danger" (click)="doReturnDTOToDelete(item)">
             <fa-icon [icon]="faTimes"></fa-icon>
-          </button>
-          
+          </button>  
 
         </td>
       </tr>

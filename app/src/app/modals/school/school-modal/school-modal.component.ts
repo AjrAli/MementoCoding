@@ -15,4 +15,8 @@ export class SchoolModalComponent {
   handleEvent(school: SchoolDto) {
     this.passBackSchoolToMainSchool.emit(school);
   }
+  closeModal(){
+    console.log(this.school);
+    this.modal.dismiss('Cross click')
+  }
 }

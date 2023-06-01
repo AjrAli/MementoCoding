@@ -9,33 +9,39 @@ import { FormControl, FormGroup } from '@angular/forms';
   templateUrl: './school-form.component.html',
   styleUrls: ['./school-form.component.css']
 })
-export class SchoolFormComponent implements OnInit{
+export class SchoolFormComponent implements OnInit {
 
   @Input()
   school!: SchoolDto;
   @Output() passBackSchool = new EventEmitter<SchoolDto>();
   schoolForm!: FormGroup;
-  constructor(private router: Router, 
+  title: string = 'Add School';
+  constructor(private router: Router,
     private schoolService: SchoolService) { }
 
 
   ngOnInit(): void {
+    if (this.school?.name) {
+      this.title = 'Update School';
+    }
     this.schoolForm = new FormGroup({
+      id: new FormControl(this.school.id),
       name: new FormControl(this.school.name),
       adress: new FormControl(this.school.adress),
       town: new FormControl(this.school.town),
       description: new FormControl(this.school.description)
     });
-    this.schoolForm.valueChanges.subscribe((formValues) => {
-      this.school.name = formValues.name;
-      this.school.adress = formValues.adress;
-      this.school.town = formValues.town;
-      this.school.description = formValues.description;
-    });
   }
 
   addSchool(): void {
+    this.school = this.schoolForm.value;
+    this.clearForm();
     this.passBackSchool.emit(this.school);
+  }
+  clearForm() {
     this.schoolForm.reset();
+    Object.keys(this.schoolForm.controls).forEach(controlName => {
+      this.schoolForm.get(controlName)?.patchValue('');
+    });
   }
 }
