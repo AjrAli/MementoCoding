@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { StudentDto } from '../dto/student/studentdto';
+import { GetStudentDto } from '../dto/student/getstudentdto';
 import { StudentService } from '../services/student/student.service';
-
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.component';
+import { ErrorResponse } from '../dto/error/error-response';
 @Component({
   selector: 'app-students',
   templateUrl: './students.component.html',
@@ -9,7 +12,7 @@ import { StudentService } from '../services/student/student.service';
 })
 export class StudentsComponent implements OnInit {
   students: StudentDto[] = [];
-
+  newStudent: StudentDto = new StudentDto();
   constructor(private studentService: StudentService) { }
 
   ngOnInit(): void {

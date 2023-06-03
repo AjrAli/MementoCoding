@@ -1,12 +1,22 @@
-<div class="container mt-4">
-  <h1>School</h1>
-  <button class="btn btn-outline-primary me-2" (click)="openAddModal()">
-    Add a new School
-  </button>
-  <app-table (returnDTOToUpdate)="handleReturnSchoolToUpdate($event)"
-    (returnDTOToDelete)="handleReturnSchoolToDelete($event)" [headers]="['id', 'name', 'adress', 'town', 'description']"
-    [data]="schools">
-  </app-table>
-
-
+<div class="container mt-12">
+  <div class="row text-center mb-4">
+    <div class="col-md-12">
+      <h1>School Management</h1>
+    </div>
+  </div>
+  <div class="row text-center mb-4">
+    <div class="col-md-12">
+      <button class="btn btn-primary col-6" (click)="openAddModal()">
+        Add a new School
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <app-table (returnDTOToUpdate)="handleReturnSchoolToUpdate($event)"
+        (returnDTOToDelete)="handleReturnSchoolToDelete($event)"
+        [headers]="['id', 'name', 'adress', 'town', 'description']" [data]="schools">
+      </app-table>
+    </div>
+  </div>
 </div>

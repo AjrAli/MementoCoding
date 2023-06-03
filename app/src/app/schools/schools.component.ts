@@ -3,9 +3,9 @@ import { SchoolService } from '../services/school/school.service';
 import { SchoolDto } from '../dto/school/schooldto';
 import { GetSchoolDto } from '../dto/school/getschooldto';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SchoolModalComponent } from '../modals/school/school-modal/school-modal.component';
 import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.component';
 import { ErrorResponse } from '../dto/error/error-response';
+import { DtoModalComponent } from '../modals/dto-modal/dto-modal.component';
 
 @Component({
   selector: 'app-schools',
@@ -14,13 +14,7 @@ import { ErrorResponse } from '../dto/error/error-response';
 })
 export class SchoolsComponent implements OnInit {
   schools: GetSchoolDto[] = [];
-  newSchool: SchoolDto = {
-    id: 0,
-    name: '',
-    adress: '',
-    town: '',
-    description: ''
-  };
+  newSchool: SchoolDto = new SchoolDto();
   constructor(private schoolService: SchoolService,
     private _modalService: NgbModal,
     private changeDetectorRef: ChangeDetectorRef) { }
@@ -75,15 +69,16 @@ export class SchoolsComponent implements OnInit {
   }
 
   openAddModal() {
-    const modalRef = this._modalService.open(SchoolModalComponent);
-    modalRef.componentInstance.school = this.newSchool;
-    modalRef.componentInstance.passBackSchoolToMainSchool.subscribe((receivedSchool: SchoolDto) => {
+    const modalRef = this._modalService.open(DtoModalComponent);
+    modalRef.componentInstance.title = 'School Modal';
+    modalRef.componentInstance.dto = this.newSchool;
+    modalRef.componentInstance.passBackDTOToMainComponent.subscribe((receivedSchool: SchoolDto) => {
       this.createSchool(receivedSchool);
       this.changeDetectorRef.detectChanges();
       modalRef.close();
     });
   }
-  handleReturnSchoolToDelete(schoolReturn: object) {
+  handleReturnSchoolToDelete(schoolReturn: any) {
     let school = schoolReturn as GetSchoolDto;
     const modalRef = this._modalService.open(ConfirmModalComponent);
     modalRef.componentInstance.name = school.name;
@@ -106,11 +101,12 @@ export class SchoolsComponent implements OnInit {
       console.log('Erreur :', error);
     });
   }
-  handleReturnSchoolToUpdate(schoolReturn: object) {
+  handleReturnSchoolToUpdate(schoolReturn: any) {
     let school = schoolReturn as SchoolDto;
-    const modalRef = this._modalService.open(SchoolModalComponent);
-    modalRef.componentInstance.school = school;
-    modalRef.componentInstance.passBackSchoolToMainSchool.subscribe((receivedSchool: SchoolDto) => {
+    const modalRef = this._modalService.open(DtoModalComponent);
+    modalRef.componentInstance.title = 'School Modal';
+    modalRef.componentInstance.dto = school;
+    modalRef.componentInstance.passBackDTOToMainComponent.subscribe((receivedSchool: SchoolDto) => {
       this.updateSchool(receivedSchool);
       this.changeDetectorRef.detectChanges();
       modalRef.close();

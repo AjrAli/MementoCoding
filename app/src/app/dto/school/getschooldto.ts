@@ -1,6 +1,11 @@
 import {SchoolDto} from './schooldto';
 
-export interface GetSchoolDto extends SchoolDto {
+export class GetSchoolDto extends SchoolDto {
     haschildren: boolean;
     parentname: string;
+    constructor(){
+      super();
+      this.haschildren = false,
+      this.parentname = ''
+    }
   }

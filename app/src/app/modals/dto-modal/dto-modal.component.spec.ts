@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SchoolModalComponent } from './school-modal.component';
+import { DtoModalComponent } from './dto-modal.component';
 
-describe('SchoolModalComponent', () => {
-  let component: SchoolModalComponent;
-  let fixture: ComponentFixture<SchoolModalComponent>;
+describe('DtoModalComponent', () => {
+  let component: DtoModalComponent;
+  let fixture: ComponentFixture<DtoModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SchoolModalComponent ]
+      declarations: [ DtoModalComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SchoolModalComponent);
+    fixture = TestBed.createComponent(DtoModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

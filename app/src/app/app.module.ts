@@ -18,10 +18,10 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { HomeComponent } from './home/home.component';
 import { MenuComponent } from './menu/menu.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { SchoolModalComponent } from './modals/school/school-modal/school-modal.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ConfirmModalComponent } from './modals/confirm-modal/confirm-modal.component';
+import { DtoModalComponent } from './modals/dto-modal/dto-modal.component';
 
 @NgModule({
   declarations: [
@@ -34,8 +34,9 @@ import { ConfirmModalComponent } from './modals/confirm-modal/confirm-modal.comp
     TableComponent,
     HomeComponent,
     MenuComponent,
-    SchoolModalComponent,
-    ConfirmModalComponent
+    DtoModalComponent,
+    ConfirmModalComponent,
+    DtoModalComponent
   ],
   imports: [
     BrowserModule,

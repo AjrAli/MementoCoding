@@ -12,8 +12,9 @@ import { FormControl, FormGroup } from '@angular/forms';
 export class SchoolFormComponent implements OnInit {
 
   @Input()
-  school!: SchoolDto;
-  @Output() passBackSchool = new EventEmitter<SchoolDto>();
+  dto: any;
+  school: SchoolDto = new SchoolDto();
+  @Output() passBackDTO = new EventEmitter<any>();
   schoolForm!: FormGroup;
   title: string = 'Add School';
   constructor(private router: Router,
@@ -21,6 +22,7 @@ export class SchoolFormComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.school = this.dto as SchoolDto;
     if (this.school?.name) {
       this.title = 'Update School';
     }
@@ -36,7 +38,7 @@ export class SchoolFormComponent implements OnInit {
   addSchool(): void {
     this.school = this.schoolForm.value;
     this.clearForm();
-    this.passBackSchool.emit(this.school);
+    this.passBackDTO.emit(this.school);
   }
   clearForm() {
     this.schoolForm.reset();

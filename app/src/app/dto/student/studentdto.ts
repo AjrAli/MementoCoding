@@ -1,8 +1,16 @@
-export interface StudentDto {
+export class StudentDto {
     id: number;
-    firstName: string | null;
-    lastName: string | null;
+    firstName: string;
+    lastName: string;
     age: number;
-    adress: string | null;
+    adress: string;
     schoolId: number;
+    constructor(){
+      this.id = 0,
+      this.firstName = '',
+      this.lastName = '',
+      this.age = 0,
+      this.adress = '',
+      this.schoolId = 0
+    }
   }

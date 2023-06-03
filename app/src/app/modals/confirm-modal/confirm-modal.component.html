@@ -15,7 +15,7 @@
     </div>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-danger" [disabled]="errorMessage.message" (click)="modal.close('yes')">
+    <button type="button" class="btn btn-danger" [disabled]="errorMessage && errorMessage.message" (click)="modal.close('yes')">
         Yes
     </button>
     <button type="button" class="btn btn-primary" (click)="modal.dismiss('cancel click')">

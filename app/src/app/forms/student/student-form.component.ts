@@ -12,14 +12,7 @@ import { StudentService } from '../../services/student/student.service';
 })
 export class StudentFormComponent {
 
-  student: StudentDto = {
-    id: 0,
-    firstName: '',
-    lastName: '',
-    age: 0,
-    adress: '',
-    schoolId: 0
-  };
+  student: StudentDto = new StudentDto();
 
   schools: SchoolDto[] = [];
 

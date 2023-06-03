@@ -10,17 +10,17 @@ import { SchoolDto } from 'src/app/dto/school/schooldto';
 export class TableComponent implements OnInit {
   @Input() headers: string[] = [];
   @Input() data: any[] = [];
-  @Output() returnDTOToDelete = new EventEmitter<object>();
-  @Output() returnDTOToUpdate = new EventEmitter<object>();
+  @Output() returnDTOToDelete = new EventEmitter<any>();
+  @Output() returnDTOToUpdate = new EventEmitter<any>();
   faTimes = faTimes;
   faPencil = faPencil;
   constructor() {}
 
   
-  doReturnDTOToDelete(item: object){
+  doReturnDTOToDelete(item: any){
     this.returnDTOToDelete.emit(item);
   }
-  doReturnDTOToUpdate(item: object){
+  doReturnDTOToUpdate(item: any){
     this.returnDTOToUpdate.emit(item);
   }
   ngOnInit(): void {}

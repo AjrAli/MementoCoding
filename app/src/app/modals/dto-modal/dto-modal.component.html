@@ -1,0 +1,13 @@
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-title">{{title}}</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-describedby="modal-title"
+      (click)="closeModal()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <app-school-form *ngIf="isSchoolDTO()" (passBackDTO)="handleEvent($event)"  [dto]= "dto"></app-school-form>
+  </div>
+  
