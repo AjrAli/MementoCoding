@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../services/authentification/authentication.service';
 import { Router } from '@angular/router';
 import { ErrorResponse } from '../dto/error/error-response';
@@ -7,12 +7,17 @@ import { ErrorResponse } from '../dto/error/error-response';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   username: string = '';
   password: string = '';
   errorMessage!: ErrorResponse;
   constructor(private authService: AuthenticationService, private router: Router) { }
 
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/home']);
+    }
+  }
   onSubmit() {
     this.authService.authenticate(this.username, this.password).subscribe({
       next: (r) => {
