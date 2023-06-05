@@ -26,6 +26,9 @@ export class SchoolsComponent implements OnInit {
   getSchools(): void {
     this.schoolService.getSchools().subscribe((schools: any) => {
       this.schools = schools.schoolsDto;
+      this.schools.forEach(x => {
+        x.typeInstance = 'GetSchoolDto';
+      });
     });
   }
 

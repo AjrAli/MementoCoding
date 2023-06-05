@@ -1,11 +1,11 @@
-import {StudentDto} from './studentdto';
+import { StudentDto } from './studentdto';
 
 export class GetStudentDto extends StudentDto {
   haschildren: boolean;
   parentname: string;
-  constructor(){
-    super();
-    this.haschildren = false,
-    this.parentname = ''
+  constructor() {
+    super('GetStudentDto');
+    this.haschildren = false;
+    this.parentname = '';
   }
-  }
+}

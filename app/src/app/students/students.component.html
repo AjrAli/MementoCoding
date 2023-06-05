@@ -6,20 +6,17 @@
   </div>
   <div class="row text-center mb-4">
     <div class="col-md-12">
-      <!-- <button class="btn btn-primary col-6" (click)="openAddModal()">
+      <button class="btn btn-primary col-6" (click)="openAddModal()">
         Add a new Student
-      </button> -->
+      </button>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-      <!-- <app-table (returnDTOToUpdate)="handleReturnStudentToUpdate($event)"
+      <app-table (returnDTOToUpdate)="handleReturnStudentToUpdate($event)"
         (returnDTOToDelete)="handleReturnStudentToDelete($event)"
         [headers]="['id', 'firstName', 'lastName', 'age', 'adress', 'schoolId']" [data]="students">
-      </app-table> -->
-      <app-table 
-      [headers]="['id', 'firstName', 'lastName', 'age', 'adress', 'schoolId']" [data]="students">
-    </app-table>
+      </app-table>
     </div>
   </div>
 </div>
