@@ -24,9 +24,10 @@ export class StudentsComponent implements OnInit {
 
   getStudents(): void {
     this.studentService.getStudents().subscribe((students: any) => {
-      this.students = students.studentsDto;
-      this.students.forEach(x => {
-        x.typeInstance = 'GetStudentDto';
+      this.students = students.studentsDto.map((studentData: any) => {
+        const student = new GetStudentDto();
+        Object.assign(student, studentData);
+        return student;
       });
     });
   }

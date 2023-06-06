@@ -5,6 +5,7 @@ import { StudentDto } from '../../dto/student/studentdto';
 import { SchoolService } from '../../services/school/school.service';
 import { StudentService } from '../../services/student/student.service';
 import { FormControl, FormGroup } from '@angular/forms';
+import { GetSchoolDto } from 'src/app/dto/school/getschooldto';
 
 @Component({
   selector: 'app-student-form',
@@ -26,7 +27,11 @@ export class StudentFormComponent implements OnInit {
   ) { }
   fetchSchools(): void {
     this.schoolService.getSchools().subscribe((response: any) => {
-      this.schools = response.schoolsDto;
+      this.schools = response.schoolsDto.map((schoolData: any) => {
+        const school = new GetSchoolDto();
+        Object.assign(school, schoolData);
+        return school;
+      });
     });
   }
   ngOnInit(): void {
