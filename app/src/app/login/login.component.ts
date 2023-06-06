@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../services/authentification/authentication.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorResponse } from '../dto/error/error-response';
 @Component({
   selector: 'app-login',
@@ -11,7 +11,7 @@ export class LoginComponent implements OnInit {
   username: string = '';
   password: string = '';
   errorMessage!: ErrorResponse;
-  constructor(private authService: AuthenticationService, private router: Router) { }
+  constructor(private authService: AuthenticationService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
@@ -23,7 +23,11 @@ export class LoginComponent implements OnInit {
       next: (r) => {
         if (r.token) {
           this.authService.setToken(r.token);
-          this.router.navigate(['/schools']);
+          // Récupérer l'URL demandée avant la connexion
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+
+          // Rediriger vers l'URL demandée ou vers '/home' par défaut
+          this.router.navigateByUrl(returnUrl || '/home');
         } else {
           alert('Invalid credentials');
         }
