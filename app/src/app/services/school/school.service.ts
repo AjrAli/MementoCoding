@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { SchoolDto } from '../../dto/school/schooldto' ;
+import { SchoolDto } from '../../dto/school/school-dto' ;
 
 @Injectable({
   providedIn: 'root',
@@ -12,8 +12,12 @@ export class SchoolService {
 
   constructor(private http: HttpClient) {}
 
-  getSchools(): Observable<SchoolDto[]> {
-    return this.http.get<SchoolDto[]>(`${this.apiUrl}/School`);
+  getSchools(skip?:number, take?:number): Observable<SchoolDto[]> {
+      let paginateParams: string = '';
+      if(take){
+        paginateParams = `/${skip}/${take}`;
+      }
+    return this.http.get<SchoolDto[]>(`${this.apiUrl}/School${paginateParams}`);
   }
 
   createSchool(school: SchoolDto): Observable<SchoolDto> {

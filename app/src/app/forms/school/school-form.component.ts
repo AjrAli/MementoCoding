@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { SchoolDto } from '../../dto/school/schooldto';
+import { SchoolDto } from '../../dto/school/school-dto';
 import { SchoolService } from '../../services/school/school.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormControl, FormGroup } from '@angular/forms';

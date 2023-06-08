@@ -4,5 +4,7 @@ namespace SchoolProject.Management.Application.Features.Schools.Queries.GetSchoo
 {
     public class GetSchoolsQuery : IRequest<GetSchoolsQueryResponse>
     {
+        public int Skip { get; set; }
+        public int Take { get; set; }
     }
 }

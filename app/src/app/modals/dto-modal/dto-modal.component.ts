@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { GetSchoolDto } from 'src/app/dto/school/getschooldto';
-import { SchoolDto } from 'src/app/dto/school/schooldto';
-import { GetStudentDto } from 'src/app/dto/student/getstudentdto';
-import { StudentDto } from 'src/app/dto/student/studentdto';
+import { GetSchoolDto } from 'src/app/dto/school/getschool-dto';
+import { SchoolDto } from 'src/app/dto/school/school-dto';
+import { GetStudentDto } from 'src/app/dto/student/getstudent-dto';
+import { StudentDto } from 'src/app/dto/student/student-dto';
 @Component({
   selector: 'app-dto-modal',
   templateUrl: './dto-modal.component.html',

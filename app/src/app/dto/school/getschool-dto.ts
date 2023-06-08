@@ -1,4 +1,4 @@
-import { SchoolDto } from './schooldto';
+import { SchoolDto } from './school-dto';
 
 export class GetSchoolDto extends SchoolDto {
   haschildren: boolean;

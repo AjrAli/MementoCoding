@@ -48,13 +48,17 @@ namespace SchoolProject.Management.Api.Controllers
         }
 
         [HttpGet]
-        [Route("")]
-        public async Task<IActionResult> GetStudents()
+        [Route("{skip?}/{take?}")]
+        public async Task<IActionResult> GetStudents(int skip = 0, int take = 0)
         {
             GetStudentsQueryResponse? dataReponse = null;
             try
             {
-                dataReponse = await _mediator.Send(new GetStudentsQuery());
+                dataReponse = await _mediator.Send(new GetStudentsQuery()
+                {
+                    Skip = skip,
+                    Take = take
+                });
             }
             catch (NotFoundException ex)
             {

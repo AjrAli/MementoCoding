@@ -7,5 +7,6 @@ namespace SchoolProject.Management.Application.Features.Response
         bool Success { get; set; }
         string? Message { get; set; }
         IList<string>? ValidationErrors { get; set; }
+        long Count { get; set; }
     }
 }

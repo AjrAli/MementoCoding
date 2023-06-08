@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { SchoolDto } from '../../dto/school/schooldto';
-import { StudentDto } from '../../dto/student/studentdto';
+import { SchoolDto } from '../../dto/school/school-dto';
+import { StudentDto } from '../../dto/student/student-dto';
 import { SchoolService } from '../../services/school/school.service';
 import { StudentService } from '../../services/student/student.service';
 import { FormControl, FormGroup } from '@angular/forms';
-import { GetSchoolDto } from 'src/app/dto/school/getschooldto';
+import { GetSchoolDto } from 'src/app/dto/school/getschool-dto';
 
 @Component({
   selector: 'app-student-form',

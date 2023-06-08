@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { StudentDto } from '../dto/student/studentdto';
-import { GetStudentDto } from '../dto/student/getstudentdto';
+import { StudentDto } from '../dto/student/student-dto';
+import { GetStudentDto } from '../dto/student/getstudent-dto';
 import { StudentService } from '../services/student/student.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.component';
 import { ErrorResponse } from '../dto/error/error-response';
 import { DtoModalComponent } from '../modals/dto-modal/dto-modal.component';
+import { PageDetailsDto } from '../dto/utilities/page-details-dto';
 @Component({
   selector: 'app-students',
   templateUrl: './students.component.html',
@@ -13,17 +14,19 @@ import { DtoModalComponent } from '../modals/dto-modal/dto-modal.component';
 })
 export class StudentsComponent implements OnInit {
   students: GetStudentDto[] = [];
+  pageDetails: PageDetailsDto = new PageDetailsDto();
   newStudent: StudentDto = new StudentDto();
   constructor(private studentService: StudentService,
     private _modalService: NgbModal,
     private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.getStudents();
+    this.getStudents(this.pageDetails.skip, this.pageDetails.take);
   }
 
-  getStudents(): void {
-    this.studentService.getStudents().subscribe((students: any) => {
+  getStudents(skip?: number, take?: number): void {
+    this.studentService.getStudents(skip, take).subscribe((students: any) => {
+      this.pageDetails.totalItems = students.count;
       this.students = students.studentsDto.map((studentData: any) => {
         const student = new GetStudentDto();
         Object.assign(student, studentData);
@@ -35,7 +38,7 @@ export class StudentsComponent implements OnInit {
   createStudent(student: StudentDto): void {
     this.studentService.createStudent(student).subscribe({
       next: () => {
-        this.getStudents();
+        this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       },
       error: (e) => {
         console.error('Add student error:', e);
@@ -48,7 +51,7 @@ export class StudentsComponent implements OnInit {
   updateStudent(student: StudentDto): void {
     this.studentService.updateStudent(student).subscribe({
       next: () => {
-        this.getStudents();
+        this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       },
       error: (e) => {
         console.error('Update student error:', e);
@@ -61,7 +64,7 @@ export class StudentsComponent implements OnInit {
   deleteStudent(studentId: number): void {
     this.studentService.deleteStudent(studentId).subscribe({
       next: () => {
-        this.getStudents();
+        this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       },
       error: (e) => {
         console.error('Delete student error:', e);
@@ -80,6 +83,12 @@ export class StudentsComponent implements OnInit {
       this.changeDetectorRef.detectChanges();
       modalRef.close();
     });
+  }
+  handleNextPage(result: any) {
+    this.pageDetails.skip = result.skip;
+    this.pageDetails.take = result.take;
+    this.getStudents(this.pageDetails.skip, this.pageDetails.take);
+    this.changeDetectorRef.detectChanges();
   }
   handleReturnStudentToDelete(studentReturn: any) {
     let student = studentReturn as GetStudentDto;

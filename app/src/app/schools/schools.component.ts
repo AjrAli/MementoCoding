@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { SchoolService } from '../services/school/school.service';
-import { SchoolDto } from '../dto/school/schooldto';
-import { GetSchoolDto } from '../dto/school/getschooldto';
+import { SchoolDto } from '../dto/school/school-dto';
+import { GetSchoolDto } from '../dto/school/getschool-dto';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.component';
 import { ErrorResponse } from '../dto/error/error-response';
 import { DtoModalComponent } from '../modals/dto-modal/dto-modal.component';
+import { PageDetailsDto } from '../dto/utilities/page-details-dto';
 
 @Component({
   selector: 'app-schools',
@@ -15,16 +16,18 @@ import { DtoModalComponent } from '../modals/dto-modal/dto-modal.component';
 export class SchoolsComponent implements OnInit {
   schools: GetSchoolDto[] = [];
   newSchool: SchoolDto = new SchoolDto();
+  pageDetails: PageDetailsDto = new PageDetailsDto();
   constructor(private schoolService: SchoolService,
     private _modalService: NgbModal,
     private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.getSchools();
+    this.getSchools(this.pageDetails.skip, this.pageDetails.take);
   }
 
-  getSchools(): void {
-    this.schoolService.getSchools().subscribe((schools: any) => {
+  getSchools(skip?: number, take?: number): void {
+    this.schoolService.getSchools(skip, take).subscribe((schools: any) => {
+      this.pageDetails.totalItems = schools.count;
       this.schools = schools.schoolsDto.map((schoolData: any) => {
         const school = new GetSchoolDto();
         Object.assign(school, schoolData);
@@ -36,7 +39,7 @@ export class SchoolsComponent implements OnInit {
   createSchool(school: SchoolDto): void {
     this.schoolService.createSchool(school).subscribe({
       next: () => {
-        this.getSchools();
+        this.getSchools(this.pageDetails.skip, this.pageDetails.take);
       },
       error: (e) => {
         console.error('Add school error:', e);
@@ -49,7 +52,7 @@ export class SchoolsComponent implements OnInit {
   updateSchool(school: SchoolDto): void {
     this.schoolService.updateSchool(school).subscribe({
       next: () => {
-        this.getSchools();
+        this.getSchools(this.pageDetails.skip, this.pageDetails.take);
       },
       error: (e) => {
         console.error('Update school error:', e);
@@ -62,7 +65,7 @@ export class SchoolsComponent implements OnInit {
   deleteSchool(schoolId: number): void {
     this.schoolService.deleteSchool(schoolId).subscribe({
       next: () => {
-        this.getSchools();
+        this.getSchools(this.pageDetails.skip, this.pageDetails.take);
       },
       error: (e) => {
         console.error('Delete school error:', e);
@@ -81,6 +84,12 @@ export class SchoolsComponent implements OnInit {
       this.changeDetectorRef.detectChanges();
       modalRef.close();
     });
+  }
+  handleNextPage(result: any) {
+    this.pageDetails.skip = result.skip;
+    this.pageDetails.take = result.take;
+    this.getSchools(this.pageDetails.skip, this.pageDetails.take);
+    this.changeDetectorRef.detectChanges();
   }
   handleReturnSchoolToDelete(schoolReturn: any) {
     let school = schoolReturn as GetSchoolDto;

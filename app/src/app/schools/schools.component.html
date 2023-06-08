@@ -14,8 +14,9 @@
   <div class="row">
     <div class="col-md-12">
       <app-table (returnDTOToUpdate)="handleReturnSchoolToUpdate($event)"
-        (returnDTOToDelete)="handleReturnSchoolToDelete($event)"
-        [headers]="['id', 'name', 'adress', 'town', 'description']" [data]="schools">
+        (returnDTOToDelete)="handleReturnSchoolToDelete($event)" (nextPage)="handleNextPage($event)"
+        [headers]="['id', 'name', 'adress', 'town', 'description']" [data]="schools"
+        [totalItems]="pageDetails.totalItems">
       </app-table>
     </div>
   </div>

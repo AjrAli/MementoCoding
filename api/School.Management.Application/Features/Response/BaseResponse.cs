@@ -15,5 +15,6 @@ namespace SchoolProject.Management.Application.Features.Response
         public bool Success { get; set; }
         public string? Message { get; set; }
         public IList<string>? ValidationErrors { get; set; }
+        public long Count { get; set; }
     }
 }

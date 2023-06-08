@@ -1,4 +1,4 @@
-import { TypeDto } from "../typedto";
+import { TypeDto } from "../utilities/type-dto";
 
 export class SchoolDto extends TypeDto {
   id: number;
