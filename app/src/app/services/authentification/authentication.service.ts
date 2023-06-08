@@ -10,7 +10,7 @@ export class AuthenticationService {
   private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {
-    localStorage.removeItem('authToken');
+    
   }
 
   authenticate(username: string, password: string): Observable<AuthenticationResponse> {

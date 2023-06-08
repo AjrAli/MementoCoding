@@ -1,17 +1,15 @@
-﻿using System;
+﻿using SchoolProject.Management.Application.Features.Response;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace SchoolProject.Management.Application.Exceptions
 {
 
-    public class BadRequestException: Exception
+    public class BadRequestException: BaseException
     {
-        private readonly string _responseException;
-
-        public BadRequestException(string message, Exception? exception) : base(message)
+        public BadRequestException(string message) : base(message)
         {
-            _responseException = $"ERROR : {exception?.Message} {exception?.InnerException?.Source} : {exception?.InnerException?.Message}";
         }
-        public string ResponseException { get { return _responseException; } }
     }
 }

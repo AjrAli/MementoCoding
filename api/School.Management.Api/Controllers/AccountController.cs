@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using SchoolProject.Management.Application.Contracts.Identity;
+using SchoolProject.Management.Application.Exceptions;
 using SchoolProject.Management.Application.Models.Authentication;
 using System;
 using System.Collections.Generic;
@@ -13,25 +16,42 @@ namespace SchoolProject.Management.Api.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
-        public AccountController(IAuthenticationService authenticationService)
+        private readonly ILogger<AccountController> _logger;
+        public AccountController(IAuthenticationService authenticationService,
+                                 ILogger<AccountController> logger)
         {
+            _logger = logger;
             _authenticationService = authenticationService;
         }
 
         [HttpPost("authenticate")]
         public async Task<ActionResult<AuthenticationResponse>> AuthenticateAsync([FromBody] AuthenticationRequest request)
         {
-            var response = await _authenticationService.AuthenticateAsync(request.Username, request.Password);
-            if(response != null && response.Token != null)
+            try
             {
-                Response.Cookies.Append("X-Access-Token", response.Token, new CookieOptions()
+                if (!string.IsNullOrEmpty(request?.Username) && !string.IsNullOrEmpty(request?.Password))
                 {
-                    Expires = DateTimeOffset.UtcNow.AddDays(1).AddMinutes(-5),
-                    HttpOnly = true,
-                    SameSite = SameSiteMode.Strict
-                });
+                    var response = await _authenticationService.AuthenticateAsync(request.Username, request.Password);
+                    if (response != null && response.Token != null)
+                    {
+                        Response.Cookies.Append("X-Access-Token", response.Token, new CookieOptions()
+                        {
+                            Expires = DateTimeOffset.UtcNow.AddDays(1).AddMinutes(-5),
+                            HttpOnly = true,
+                            SameSite = SameSiteMode.Strict
+                        });
+                        return Ok(response);
+                    }
+                }
+                throw new BadRequestException("Invalid username or password.");
+
             }
-            return Ok(response);
+            catch (BadRequestException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                var errorResponse = ex.CreateErrorResponse();
+                return BadRequest(errorResponse);
+            }
         }
     }
 }

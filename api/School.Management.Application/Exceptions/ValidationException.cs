@@ -6,12 +6,12 @@ using System.Runtime.Serialization;
 namespace SchoolProject.Management.Application.Exceptions
 {
     [Serializable]
-    public class ValidationException : Exception
+    public class ValidationException : BaseException
     {
 
         private readonly IList<string>? _validationErrors;
 
-        public ValidationException(ValidationResult validationResult)
+        public ValidationException(ValidationResult validationResult) : base("Erreur de validations de champs")
         {
             _validationErrors = new List<string>();
 
@@ -47,11 +47,6 @@ namespace SchoolProject.Management.Application.Exceptions
         : base(info, context)
         {
             _validationErrors = info.GetValue("ValidationErrors", typeof(IList<string>)) as IList<string>;
-        }
-
-        public IList<string>? ValidationErrors
-        {
-            get { return _validationErrors; }
         }
 
     }

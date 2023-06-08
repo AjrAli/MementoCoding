@@ -48,13 +48,17 @@ namespace SchoolProject.Management.Api.Controllers
         }
 
         [HttpGet]
-        [Route("")]
-        public async Task<IActionResult> GetStudents()
+        [Route("{skip?}/{take?}")]
+        public async Task<IActionResult> GetStudents(int skip = 0, int take = 0)
         {
             GetStudentsQueryResponse? dataReponse = null;
             try
             {
-                dataReponse = await _mediator.Send(new GetStudentsQuery());
+                dataReponse = await _mediator.Send(new GetStudentsQuery()
+                {
+                    Skip = skip,
+                    Take = take
+                });
             }
             catch (NotFoundException ex)
             {
@@ -80,8 +84,9 @@ namespace SchoolProject.Management.Api.Controllers
             }
             catch (BadRequestException ex)
             {
-                _logger.LogWarning(ex.ResponseException);
-                return BadRequest();
+                _logger.LogWarning(ex.Message);
+                var errorResponse = ex.CreateErrorResponse();
+                return BadRequest(errorResponse);
             }
             return Ok(dataReponse);
         }
@@ -100,8 +105,9 @@ namespace SchoolProject.Management.Api.Controllers
             }
             catch (BadRequestException ex)
             {
-                _logger.LogWarning(ex.ResponseException);
-                return BadRequest();
+                _logger.LogWarning(ex.Message);
+                var errorResponse = ex.CreateErrorResponse();
+                return BadRequest(errorResponse);
             }
             return Ok(dataReponse);
 
@@ -120,8 +126,9 @@ namespace SchoolProject.Management.Api.Controllers
             }
             catch (BadRequestException ex)
             {
-                _logger.LogWarning(ex.ResponseException);
-                return BadRequest();
+                _logger.LogWarning(ex.Message);
+                var errorResponse = ex.CreateErrorResponse();
+                return BadRequest(errorResponse);
             }
             return Ok(dataReponse);
         }

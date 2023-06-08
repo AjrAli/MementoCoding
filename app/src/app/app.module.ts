@@ -6,8 +6,8 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { SchoolsComponent } from './schools/schools.component';
 import { StudentsComponent } from './students/students.component';
-import { SchoolFormComponent } from './school-form/school-form.component';
-import { StudentFormComponent } from './student-form/student-form.component';
+import { SchoolFormComponent } from './forms/school/school-form.component';
+import { StudentFormComponent } from './forms/student/student-form.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SchoolService } from './services/school/school.service';
 import { StudentService } from './services/student/student.service';
@@ -18,6 +18,10 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { HomeComponent } from './home/home.component';
 import { MenuComponent } from './menu/menu.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ConfirmModalComponent } from './modals/confirm-modal/confirm-modal.component';
+import { DtoModalComponent } from './modals/dto-modal/dto-modal.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +33,10 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     StudentFormComponent,
     TableComponent,
     HomeComponent,
-    MenuComponent
+    MenuComponent,
+    DtoModalComponent,
+    ConfirmModalComponent,
+    DtoModalComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +45,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     NgxPaginationModule,
     FormsModule,
     ReactiveFormsModule,
-    NgbModule
+    NgbModule,
+    BrowserAnimationsModule,
+    FontAwesomeModule
   ],
   providers: [SchoolService, StudentService, AuthenticationService],
   bootstrap: [AppComponent]

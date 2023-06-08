@@ -1,0 +1,24 @@
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Confirm Modal</h4>
+    <button type="button" class="btn-close" aria-describedby="modal-title"
+        (click)="modal.dismiss('Cross click')"></button>
+</div>
+<div class="modal-body">
+    <p>
+        <strong>Are you sure you want to delete
+            <span class="text-primary">"{{name}}"</span>?</strong>
+    </p>
+    <div *ngIf="errorMessage" class="row  mb-3">
+        <p>
+            <strong><span class="text-danger">{{errorMessage.message}}</span></strong>
+        </p>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" [disabled]="errorMessage && errorMessage.message" (click)="modal.close('yes')">
+        Yes
+    </button>
+    <button type="button" class="btn btn-primary" (click)="modal.dismiss('cancel click')">
+        No
+    </button>
+</div>

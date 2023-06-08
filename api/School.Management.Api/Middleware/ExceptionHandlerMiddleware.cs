@@ -1,8 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SchoolProject.Management.Application.Exceptions;
+using SchoolProject.Management.Application.Features.Response;
 using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Runtime.Intrinsics.X86;
 using System.Threading.Tasks;
 
 namespace SchoolProject.Management.Api.Middleware
@@ -34,36 +39,40 @@ namespace SchoolProject.Management.Api.Middleware
 
             context.Response.ContentType = "application/json";
 
-            var result = string.Empty;
+            var result = new ErrorResponse();
 
             switch (exception)
             {
                 case ValidationException validationException:
                     httpStatusCode = HttpStatusCode.BadRequest;
-                    result = JsonConvert.SerializeObject(validationException.ValidationErrors);
+                    result = validationException.CreateErrorResponse();
                     break;
                 case BadRequestException badRequestException:
                     httpStatusCode = HttpStatusCode.BadRequest;
-                    result = badRequestException.ResponseException;
+                    result = badRequestException.CreateErrorResponse();
                     break;
                 case NotFoundException notFoundException:
                     httpStatusCode = HttpStatusCode.NotFound;
-                    result = notFoundException.Message;
+                    result = notFoundException.CreateErrorResponse();
                     break;
                 case Exception ex:
                     httpStatusCode = HttpStatusCode.BadRequest;
-                    result = ex.Message;
+                    result = new ErrorResponse(ex.Message);
                     break;
             }
 
             context.Response.StatusCode = (int)httpStatusCode;
 
-            if (result == string.Empty)
+            DefaultContractResolver contractResolver = new DefaultContractResolver
             {
-                result = JsonConvert.SerializeObject(new { error = exception.Message });
-            }
-
-            return context.Response.WriteAsync(result);
+                NamingStrategy = new CamelCaseNamingStrategy()
+            };
+            string json = JsonConvert.SerializeObject(result, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver,
+                Formatting = Formatting.Indented
+            });
+            return context.Response.WriteAsync(json);
         }
     }
 }
