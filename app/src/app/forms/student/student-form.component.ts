@@ -6,7 +6,7 @@ import { SchoolService } from '../../services/school/school.service';
 import { StudentService } from '../../services/student/student.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { GetSchoolDto } from 'src/app/dto/school/getschool-dto';
-
+import { interval, firstValueFrom, lastValueFrom } from 'rxjs';
 @Component({
   selector: 'app-student-form',
   templateUrl: './student-form.component.html',
@@ -16,7 +16,7 @@ export class StudentFormComponent implements OnInit {
   @Input()
   dto: any;
   student: StudentDto = new StudentDto();
-  schools: SchoolDto[] = [];
+  schools: GetSchoolDto[] = [];
   @Output() passBackDTO = new EventEmitter<any>();
   studentForm!: FormGroup;
   title: string = 'Add Student';
@@ -25,20 +25,25 @@ export class StudentFormComponent implements OnInit {
     private studentService: StudentService,
     private schoolService: SchoolService
   ) { }
-  fetchSchools(): void {
-    this.schoolService.getSchools().subscribe((response: any) => {
+  async fetchSchools(): Promise<void> {
+    try {
+      const response: any = await lastValueFrom(this.schoolService.getSchools());
       this.schools = response.schoolsDto.map((schoolData: any) => {
         const school = new GetSchoolDto();
         Object.assign(school, schoolData);
         return school;
       });
-    });
+    } catch (error) {
+      console.log(error);
+    }
   }
-  ngOnInit(): void {
-    this.fetchSchools();
+  async ngOnInit(): Promise<void> {
+    await this.fetchSchools();
     this.student = this.dto as StudentDto;
     if (this.student?.firstName) {
       this.title = 'Update Student';
+    }else{
+      this.student.schoolId = this.schools[0]?.id;
     }
     this.studentForm = new FormGroup({
       id: new FormControl(this.student.id),
