@@ -6,7 +6,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse col-md-9" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav ml-auto">
                 <li class="nav-item active">
                     <a class="nav-link" routerLink="/home">Home</a>
                 </li>
@@ -16,10 +16,8 @@
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/students">Students</a>
                 </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a *ngIf="this.isConnected(); else notConnected" class="nav-link" (click)="logout()">Logout</a>
+                    <a class="nav-link" *ngIf="this.isConnected(); else notConnected" (click)="logout()" routerLink="">Logout</a>
                     <ng-template #notConnected>
                         <a class="nav-link" routerLink="/login">Log in</a>
                     </ng-template>
