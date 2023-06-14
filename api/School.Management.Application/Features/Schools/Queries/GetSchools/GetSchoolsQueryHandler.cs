@@ -33,12 +33,12 @@ namespace SchoolProject.Management.Application.Features.Schools.Queries.GetSchoo
         {
             var getSchoolsQueryResponse = _responseFactory.CreateResponse();
             int index = 0;
-            var query = _schoolRepository.Queryable;
+            var query = _schoolRepository.GetDbSetQueryable();
 
             if (request.Take != 0)
                 query = query.OrderBy(x => x.Name).Skip(request.Skip).Take(request.Take);
 
-            var listSchools = await query.OrderBy(x => x.Name).ToListAsync();
+            var listSchools = query != null ? await query.OrderBy(x => x.Name).ToListAsync() : null;
 
             if (listSchools == null)
             {
