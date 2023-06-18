@@ -34,7 +34,7 @@ namespace SchoolProject.Management.Api.Controllers
                     var response = await _authenticationService.AuthenticateAsync(request.Username, request.Password);
                     if (response != null && response.Token != null)
                     {
-                        Response.Cookies.Append("X-Access-Token", response.Token, new CookieOptions()
+                        Response?.Cookies?.Append("X-Access-Token", response.Token, new CookieOptions()
                         {
                             Expires = DateTimeOffset.UtcNow.AddDays(1).AddMinutes(-5),
                             HttpOnly = true,
