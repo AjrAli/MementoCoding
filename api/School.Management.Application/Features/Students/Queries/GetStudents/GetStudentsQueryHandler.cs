@@ -31,12 +31,12 @@ namespace SchoolProject.Management.Application.Features.Students.Queries.GetStud
         public async Task<GetStudentsQueryResponse> Handle(GetStudentsQuery request, CancellationToken cancellationToken)
         {
             var getStudentsQueryResponse = _responseFactory.CreateResponse();
-            var query = _studentRepository.Queryable;
+            var query = _studentRepository.GetDbSetQueryable();
 
             if (request.Take != 0)
                 query = query.OrderBy(x => x.LastName).Skip(request.Skip).Take(request.Take);
 
-            var listStudents = await query.Include(x => x.School).OrderBy(x => x.LastName).ToListAsync();
+            var listStudents = query != null ? await query.Include(x => x.School).OrderBy(x => x.LastName).ToListAsync() : null;
 
             if (listStudents == null)
             {

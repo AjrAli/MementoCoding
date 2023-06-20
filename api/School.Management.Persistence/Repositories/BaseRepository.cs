@@ -1,7 +1,9 @@
 ﻿using DotNetCore.EntityFrameworkCore;
 using DotNetCore.Repositories;
 using SchoolProject.Management.Application.Contracts.Persistence;
+using SchoolProject.Management.Domain.Entities;
 using SchoolProject.Management.Persistence.Context;
+using System.Linq;
 
 namespace SchoolProject.Management.Persistence.Repositories
 {
@@ -12,6 +14,10 @@ namespace SchoolProject.Management.Persistence.Repositories
         public BaseRepository(SchoolManagementDbContext dbContext) : base(new EFCommandRepository<T>(dbContext), new EFQueryRepository<T>(dbContext))
         {
             _dbContext = dbContext;
+        }
+        public IQueryable<T> GetDbSetQueryable()
+        {
+            return _dbContext.Set<T>().AsQueryable();
         }
     }
 }
