@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace SchoolProject.Management.Api.Tests.Controllers
 {
     [TestClass]
-    public class SchoolControllerTest
+    public class SchoolControllerTests
     {
         private readonly ILogger<SchoolController> _logger = new SerilogLoggerFactory(new LoggerConfiguration()
                                                                                           .WriteTo.Debug()

@@ -21,7 +21,7 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 namespace SchoolProject.Management.Api.Tests.Controllers
 {
     [TestClass]
-    public class AccountControllerTest
+    public class AccountControllerTests
     {
         private readonly ILogger<AccountController> _logger = Mock.Of<ILogger<AccountController>>();
 

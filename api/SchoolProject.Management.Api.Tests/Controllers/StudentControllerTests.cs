@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace SchoolProject.Management.Api.Tests.Controllers
 {
     [TestClass]
-    public class StudentControllerTest
+    public class StudentControllerTests
     {
 
         private readonly ILogger<StudentController> _logger = new SerilogLoggerFactory(new LoggerConfiguration()
