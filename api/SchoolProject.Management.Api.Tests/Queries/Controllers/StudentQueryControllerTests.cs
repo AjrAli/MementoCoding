@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockQueryable.Moq;
 using Moq;
 using ObjectsComparer;
-using SchoolProject.Management.Api.Controllers;
+using SchoolProject.Management.Api.Controllers.Queries;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Application.Features.Students.Queries.GetStudent;
@@ -21,16 +21,16 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SchoolProject.Management.Api.Tests.Controllers
+namespace SchoolProject.Management.Api.Tests.Queries.Controllers
 {
     [TestClass]
-    public class StudentControllerTests
+    public class StudentQueryControllerTests
     {
 
-        private readonly ILogger<StudentController> _logger = new SerilogLoggerFactory(new LoggerConfiguration()
+        private readonly ILogger<StudentQueryController> _logger = new SerilogLoggerFactory(new LoggerConfiguration()
                                                                                           .WriteTo.Debug()
                                                                                           .CreateLogger())
-                                                                  .CreateLogger<StudentController>();
+                                                                  .CreateLogger<StudentQueryController>();
         private readonly IMapper _mapper = new MapperConfiguration(x => x.AddProfile<StudentMappingProfile>()).CreateMapper();
         private GetStudentDto? _studentDto;
         private List<GetStudentDto>? _allStudentDto;
@@ -51,7 +51,7 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             _studentDto = InitStudentDto(studentIdRequested);
             _studentResponse = InitGetStudentQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetStudentQuery();
-            var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
+            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudent(studentIdRequested);
@@ -67,7 +67,7 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             _allStudentDto = InitListOfStudentDto(false);
             _studentResponse = InitGetStudentsQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetStudentsQuery(false);
-            var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
+            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudents();
@@ -84,7 +84,7 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             _studentDto = InitStudentDto(studentIdRequested);
             _studentResponse = InitGetStudentQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetStudentQuery();
-            var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
+            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudent(studentIdRequested);
@@ -104,7 +104,7 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             _allStudentDto = InitListOfStudentDto(true);
             _studentResponse = InitGetStudentsQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetStudentsQuery(true);
-            var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
+            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudents();
