@@ -18,18 +18,18 @@ export class SchoolService {
       if(take){
         paginateParams = `/${skip}/${take}`;
       }
-    return this.http.get<GetSchoolDto[]>(`${this.apiUrl}/School${paginateParams}`);
+    return this.http.get<GetSchoolDto[]>(`${this.apiUrl}/SchoolQuery${paginateParams}`);
   }
 
   createSchool(school: SchoolDto): Observable<SchoolDto> {
-    return this.http.post<SchoolDto>(`${this.apiUrl}/School/CreateSchool`, school);
+    return this.http.post<SchoolDto>(`${this.apiUrl}/SchoolCommand/CreateSchool`, school);
   }
 
   updateSchool(school: SchoolDto): Observable<SchoolDto> {
-    return this.http.post<SchoolDto>(`${this.apiUrl}/School/UpdateSchool`, school);
+    return this.http.post<SchoolDto>(`${this.apiUrl}/SchoolCommand/UpdateSchool`, school);
   }
 
   deleteSchool(schoolId: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/School/DeleteSchool`, schoolId);
+    return this.http.post<void>(`${this.apiUrl}/SchoolCommand/DeleteSchool`, schoolId);
   }
 }
