@@ -26,6 +26,22 @@ namespace SchoolProject.Management.Api.Tests.Context
             Assert.AreEqual(1, result); // Vérifie si le résultat est égal à 1
             mockDbContext.Verify();
         }
+        [TestMethod]
+        public async Task SaveChangesAsync_ReturnZero()
+        {
+            // Arrange
+            DbContextOptions<SchoolManagementDbContext> options = new DbContextOptions<SchoolManagementDbContext>();
+            var mockDbContext = new Mock<SchoolManagementDbContext>(options);
+            mockDbContext.Setup(x => x.SaveChangesAsync(It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(0); // Retourne zéro entité enregistrée
+            var mockUnitOfWork = new UnitOfWork<SchoolManagementDbContext>(mockDbContext.Object);
+
+            // Act
+            var result = await mockUnitOfWork.SaveChangesAsync();
+
+            // Assert
+            Assert.AreEqual(0, result); // Vérifie si le résultat est égal à zéro
+            mockDbContext.Verify();
+        }
 
 
     }

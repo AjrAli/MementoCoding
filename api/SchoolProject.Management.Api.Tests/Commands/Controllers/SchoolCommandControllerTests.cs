@@ -11,6 +11,7 @@ using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Application.Features.Schools;
 using SchoolProject.Management.Application.Features.Schools.Commands.CreateSchool;
+using SchoolProject.Management.Application.Features.Schools.Commands.DeleteSchool;
 using SchoolProject.Management.Application.Features.Schools.Commands.UpdateSchool;
 using SchoolProject.Management.Application.Profiles.Schools;
 using SchoolProject.Management.Domain.Entities;
@@ -18,6 +19,7 @@ using SchoolProject.Management.Persistence.Context;
 using Serilog;
 using Serilog.Extensions.Logging;
 using System;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,6 +34,7 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
                                                                   .CreateLogger<SchoolCommandController>();
         private readonly IMapper _mapper = new MapperConfiguration(x => x.AddProfile<SchoolMappingProfile>()).CreateMapper();
         private Mock<ISchoolRepository> _mockSchoolRepo = new Mock<ISchoolRepository>();
+        private Mock<IStudentRepository> _mockStudentRepo = new Mock<IStudentRepository>();
 
         [TestMethod]
         public async Task Create_School_ReturnSuccess()
@@ -81,6 +84,30 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
             var success = (((resultSchoolCall as OkObjectResult)?.Value) as UpdateSchoolCommandResponse)?.Success;
             Assert.IsTrue(success);
         }
+        [TestMethod]
+        public async Task Delete_School_ReturnSuccess()
+        {
+            //Arrange
+
+            var schoolDto = new SchoolDto()
+            {
+                Id = 3,
+                Name = "test",
+                Town = "town",
+                Adress = "adres",
+                Description = "desc"
+
+            };
+            Mock<IMediator> mediatorMock = MockMediatorDeleteSchoolCommand();
+            var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
+
+            //Act
+            var resultSchoolCall = await schoolControllerTest.DeleteSchool(3);
+
+            //Assert
+            var success = (((resultSchoolCall as OkObjectResult)?.Value) as DeleteSchoolCommandResponse)?.Success;
+            Assert.IsTrue(success);
+        }
         private Mock<IMediator> MockMediatorCreateSchoolCommand()
         {
             var mediatorMock = new Mock<IMediator>();
@@ -115,6 +142,26 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
             _mockSchoolRepo.Setup(x => x.UpdateAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
             mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new UpdateSchoolCommandResponse());
             return new UpdateSchoolCommandHandler(_mapper, _mockSchoolRepo.Object, InitUnitOfWork(), mockResponseFactory.Object);
+        }
+
+        private Mock<IMediator> MockMediatorDeleteSchoolCommand()
+        {
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.Send(It.IsAny<DeleteSchoolCommand>(), default)).Returns(
+                async (DeleteSchoolCommand q, CancellationToken token) =>
+                await InitDeleteSchoolCommandHandler(q.SchoolId).Handle(q, token));
+            return mediatorMock;
+        }
+        private DeleteSchoolCommandHandler InitDeleteSchoolCommandHandler(long? id)
+        {
+            if (id == null)
+                throw new Exception("id is null");
+            var mockResponseFactory = new Mock<IResponseFactory<DeleteSchoolCommandResponse>>();
+            _mockSchoolRepo.Setup(x => x.GetAsync(id)).ReturnsAsync(InitSchoolEntity());
+            _mockStudentRepo.Setup(x => x.Any(It.IsAny<Expression<Func<Student, bool>>>())).Returns(false);
+            _mockSchoolRepo.Setup(x => x.DeleteAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
+            mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new DeleteSchoolCommandResponse());
+            return new DeleteSchoolCommandHandler(_mockSchoolRepo.Object, _mockStudentRepo.Object, InitUnitOfWork(), mockResponseFactory.Object);
         }
         private UnitOfWork<SchoolManagementDbContext> InitUnitOfWork()
         {
