@@ -18,17 +18,14 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.UpdateS
         private readonly IBaseRepository<School> _schoolRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<UpdateSchoolCommand> _logger;
         private readonly IResponseFactory<UpdateSchoolCommandResponse> _responseFactory;
 
         public UpdateSchoolCommandHandler(IMapper mapper,
-                                          ILogger<UpdateSchoolCommand> logger,
                                           IBaseRepository<School> schoolRepository,
                                           IUnitOfWork unitOfWork,
                                           IResponseFactory<UpdateSchoolCommandResponse> responseFactory)
         {
             _mapper = mapper;
-            _logger = logger;
             _schoolRepository = schoolRepository;
             _unitOfWork = unitOfWork;
             _responseFactory = responseFactory;

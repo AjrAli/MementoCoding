@@ -11,6 +11,7 @@ using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Application.Features.Schools;
 using SchoolProject.Management.Application.Features.Schools.Commands.CreateSchool;
+using SchoolProject.Management.Application.Features.Schools.Commands.UpdateSchool;
 using SchoolProject.Management.Application.Profiles.Schools;
 using SchoolProject.Management.Domain.Entities;
 using SchoolProject.Management.Persistence.Context;
@@ -33,7 +34,7 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
         private Mock<ISchoolRepository> _mockSchoolRepo = new Mock<ISchoolRepository>();
 
         [TestMethod]
-        public async Task CheckCreateSchoolReturnSuccess()
+        public async Task Create_School_ReturnSuccess()
         {
             //Arrange
 
@@ -56,6 +57,30 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
             var success = (((resultSchoolCall as OkObjectResult)?.Value) as CreateSchoolCommandResponse)?.Success;
             Assert.IsTrue(success);
         }
+        [TestMethod]
+        public async Task Update_School_ReturnSuccess()
+        {
+            //Arrange
+
+            var schoolDto = new SchoolDto()
+            {
+                Id = 3,
+                Name = "test",
+                Town = "town",
+                Adress = "adres",
+                Description = "desc"
+
+            };
+            Mock<IMediator> mediatorMock = MockMediatorUpdateSchoolCommand();
+            var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
+
+            //Act
+            var resultSchoolCall = await schoolControllerTest.UpdateSchool(schoolDto);
+
+            //Assert
+            var success = (((resultSchoolCall as OkObjectResult)?.Value) as UpdateSchoolCommandResponse)?.Success;
+            Assert.IsTrue(success);
+        }
         private Mock<IMediator> MockMediatorCreateSchoolCommand()
         {
             var mediatorMock = new Mock<IMediator>();
@@ -73,6 +98,24 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
             mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new CreateSchoolCommandResponse());
             return new CreateSchoolCommandHandler(_mapper, _mockSchoolRepo.Object, InitUnitOfWork(), mockResponseFactory.Object);
         }
+        private Mock<IMediator> MockMediatorUpdateSchoolCommand()
+        {
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.Send(It.IsAny<UpdateSchoolCommand>(), default)).Returns(
+                async (UpdateSchoolCommand q, CancellationToken token) =>
+                await InitUpdateSchoolCommandHandler(q.School).Handle(q, token));
+            return mediatorMock;
+        }
+        private UpdateSchoolCommandHandler InitUpdateSchoolCommandHandler(SchoolDto? updateSchoolDto)
+        {
+            if (updateSchoolDto == null || _mapper.Map<School>(updateSchoolDto) == null)
+                throw new Exception("Invalid DTO or null");
+            var mockResponseFactory = new Mock<IResponseFactory<UpdateSchoolCommandResponse>>();
+            _mockSchoolRepo.Setup(x => x.GetAsync(updateSchoolDto.Id)).ReturnsAsync(InitSchoolEntity());
+            _mockSchoolRepo.Setup(x => x.UpdateAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
+            mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new UpdateSchoolCommandResponse());
+            return new UpdateSchoolCommandHandler(_mapper, _mockSchoolRepo.Object, InitUnitOfWork(), mockResponseFactory.Object);
+        }
         private UnitOfWork<SchoolManagementDbContext> InitUnitOfWork()
         {
             DbContextOptions<SchoolManagementDbContext> options = new DbContextOptions<SchoolManagementDbContext>();
@@ -80,6 +123,10 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
             mockDbContext.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
             var mockUnitOfWork = new UnitOfWork<SchoolManagementDbContext>(mockDbContext.Object);
             return mockUnitOfWork;
+        }
+        private static School InitSchoolEntity()
+        {
+            return new School(3, "test", "adres", "town", "desc");
         }
     }
 }

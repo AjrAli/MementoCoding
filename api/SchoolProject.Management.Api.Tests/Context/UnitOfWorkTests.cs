@@ -11,7 +11,7 @@ namespace SchoolProject.Management.Api.Tests.Context
     public class UnitOfWorkTests
     {
         [TestMethod]
-        public async Task CheckSaveChangesAsync()
+        public async Task SaveChangesAsync_ReturnOne()
         {
             //Arrange
             DbContextOptions<SchoolManagementDbContext> options = new DbContextOptions<SchoolManagementDbContext>();

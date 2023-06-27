@@ -20,16 +20,13 @@ namespace SchoolProject.Management.Application.Features.Students.Commands.Update
         private readonly IBaseRepository<Student> _studentRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<UpdateStudentCommand> _logger;
         private readonly IResponseFactory<UpdateStudentCommandResponse> _responseFactory;
         public UpdateStudentCommandHandler(IMapper mapper,
-                                           ILogger<UpdateStudentCommand> logger,
                                            IBaseRepository<Student> studentRepository,
                                            IUnitOfWork unitOfWork,
                                            IResponseFactory<UpdateStudentCommandResponse> responseFactory)
         {
             _mapper = mapper;
-            _logger = logger;
             _studentRepository = studentRepository;
             _unitOfWork = unitOfWork;
             _responseFactory = responseFactory;

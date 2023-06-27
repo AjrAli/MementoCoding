@@ -26,7 +26,7 @@ namespace SchoolProject.Management.Api.Tests.Queries.Controllers
         private readonly ILogger<AccountQueryController> _logger = Mock.Of<ILogger<AccountQueryController>>();
 
         [TestMethod]
-        public async Task CheckIfConnectionWorkingWithReturnOfToken()
+        public async Task AuthenticateAsync_ReturnToken()
         {
             // Arrange
             var request = new AuthenticationRequest()

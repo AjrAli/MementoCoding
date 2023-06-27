@@ -44,7 +44,7 @@ namespace SchoolProject.Management.Api.Tests.Queries.Controllers
             _testContext = testContext;
         }
         [TestMethod]
-        public async Task CheckWhenGetStudentReturnNullStudentDto()
+        public async Task GetStudent_ReturnNullStudentDto()
         {
             //Arrange
             long studentIdRequested = 0;
@@ -61,7 +61,7 @@ namespace SchoolProject.Management.Api.Tests.Queries.Controllers
             Assert.IsTrue(resultStudentCall is NotFoundResult);
         }
         [TestMethod]
-        public async Task CheckWhenGetStudentsReturnNullListStudentDto()
+        public async Task GetStudents_ReturnNullListStudentDto()
         {
             //Arrange
             _allStudentDto = InitListOfStudentDto(false);
@@ -77,7 +77,7 @@ namespace SchoolProject.Management.Api.Tests.Queries.Controllers
             Assert.IsTrue(resultStudentCall is NotFoundResult);
         }
         [TestMethod]
-        public async Task CheckIfGetStudentReturnCorrectStudentDto()
+        public async Task GetStudent_ReturnCorrectStudentDto()
         {
             //Arrange
             long studentIdRequested = 3;
@@ -98,7 +98,7 @@ namespace SchoolProject.Management.Api.Tests.Queries.Controllers
 
 
         [TestMethod]
-        public async Task CheckIfGetStudentsReturnCorrectListOfStudentDto()
+        public async Task GetStudents_ReturnCorrectListOfStudentDto()
         {
             //Arrange
             _allStudentDto = InitListOfStudentDto(true);
