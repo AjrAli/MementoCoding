@@ -30,6 +30,8 @@ namespace SchoolProject.Management.Api.Controllers.Commands
             CreateStudentCommandResponse? dataReponse;
             try
             {
+                if (createStudentDto == null)
+                    throw new BadRequestException("Student DTO is null");
                 dataReponse = await _mediator.Send(new CreateStudentCommand
                 {
                     Student = createStudentDto
@@ -72,6 +74,8 @@ namespace SchoolProject.Management.Api.Controllers.Commands
             UpdateStudentCommandResponse? dataReponse;
             try
             {
+                if (updateStudentDto == null)
+                    throw new BadRequestException("Student DTO is null");
                 dataReponse = await _mediator.Send(new UpdateStudentCommand
                 {
                     Student = updateStudentDto

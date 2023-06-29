@@ -88,25 +88,64 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
         public async Task Delete_School_ReturnSuccess()
         {
             //Arrange
-
-            var schoolDto = new SchoolDto()
-            {
-                Id = 3,
-                Name = "test",
-                Town = "town",
-                Adress = "adres",
-                Description = "desc"
-
-            };
             Mock<IMediator> mediatorMock = MockMediatorDeleteSchoolCommand();
             var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
 
             //Act
-            var resultSchoolCall = await schoolControllerTest.DeleteSchool(3);
+            var resultSchoolCall = await schoolControllerTest.DeleteSchool(1);
 
             //Assert
             var success = (((resultSchoolCall as OkObjectResult)?.Value) as DeleteSchoolCommandResponse)?.Success;
             Assert.IsTrue(success);
+        }
+        [TestMethod]
+        public async Task Create_School_ReturnBadRequest()
+        {
+            //Arrange
+
+            SchoolDto schoolDto = null;
+            Mock<IMediator> mediatorMock = MockMediatorCreateSchoolCommand();
+            var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
+
+            //Act
+            var resultSchoolCall = await schoolControllerTest.CreateSchool(schoolDto);
+
+            //Assert
+            Assert.IsTrue(resultSchoolCall is BadRequestObjectResult);
+            var success = (((resultSchoolCall as BadRequestObjectResult)?.Value) as ErrorResponse)?.Success;
+            Assert.IsTrue(!success);
+        }
+        [TestMethod]
+        public async Task Update_School_ReturnBadRequest()
+        {
+            //Arrange
+
+            SchoolDto schoolDto = null;
+            Mock<IMediator> mediatorMock = MockMediatorUpdateSchoolCommand();
+            var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
+
+            //Act
+            var resultSchoolCall = await schoolControllerTest.UpdateSchool(schoolDto);
+
+            //Assert
+            Assert.IsTrue(resultSchoolCall is BadRequestObjectResult);
+            var success = (((resultSchoolCall as BadRequestObjectResult)?.Value) as ErrorResponse)?.Success;
+            Assert.IsTrue(!success);
+        }
+        [TestMethod]
+        public async Task Delete_School_ReturnBadRequest()
+        {
+            //Arrange
+            Mock<IMediator> mediatorMock = MockMediatorDeleteSchoolCommand();
+            var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
+
+            //Act
+            var resultSchoolCall = await schoolControllerTest.DeleteSchool(0);
+
+            //Assert
+            Assert.IsTrue(resultSchoolCall is BadRequestObjectResult);
+            var success = (((resultSchoolCall as BadRequestObjectResult)?.Value) as ErrorResponse)?.Success;
+            Assert.IsTrue(!success);
         }
         private Mock<IMediator> MockMediatorCreateSchoolCommand()
         {
@@ -118,8 +157,6 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
         }
         private CreateSchoolCommandHandler InitCreateSchoolCommandHandler(SchoolDto? createSchoolDto)
         {
-            if (createSchoolDto == null || _mapper.Map<School>(createSchoolDto) == null)
-                throw new Exception("Invalid DTO or null");
             var mockResponseFactory = new Mock<IResponseFactory<CreateSchoolCommandResponse>>();
             _mockSchoolRepo.Setup(x => x.AddAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
             mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new CreateSchoolCommandResponse());
@@ -135,8 +172,6 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
         }
         private UpdateSchoolCommandHandler InitUpdateSchoolCommandHandler(SchoolDto? updateSchoolDto)
         {
-            if (updateSchoolDto == null || _mapper.Map<School>(updateSchoolDto) == null)
-                throw new Exception("Invalid DTO or null");
             var mockResponseFactory = new Mock<IResponseFactory<UpdateSchoolCommandResponse>>();
             _mockSchoolRepo.Setup(x => x.GetAsync(updateSchoolDto.Id)).ReturnsAsync(InitSchoolEntity());
             _mockSchoolRepo.Setup(x => x.UpdateAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
@@ -154,10 +189,8 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
         }
         private DeleteSchoolCommandHandler InitDeleteSchoolCommandHandler(long? id)
         {
-            if (id == null)
-                throw new Exception("id is null");
             var mockResponseFactory = new Mock<IResponseFactory<DeleteSchoolCommandResponse>>();
-            _mockSchoolRepo.Setup(x => x.GetAsync(id)).ReturnsAsync(InitSchoolEntity());
+            _mockSchoolRepo.Setup(x => x.GetAsync(id)).ReturnsAsync(InitSchoolEntity(id));
             _mockStudentRepo.Setup(x => x.Any(It.IsAny<Expression<Func<Student, bool>>>())).Returns(false);
             _mockSchoolRepo.Setup(x => x.DeleteAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
             mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new DeleteSchoolCommandResponse());
@@ -174,6 +207,13 @@ namespace SchoolProject.Management.Api.Tests.Commands.Controllers
         private static School InitSchoolEntity()
         {
             return new School(3, "test", "adres", "town", "desc");
+        }
+        private static School InitSchoolEntity(long? id)
+        {
+            if (id == 1)
+                return new School(1, "test", "adres", "town", "desc");
+
+            return null;
         }
     }
 }
