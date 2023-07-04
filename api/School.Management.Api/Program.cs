@@ -4,6 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SchoolProject.Management.Identity.Entity;
+using SchoolProject.Management.Identity.Seed;
+using SchoolProject.Management.Persistence.Context;
+using SchoolProject.Management.Persistence.Seed;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -33,8 +36,9 @@ namespace SchoolProject.Management.Api
                 try
                 {
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-
-                    await Identity.Seed.CreateFirstUser.SeedAsync(userManager);
+                    await CreateFirstUser.SeedAsync(userManager);
+                    var dbContext = services.GetRequiredService<SchoolManagementDbContext>();
+                    await DatabaseSeeder.SeedAsync(dbContext);
                     Log.Information("Starting web host");
                     CreateHostBuilder(args).Build().Run();
                 }

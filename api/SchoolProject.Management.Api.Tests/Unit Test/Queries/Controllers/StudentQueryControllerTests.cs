@@ -21,7 +21,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SchoolProject.Management.Api.Tests.Queries.Controllers
+namespace SchoolProject.Management.Api.Tests.Unit_Test.Queries.Controllers
 {
     [TestClass]
     public class StudentQueryControllerTests

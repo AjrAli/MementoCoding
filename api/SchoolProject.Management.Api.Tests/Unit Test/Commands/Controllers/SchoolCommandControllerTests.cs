@@ -23,7 +23,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SchoolProject.Management.Api.Tests.Commands.Controllers
+namespace SchoolProject.Management.Api.Tests.Unit_Test.Commands.Controllers
 {
     [TestClass]
     public partial class SchoolCommandControllerTests

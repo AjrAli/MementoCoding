@@ -3,9 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SchoolProject.Management.Persistence.Context;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace SchoolProject.Management.Api.Tests.Context
+namespace SchoolProject.Management.Persistence.Tests.Unit_Test.Context
 {
     [TestClass]
     public class UnitOfWorkTests

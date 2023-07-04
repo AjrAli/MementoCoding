@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SchoolProject.Management.Api.Controllers.Queries;
+using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Application.Models.Authentication;
 using SchoolProject.Management.Identity.Entity;
 using SchoolProject.Management.Identity.JwtModel;
@@ -18,7 +19,7 @@ using System.Threading.Tasks;
 using AuthenticationService = SchoolProject.Management.Identity.Services.AuthenticationService;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
-namespace SchoolProject.Management.Api.Tests.Queries.Controllers
+namespace SchoolProject.Management.Api.Tests.Unit_Test.Queries.Controllers
 {
     [TestClass]
     public class AccountQueryControllerTests
@@ -42,6 +43,22 @@ namespace SchoolProject.Management.Api.Tests.Queries.Controllers
 
             // Assert
             Assert.IsTrue(val?.Token != null);
+        }
+        [TestMethod]
+        public async Task AuthenticateAsync_ReturnBadRequest()
+        {
+            // Arrange
+            AuthenticationRequest request = null;
+            var accountController = InitAccountController();
+
+            // Act
+            var resultAuthCall = await accountController.AuthenticateAsync(request);
+            var result = resultAuthCall?.Result;
+
+            // Assert
+            Assert.IsTrue(result is BadRequestObjectResult);
+            var success = (((result as BadRequestObjectResult)?.Value) as ErrorResponse)?.Success;
+            Assert.IsTrue(!success);
         }
 
         private AccountQueryController InitAccountController()

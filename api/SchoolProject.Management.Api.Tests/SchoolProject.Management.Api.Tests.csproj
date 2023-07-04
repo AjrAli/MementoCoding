@@ -24,4 +24,8 @@
     <ProjectReference Include="..\School.Management.Api\SchoolProject.Management.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Integration Test\" />
+  </ItemGroup>
+
 </Project>
