@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ObjectsComparer;
 using SchoolProject.Management.Domain.Entities;
 using SchoolProject.Management.Persistence.Context;
 using System.Collections.Generic;
@@ -11,74 +12,87 @@ namespace SchoolProject.Management.Persistence.Tests.Integration_Test.Context
     [TestClass]
     public class SchoolManagementDbContextTests
     {
-        private readonly DbContextOptions<SchoolManagementDbContext> _inMemoryOptions = new DbContextOptionsBuilder<SchoolManagementDbContext>()
+        private static readonly DbContextOptions<SchoolManagementDbContext> _inMemoryOptions = new DbContextOptionsBuilder<SchoolManagementDbContext>()
                             .UseInMemoryDatabase(databaseName: "SchoolManagementDb")
                             .Options;
-        private readonly List<Student> _students = new List<Student>();
-        private readonly List<School> _schools = new List<School>();
+        private static readonly DbContextOptions<SchoolManagementDbContext> _inMemoryOptionsEmptyDb = new DbContextOptionsBuilder<SchoolManagementDbContext>()
+                    .UseInMemoryDatabase(databaseName: "EmptyDb")
+                    .Options;
+        private static TestContext? _testContext;
 
-        [TestInitialize]
-        public void Setup()
+
+        [ClassInitialize]
+        public static void Setup(TestContext testContext)
         {
+            _testContext = testContext;
             var sqlServerOptions = new DbContextOptionsBuilder<SchoolManagementDbContext>()
                            .UseSqlServer("Server=localhost;Database=SchoolManagementDb;Trusted_Connection=True;MultipleActiveResultSets=True;")
                            .Options;
-
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
             using (var sqlServerContext = new SchoolManagementDbContext(sqlServerOptions))
             {
                 var schools = sqlServerContext?.Schools?.ToList();
                 var students = sqlServerContext?.Students?.ToList();
                 if (schools != null && students != null)
                 {
-                    _schools.AddRange(schools);
-                    _students.AddRange(students);
+                    inMemoryContext?.Schools?.AddRange(schools);
+                    inMemoryContext?.Students?.AddRange(students);
+                    inMemoryContext?.SaveChanges();
                 }
             }
         }
 
         [TestMethod]
-        public async Task Schools_ToListAsync_ReturnListOfSchools()
+        public async Task GetSchoolsAsync_WhenDatabaseHasSchools_ReturnsListOfSchools()
         {
             //Arrange
-
-            var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions);
             List<School> listSchools = null;
             // Act
-            using (inMemoryContext)
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
             {
-                if (inMemoryContext.Schools.Any())
-                {
-                    inMemoryContext.Schools.RemoveRange(_schools);
-                    inMemoryContext.SaveChanges();
-                }
-                inMemoryContext.Schools.AddRange(_schools);
-                inMemoryContext.SaveChanges();
                 listSchools = await inMemoryContext.Schools?.ToListAsync();
             }
             // Assert
             Assert.IsNotNull(listSchools);
         }
         [TestMethod]
-        public async Task Students_ToListAsync_ReturnListOfStudents()
+        public async Task GetStudentsAsync_WhenDatabaseHasStudents_ReturnsListOfStudents()
         {
             //Arrange
-
-            var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions);
             List<Student> listStudents = null;
             // Act
-            using (inMemoryContext)
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
             {
-                if (inMemoryContext.Students.Any())
-                {
-                    inMemoryContext.Students.RemoveRange(_students);
-                    inMemoryContext.SaveChanges();
-                }
-                inMemoryContext.Students.AddRange(_students);
-                inMemoryContext.SaveChanges();
                 listStudents = await inMemoryContext.Students?.ToListAsync();
             }
             // Assert
             Assert.IsNotNull(listStudents);
+        }
+        [TestMethod]
+        public async Task GetSchoolsAsync_WhenDatabaseIsEmpty_ReturnsEmptyList()
+        {
+            //Arrange
+            List<School> listSchools = null;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptionsEmptyDb))
+            {
+                listSchools = await inMemoryContext.Schools?.ToListAsync();
+            }
+            // Assert
+            Assert.IsTrue(listSchools?.Count == 0);
+        }
+        [TestMethod]
+        public async Task GetStudentsAsync_WhenDatabaseIsEmpty_ReturnsEmptyList()
+        {
+            //Arrange
+            List<Student> listStudents = null;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptionsEmptyDb))
+            {
+                listStudents = await inMemoryContext.Students?.ToListAsync();
+            }
+            // Assert
+            Assert.IsTrue(listStudents?.Count == 0);
         }
     }
 }
