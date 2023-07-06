@@ -28,7 +28,7 @@ steps:
 
 - task: UseDotNet@2
   inputs:
-    version: '6.x' # Replace with the desired .NET version
+    version: '6.0.400' # Replace with the desired .NET version
 
 - task: VSBuild@1
   inputs:
