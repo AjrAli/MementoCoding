@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockQueryable.Moq;
 using Moq;
 using ObjectsComparer;
-using SchoolProject.Management.Api.Controllers;
+using SchoolProject.Management.Api.Controllers.Queries;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Application.Features.Students.Queries.GetStudent;
@@ -21,16 +21,16 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SchoolProject.Management.Api.Tests.Controllers
+namespace SchoolProject.Management.Api.Tests.Unit_Test.Queries.Controllers
 {
     [TestClass]
-    public class StudentControllerTest
+    public class StudentQueryControllerTests
     {
 
-        private readonly ILogger<StudentController> _logger = new SerilogLoggerFactory(new LoggerConfiguration()
+        private readonly ILogger<StudentQueryController> _logger = new SerilogLoggerFactory(new LoggerConfiguration()
                                                                                           .WriteTo.Debug()
                                                                                           .CreateLogger())
-                                                                  .CreateLogger<StudentController>();
+                                                                  .CreateLogger<StudentQueryController>();
         private readonly IMapper _mapper = new MapperConfiguration(x => x.AddProfile<StudentMappingProfile>()).CreateMapper();
         private GetStudentDto? _studentDto;
         private List<GetStudentDto>? _allStudentDto;
@@ -44,14 +44,14 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             _testContext = testContext;
         }
         [TestMethod]
-        public async Task CheckWhenGetStudentReturnNullStudentDto()
+        public async Task GetStudent_ReturnNullStudentDto()
         {
             //Arrange
             long studentIdRequested = 0;
             _studentDto = InitStudentDto(studentIdRequested);
             _studentResponse = InitGetStudentQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetStudentQuery();
-            var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
+            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudent(studentIdRequested);
@@ -61,13 +61,13 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             Assert.IsTrue(resultStudentCall is NotFoundResult);
         }
         [TestMethod]
-        public async Task CheckWhenGetStudentsReturnNullListStudentDto()
+        public async Task GetStudents_ReturnNullListStudentDto()
         {
             //Arrange
             _allStudentDto = InitListOfStudentDto(false);
             _studentResponse = InitGetStudentsQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetStudentsQuery(false);
-            var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
+            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudents();
@@ -77,14 +77,14 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             Assert.IsTrue(resultStudentCall is NotFoundResult);
         }
         [TestMethod]
-        public async Task CheckIfGetStudentReturnCorrectStudentDto()
+        public async Task GetStudent_ReturnCorrectStudentDto()
         {
             //Arrange
             long studentIdRequested = 3;
             _studentDto = InitStudentDto(studentIdRequested);
             _studentResponse = InitGetStudentQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetStudentQuery();
-            var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
+            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudent(studentIdRequested);
@@ -98,13 +98,13 @@ namespace SchoolProject.Management.Api.Tests.Controllers
 
 
         [TestMethod]
-        public async Task CheckIfGetStudentsReturnCorrectListOfStudentDto()
+        public async Task GetStudents_ReturnCorrectListOfStudentDto()
         {
             //Arrange
             _allStudentDto = InitListOfStudentDto(true);
             _studentResponse = InitGetStudentsQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetStudentsQuery(true);
-            var studentControllerTest = new StudentController(mediatorMock.Object, _logger);
+            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudents();

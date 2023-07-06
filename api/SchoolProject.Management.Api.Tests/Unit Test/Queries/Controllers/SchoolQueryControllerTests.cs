@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockQueryable.Moq;
 using Moq;
 using ObjectsComparer;
-using SchoolProject.Management.Api.Controllers;
+using SchoolProject.Management.Api.Controllers.Queries;
 using SchoolProject.Management.Application.Contracts.Persistence;
 using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Application.Features.Schools.Queries.GetSchool;
@@ -20,15 +20,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SchoolProject.Management.Api.Tests.Controllers
+namespace SchoolProject.Management.Api.Tests.Unit_Test.Queries.Controllers
 {
     [TestClass]
-    public class SchoolControllerTest
+    public class SchoolQueryControllerTests
     {
-        private readonly ILogger<SchoolController> _logger = new SerilogLoggerFactory(new LoggerConfiguration()
+        private readonly ILogger<SchoolQueryController> _logger = new SerilogLoggerFactory(new LoggerConfiguration()
                                                                                           .WriteTo.Debug()
                                                                                           .CreateLogger())
-                                                                  .CreateLogger<SchoolController>();
+                                                                  .CreateLogger<SchoolQueryController>();
         private readonly IMapper _mapper = new MapperConfiguration(x => x.AddProfile<SchoolMappingProfile>()).CreateMapper();
         private GetSchoolDto? _schoolDto;
         private List<GetSchoolDto>? _allSchoolDto;
@@ -43,14 +43,14 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             _testContext = testContext;
         }
         [TestMethod]
-        public async Task CheckWhenGetSchoolReturnNullSchoolDto()
+        public async Task GetSchool_ReturnNullSchoolDto()
         {
             //Arrange
             long schoolIdRequested = 0;
             _schoolDto = InitSchoolDto(schoolIdRequested);
             _schoolResponse = InitGetSchoolQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetSchoolQuery();
-            var schoolControllerTest = new SchoolController(mediatorMock.Object, _logger);
+            var schoolControllerTest = new SchoolQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultSchoolCall = await schoolControllerTest.GetSchool(schoolIdRequested);
@@ -60,13 +60,13 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             Assert.IsTrue(resultSchoolCall is NotFoundResult);
         }
         [TestMethod]
-        public async Task CheckWhenGetSchoolsReturnNullListSchoolDto()
+        public async Task GetSchools_ReturnNullListSchoolDto()
         {
             //Arrange
             _allSchoolDto = InitListOfSchoolDto(false);
             _schoolResponse = InitGetSchoolsQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetSchoolsQuery(false);
-            var schoolControllerTest = new SchoolController(mediatorMock.Object, _logger);
+            var schoolControllerTest = new SchoolQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultSchoolCall = await schoolControllerTest.GetSchools();
@@ -76,14 +76,14 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             Assert.IsTrue(resultSchoolCall is NotFoundResult);
         }
         [TestMethod]
-        public async Task CheckIfGetSchoolReturnCorrectSchoolDto()
+        public async Task GetSchool_ReturnCorrectSchoolDto()
         {
             //Arrange
             long schoolIdRequested = 3;
             _schoolDto = InitSchoolDto(schoolIdRequested);
             _schoolResponse = InitGetSchoolQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetSchoolQuery();
-            var schoolControllerTest = new SchoolController(mediatorMock.Object, _logger);
+            var schoolControllerTest = new SchoolQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultSchoolCall = await schoolControllerTest.GetSchool(schoolIdRequested);
@@ -97,13 +97,13 @@ namespace SchoolProject.Management.Api.Tests.Controllers
 
 
         [TestMethod]
-        public async Task CheckIfGetSchoolsReturnCorrectListOfSchoolDto()
+        public async Task GetSchools_ReturnCorrectListOfSchoolDto()
         {
             //Arrange
             _allSchoolDto = InitListOfSchoolDto(true);
             _schoolResponse = InitGetSchoolsQueryResponse();
             Mock<IMediator> mediatorMock = MockMediatorGetSchoolsQuery(true);
-            var schoolControllerTest = new SchoolController(mediatorMock.Object, _logger);
+            var schoolControllerTest = new SchoolQueryController(mediatorMock.Object, _logger);
 
             //Act
             var resultSchoolCall = await schoolControllerTest.GetSchools();

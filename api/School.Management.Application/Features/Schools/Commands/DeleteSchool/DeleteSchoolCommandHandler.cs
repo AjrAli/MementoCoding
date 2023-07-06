@@ -17,15 +17,12 @@ namespace SchoolProject.Management.Application.Features.Schools.Commands.DeleteS
         private readonly IBaseRepository<School> _schoolRepository;
         private readonly IBaseRepository<Student> _studentRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<DeleteSchoolCommand> _logger;
         private readonly IResponseFactory<DeleteSchoolCommandResponse> _responseFactory;
         public DeleteSchoolCommandHandler(IBaseRepository<School> schoolRepository,
-                                          ILogger<DeleteSchoolCommand> logger,
                                           IBaseRepository<Student> studentRepository,
                                           IUnitOfWork unitOfWork,
                                           IResponseFactory<DeleteSchoolCommandResponse> responseFactory)
         {
-            _logger = logger;
             _schoolRepository = schoolRepository;
             _studentRepository = studentRepository;
             _unitOfWork = unitOfWork;

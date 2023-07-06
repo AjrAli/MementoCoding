@@ -6,69 +6,22 @@ using SchoolProject.Management.Application.Features.Students;
 using SchoolProject.Management.Application.Features.Students.Commands.CreateStudent;
 using SchoolProject.Management.Application.Features.Students.Commands.DeleteStudent;
 using SchoolProject.Management.Application.Features.Students.Commands.UpdateStudent;
-using SchoolProject.Management.Application.Features.Students.Queries.GetStudent;
-using SchoolProject.Management.Application.Features.Students.Queries.GetStudents;
-using System;
 using System.Threading.Tasks;
 
-namespace SchoolProject.Management.Api.Controllers
+namespace SchoolProject.Management.Api.Controllers.Commands
 {
     [ApiController]
     [Route("[controller]")]
-    public class StudentController : ControllerBase
+    public class StudentCommandController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<StudentController> _logger;
-        public StudentController(IMediator mediator,
-                                ILogger<StudentController> logger)
+        private readonly ILogger<StudentCommandController> _logger;
+        public StudentCommandController(IMediator mediator,
+                                ILogger<StudentCommandController> logger)
         {
             _mediator = mediator;
             _logger = logger;
         }
-
-        [HttpGet]
-        [Route("{studentId}")]
-        public async Task<IActionResult> GetStudent(long? studentId)
-        {
-            GetStudentQueryResponse? dataReponse = null;
-            try
-            {
-                dataReponse = await _mediator.Send(new GetStudentQuery
-                {
-                    StudentId = studentId
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                if (dataReponse?.StudentDto == null)
-                    return NotFound();
-            }
-            return Ok(dataReponse);
-        }
-
-        [HttpGet]
-        [Route("{skip?}/{take?}")]
-        public async Task<IActionResult> GetStudents(int skip = 0, int take = 0)
-        {
-            GetStudentsQueryResponse? dataReponse = null;
-            try
-            {
-                dataReponse = await _mediator.Send(new GetStudentsQuery()
-                {
-                    Skip = skip,
-                    Take = take
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                if (dataReponse?.StudentsDto == null)
-                    return NotFound();
-            }
-            return Ok(dataReponse);
-        }
-
 
         [HttpPost]
         [Route("CreateStudent")]
@@ -77,6 +30,8 @@ namespace SchoolProject.Management.Api.Controllers
             CreateStudentCommandResponse? dataReponse;
             try
             {
+                if (createStudentDto == null)
+                    throw new BadRequestException("Student DTO is null");
                 dataReponse = await _mediator.Send(new CreateStudentCommand
                 {
                     Student = createStudentDto
@@ -119,6 +74,8 @@ namespace SchoolProject.Management.Api.Controllers
             UpdateStudentCommandResponse? dataReponse;
             try
             {
+                if (updateStudentDto == null)
+                    throw new BadRequestException("Student DTO is null");
                 dataReponse = await _mediator.Send(new UpdateStudentCommand
                 {
                     Student = updateStudentDto

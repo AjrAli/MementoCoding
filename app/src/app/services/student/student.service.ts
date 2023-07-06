@@ -18,17 +18,17 @@ export class StudentService {
     if (take) {
       paginateParams = `/${skip}/${take}`;
     }
-    return this.http.get<GetStudentDto[]>(`${this.apiUrl}/Student${paginateParams}`);
+    return this.http.get<GetStudentDto[]>(`${this.apiUrl}/StudentQuery${paginateParams}`);
   }
   createStudent(student: StudentDto): Observable<StudentDto> {
-    return this.http.post<StudentDto>(`${this.apiUrl}/Student/CreateStudent`, student);
+    return this.http.post<StudentDto>(`${this.apiUrl}/StudentCommand/CreateStudent`, student);
   }
 
   updateStudent(student: StudentDto): Observable<StudentDto> {
-    return this.http.post<StudentDto>(`${this.apiUrl}/Student/UpdateStudent`, student);
+    return this.http.post<StudentDto>(`${this.apiUrl}/StudentCommand/UpdateStudent`, student);
   }
 
   deleteStudent(studentId: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/Student/DeleteStudent`, studentId);
+    return this.http.post<void>(`${this.apiUrl}/StudentCommand/DeleteStudent`, studentId);
   }
 }

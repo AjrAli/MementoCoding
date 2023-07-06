@@ -10,15 +10,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SchoolProject.Management.Api.Controllers
+namespace SchoolProject.Management.Api.Controllers.Queries
 {
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountQueryController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
-        private readonly ILogger<AccountController> _logger;
-        public AccountController(IAuthenticationService authenticationService,
-                                 ILogger<AccountController> logger)
+        private readonly ILogger<AccountQueryController> _logger;
+        public AccountQueryController(IAuthenticationService authenticationService,
+                                 ILogger<AccountQueryController> logger)
         {
             _logger = logger;
             _authenticationService = authenticationService;

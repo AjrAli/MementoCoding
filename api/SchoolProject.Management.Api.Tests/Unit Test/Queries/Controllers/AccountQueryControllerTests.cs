@@ -6,7 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using SchoolProject.Management.Api.Controllers;
+using SchoolProject.Management.Api.Controllers.Queries;
+using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Application.Models.Authentication;
 using SchoolProject.Management.Identity.Entity;
 using SchoolProject.Management.Identity.JwtModel;
@@ -18,15 +19,15 @@ using System.Threading.Tasks;
 using AuthenticationService = SchoolProject.Management.Identity.Services.AuthenticationService;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
-namespace SchoolProject.Management.Api.Tests.Controllers
+namespace SchoolProject.Management.Api.Tests.Unit_Test.Queries.Controllers
 {
     [TestClass]
-    public class AccountControllerTest
+    public class AccountQueryControllerTests
     {
-        private readonly ILogger<AccountController> _logger = Mock.Of<ILogger<AccountController>>();
+        private readonly ILogger<AccountQueryController> _logger = Mock.Of<ILogger<AccountQueryController>>();
 
         [TestMethod]
-        public async Task CheckIfConnectionWorkingWithReturnOfToken()
+        public async Task AuthenticateAsync_ReturnToken()
         {
             // Arrange
             var request = new AuthenticationRequest()
@@ -43,8 +44,24 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             // Assert
             Assert.IsTrue(val?.Token != null);
         }
+        [TestMethod]
+        public async Task AuthenticateAsync_ReturnBadRequest()
+        {
+            // Arrange
+            AuthenticationRequest request = null;
+            var accountController = InitAccountController();
 
-        private AccountController InitAccountController()
+            // Act
+            var resultAuthCall = await accountController.AuthenticateAsync(request);
+            var result = resultAuthCall?.Result;
+
+            // Assert
+            Assert.IsTrue(result is BadRequestObjectResult);
+            var success = (((result as BadRequestObjectResult)?.Value) as ErrorResponse)?.Success;
+            Assert.IsTrue(!success);
+        }
+
+        private AccountQueryController InitAccountController()
         {
             var user = new ApplicationUser
             {
@@ -83,7 +100,7 @@ namespace SchoolProject.Management.Api.Tests.Controllers
             var options = Options.Create(jwtSettings);
 
             var authenticationService = new AuthenticationService(userManager.Object, options, signInManager.Object);
-            return new AccountController(authenticationService, _logger);
+            return new AccountQueryController(authenticationService, _logger);
         }
 
         private static Mock<SignInManager<ApplicationUser>> MockSetupSignInManager(UserManager<ApplicationUser> userManager, ILogger logger = null, IdentityOptions identityOptions = null, IAuthenticationSchemeProvider schemeProvider = null)

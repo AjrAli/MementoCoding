@@ -6,67 +6,21 @@ using SchoolProject.Management.Application.Features.Schools;
 using SchoolProject.Management.Application.Features.Schools.Commands.CreateSchool;
 using SchoolProject.Management.Application.Features.Schools.Commands.DeleteSchool;
 using SchoolProject.Management.Application.Features.Schools.Commands.UpdateSchool;
-using SchoolProject.Management.Application.Features.Schools.Queries.GetSchool;
-using SchoolProject.Management.Application.Features.Schools.Queries.GetSchools;
-using System;
 using System.Threading.Tasks;
 
-namespace SchoolProject.Management.Api.Controllers
+namespace SchoolProject.Management.Api.Controllers.Commands
 {
     [ApiController]
     [Route("[controller]")]
-    public class SchoolController : ControllerBase
+    public class SchoolCommandController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<SchoolController> _logger;
-        public SchoolController(IMediator mediator,
-                                ILogger<SchoolController> logger)
+        private readonly ILogger<SchoolCommandController> _logger;
+        public SchoolCommandController(IMediator mediator,
+                                ILogger<SchoolCommandController> logger)
         {
             _mediator = mediator;
             _logger = logger;
-        }
-
-
-        [HttpGet]
-        [Route("{schoolId}")]
-        public async Task<IActionResult> GetSchool(long? schoolId)
-        {
-            GetSchoolQueryResponse? dataReponse = null;
-            try
-            {
-                dataReponse = await _mediator.Send(new GetSchoolQuery
-                {
-                    SchoolId = schoolId
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                if (dataReponse?.SchoolDto == null)
-                    return NotFound();
-            }
-            return Ok(dataReponse);
-        }
-        [HttpGet]
-        [Route("{skip?}/{take?}")]
-        public async Task<IActionResult> GetSchools(int skip = 0, int take = 0)
-        {
-            GetSchoolsQueryResponse? dataReponse = null;
-            try
-            {
-                dataReponse = await _mediator.Send(new GetSchoolsQuery()
-                {
-                    Skip = skip,
-                    Take = take
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                if (dataReponse?.SchoolsDto == null)
-                    return NotFound();
-            }
-            return Ok(dataReponse);
         }
 
 
@@ -77,6 +31,8 @@ namespace SchoolProject.Management.Api.Controllers
             CreateSchoolCommandResponse? dataReponse;
             try
             {
+                if (createSchoolDto == null)
+                    throw new BadRequestException("School DTO is null");
                 dataReponse = await _mediator.Send(new CreateSchoolCommand
                 {
                     School = createSchoolDto
@@ -118,6 +74,8 @@ namespace SchoolProject.Management.Api.Controllers
             UpdateSchoolCommandResponse? dataReponse;
             try
             {
+                if (updateSchoolDto == null)
+                    throw new BadRequestException("School DTO is null");
                 dataReponse = await _mediator.Send(new UpdateSchoolCommand
                 {
                     School = updateSchoolDto
