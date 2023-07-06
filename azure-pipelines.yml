@@ -25,10 +25,17 @@ steps:
     restoreSolution: '$(solution)'
     arguments: '--no-cache'
 
-
 - task: UseDotNet@2
   inputs:
     version: '6.0.400' # Replace with the desired .NET version
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
+  inputs:
+    command: 'restore'
+    projects: '$(solution)'
+    feedsToUse: 'config'
+    nugetConfigPath: '$(Build.SourcesDirectory)/nuget.config'
 
 - task: VSBuild@1
   inputs:
