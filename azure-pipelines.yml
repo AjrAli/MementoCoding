@@ -16,7 +16,8 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      Remove-Item -Recurse -Force -Path '$(Agent.ToolsDirectory)/NuGet.CommandLine/*'
+      $nugetPackagesDir = Get-Item -Path "$env:USERPROFILE\.nuget\packages" -Force
+      Remove-Item -Path $nugetPackagesDir.FullName -Recurse -Force -ErrorAction SilentlyContinue
 
 - task: NuGetCommand@2
   inputs:
