@@ -39,18 +39,13 @@ steps:
     inputs:
       versionSpec: '18.x'
 
-  - script: |
-      npm install -g @angular/cli
-      npm install
-    displayName: 'Install Angular CLI and Dependencies'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/app'
-    
   - script: echo $(System.DefaultWorkingDirectory)
     
   - script: |
+      cd $(System.DefaultWorkingDirectory)/app
+      npm install
       ng build
     displayName: 'Build Angular Application'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/app'
 
   - script: |
       ng test
