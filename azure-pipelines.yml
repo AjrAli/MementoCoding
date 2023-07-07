@@ -47,6 +47,7 @@ steps:
   - script: |
       ng build
     displayName: 'Build Angular Application'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/app
 
   - script: |
       ng test
