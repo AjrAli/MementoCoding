@@ -33,3 +33,21 @@ steps:
       command: 'test'
       projects: '**/*Tests.csproj'
       arguments: '--configuration $(buildConfiguration)'
+  
+  - task: NodeTool@0
+    displayName: 'Install Node.js'
+    inputs:
+      versionSpec: '14.x'
+
+  - script: |
+      npm install -g @angular/cli
+      npm install
+    displayName: 'Install Angular CLI and Dependencies'
+
+  - script: |
+      ng build
+    displayName: 'Build Angular Application'
+
+  - script: |
+      ng test
+    displayName: 'Run Unit Tests'
