@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SchoolFormComponent } from './school-form.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('SchoolFormComponent', () => {
   let component: SchoolFormComponent;
@@ -8,7 +9,8 @@ describe('SchoolFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SchoolFormComponent ]
+      imports: [FormsModule, ReactiveFormsModule, HttpClientTestingModule], // Importez les modules nécessaires ici
+      declarations: [SchoolFormComponent]
     })
     .compileComponents();
 

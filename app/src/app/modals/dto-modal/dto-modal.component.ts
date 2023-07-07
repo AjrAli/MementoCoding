@@ -21,14 +21,20 @@ export class DtoModalComponent {
     this.passBackDTOToMainComponent.emit(dto);
   }
   isSchool() {
-    const isSchool = this.dto.typeInstance === 'SchoolDto' || this.dto.typeInstance === 'GetSchoolDto';
-    console.log(isSchool);
-    return isSchool;
+    if (this.dto) {
+      const isSchool = this.dto.typeInstance === 'SchoolDto' || this.dto.typeInstance === 'GetSchoolDto';
+      console.log(isSchool);
+      return isSchool;
+    }
+    return false;
   }
   isStudent() {
-    const isStudent = this.dto.typeInstance === 'StudentDto' || this.dto.typeInstance === 'GetStudentDto';
-    console.log(isStudent);
-    return isStudent;
+    if (this.dto) {
+      const isStudent = this.dto.typeInstance === 'StudentDto' || this.dto.typeInstance === 'GetStudentDto';
+      console.log(isStudent);
+      return isStudent;
+    }
+    return false;
   }
   closeModal() {
     console.log(this.dto);

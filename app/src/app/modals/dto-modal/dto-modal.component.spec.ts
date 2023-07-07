@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DtoModalComponent } from './dto-modal.component';
 
 describe('DtoModalComponent', () => {
@@ -8,9 +8,10 @@ describe('DtoModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DtoModalComponent ]
-    })
-    .compileComponents();
+      imports: [NgbModule],
+      declarations: [DtoModalComponent],
+      providers: [NgbActiveModal], // Ajoutez le fournisseur NgbActiveModal ici
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DtoModalComponent);
     component = fixture.componentInstance;
