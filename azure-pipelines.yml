@@ -37,7 +37,7 @@ steps:
   - task: NodeTool@0
     displayName: 'Install Node.js'
     inputs:
-      versionSpec: '14.x'
+      versionSpec: '18.x'
 
   - script: |
       npm install -g @angular/cli
@@ -50,4 +50,4 @@ steps:
 
   - script: |
       ng test
-    displayName: 'Run Unit Tests'
+    displayName: 'Run Angular Unit Tests'
