@@ -43,13 +43,14 @@ steps:
       npm install -g @angular/cli
       npm install
     displayName: 'Install Angular CLI and Dependencies'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/app'
     
   - script: echo $(System.DefaultWorkingDirectory)
     
   - script: |
       ng build
     displayName: 'Build Angular Application'
-    workingDirectory: '$(System.DefaultWorkingDirectory)'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/app'
 
   - script: |
       ng test
