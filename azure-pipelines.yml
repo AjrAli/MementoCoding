@@ -49,5 +49,5 @@ steps:
 
   - script: |
       cd $(System.DefaultWorkingDirectory)/app
-      ng test
+      ng tests --watch=false
     displayName: 'Run Angular Unit Tests'
