@@ -27,11 +27,11 @@ export class SchoolFormComponent implements OnInit {
       this.title = 'Update School';
     }
     this.schoolForm = new FormGroup({
-      id: new FormControl(this.school.id),
-      name: new FormControl(this.school.name),
-      adress: new FormControl(this.school.adress),
-      town: new FormControl(this.school.town),
-      description: new FormControl(this.school.description)
+      id: new FormControl(this.school?.id),
+      name: new FormControl(this.school?.name),
+      adress: new FormControl(this.school?.adress),
+      town: new FormControl(this.school?.town),
+      description: new FormControl(this.school?.description)
     });
   }
 

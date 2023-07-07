@@ -46,12 +46,12 @@ export class StudentFormComponent implements OnInit {
       this.student.schoolId = this.schools[0]?.id;
     }
     this.studentForm = new FormGroup({
-      id: new FormControl(this.student.id),
-      firstName: new FormControl(this.student.firstName),
-      lastName: new FormControl(this.student.lastName),
-      age: new FormControl(this.student.age),
-      adress: new FormControl(this.student.adress),
-      schoolId: new FormControl(this.student.schoolId)
+      id: new FormControl(this.student?.id),
+      firstName: new FormControl(this.student?.firstName),
+      lastName: new FormControl(this.student?.lastName),
+      age: new FormControl(this.student?.age),
+      adress: new FormControl(this.student?.adress),
+      schoolId: new FormControl(this.student?.schoolId)
     });
   }
 

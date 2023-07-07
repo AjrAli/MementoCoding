@@ -1,8 +1,5 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { faTimes, faPencil } from '@fortawesome/free-solid-svg-icons';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SchoolDto } from 'src/app/dto/school/school-dto';
-import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
