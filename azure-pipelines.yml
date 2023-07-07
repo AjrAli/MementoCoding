@@ -38,8 +38,6 @@ steps:
     displayName: 'Install Node.js'
     inputs:
       versionSpec: '18.x'
-
-  - script: echo $(System.DefaultWorkingDirectory)
     
   - script: |
       cd $(System.DefaultWorkingDirectory)/app
