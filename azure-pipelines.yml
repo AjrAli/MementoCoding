@@ -48,5 +48,6 @@ steps:
     displayName: 'Build Angular Application'
 
   - script: |
+      cd $(System.DefaultWorkingDirectory)/app
       ng test
     displayName: 'Run Angular Unit Tests'
