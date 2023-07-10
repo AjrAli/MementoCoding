@@ -69,6 +69,141 @@ namespace SchoolProject.Management.Persistence.Tests.Integration_Test.Context
             Assert.IsNotNull(listStudents);
         }
         [TestMethod]
+        public async Task AddSchoolAsync_WhenDatabaseHasSchools_ReturnTrue()
+        {
+            //Arrange
+            School school = new()
+            {
+                Name = "TestDummy",
+                Adress = "TestDummy",
+                Description = "TestDummy",
+                Town = "TestDummy"
+            };
+            int result = default;
+            School addedSchool = null;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                await inMemoryContext.Schools.AddAsync(school);
+                result = await inMemoryContext.SaveChangesAsync();
+                addedSchool = inMemoryContext.Schools.FirstOrDefault(x => x.Name == school.Name);
+
+            }
+            // Assert
+            Assert.IsTrue(result == 1);
+            Assert.IsTrue(addedSchool != null);
+        }
+        [TestMethod]
+        public async Task AddStudentAsync_WhenDatabaseHasStudents_ReturnTrue()
+        {
+            //Arrange
+            Student student = new()
+            {
+                FirstName = "TestDummy",
+                LastName = "TestDummy",
+                Adress = "TestDummy",
+                Age = 18
+            };
+            int result = default;
+            Student addedStudent = null;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                await inMemoryContext.Students.AddAsync(student);
+                result = await inMemoryContext.SaveChangesAsync();
+                addedStudent = inMemoryContext.Students.FirstOrDefault(x => x.FirstName == student.FirstName && 
+                                                                            x.LastName == student.LastName);
+
+            }
+            // Assert
+            Assert.IsTrue(result == 1);
+            Assert.IsTrue(addedStudent != null);
+        }
+        [TestMethod]
+        public async Task RemoveSchool_WhenDatabaseHasSchools_ReturnTrue()
+        {
+            //Arrange
+            int result = default;
+            bool schoolExist = false;
+            School schoolToRemove = null;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                schoolToRemove = await inMemoryContext.Schools.FirstOrDefaultAsync();
+                inMemoryContext.Schools.Remove(schoolToRemove);
+                result = await inMemoryContext.SaveChangesAsync();
+                schoolExist = inMemoryContext.Schools.Any(x => x.Id == schoolToRemove.Id);
+
+            }
+            // Assert
+            Assert.IsTrue(result == 1);
+            Assert.IsTrue(schoolExist == false);
+        }
+        [TestMethod]
+        public async Task RemoveStudent_WhenDatabaseHasStudents_ReturnTrue()
+        {
+            //Arrange
+            int result = default;
+            bool studentExist = false;
+            Student studentToRemove = null;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                studentToRemove = await inMemoryContext.Students.FirstOrDefaultAsync();
+                inMemoryContext.Students.Remove(studentToRemove);
+                result = await inMemoryContext.SaveChangesAsync();
+                studentExist = inMemoryContext.Students.Any(x => x.Id == studentToRemove.Id);
+
+            }
+            // Assert
+            Assert.IsTrue(result == 1);
+            Assert.IsTrue(studentExist == false);
+        }
+        [TestMethod]
+        public async Task UpdateSchool_WhenDatabaseHasSchools_ReturnTrue()
+        {
+            //Arrange
+            int result = default;
+            School schoolToUpdate = null;
+            string newSchoolName = "NewNameTestDummy";
+            bool schoolExist = false;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                schoolToUpdate = await inMemoryContext.Schools.FirstOrDefaultAsync();
+                schoolToUpdate.Name = newSchoolName;
+                inMemoryContext.Schools.Update(schoolToUpdate);
+                result = await inMemoryContext.SaveChangesAsync();
+                schoolExist = inMemoryContext.Schools.Any(x => x.Name == newSchoolName);
+
+            }
+            // Assert
+            Assert.IsTrue(result == 1);
+            Assert.IsTrue(schoolExist == true);
+        }
+        [TestMethod]
+        public async Task UpdateStudent_WhenDatabaseHasStudents_ReturnTrue()
+        {
+            //Arrange
+            int result = default;
+            Student studentToUpdate = null;
+            string newStudentFirstName = "NewFirstNameTestDummy";
+            bool studentExist = false;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                studentToUpdate = await inMemoryContext.Students.FirstOrDefaultAsync();
+                studentToUpdate.FirstName = newStudentFirstName;
+                inMemoryContext.Students.Update(studentToUpdate);
+                result = await inMemoryContext.SaveChangesAsync();
+                studentExist = inMemoryContext.Students.Any(x => x.FirstName == newStudentFirstName);
+
+            }
+            // Assert
+            Assert.IsTrue(result == 1);
+            Assert.IsTrue(studentExist == true);
+        }
+        [TestMethod]
         public async Task GetSchoolsAsync_WhenDatabaseIsEmpty_ReturnsEmptyList()
         {
             //Arrange
