@@ -13,7 +13,7 @@ namespace SchoolProject.Management.Persistence.Tests.Integration_Test.Context
     public class SchoolManagementDbContextTests
     {
         private static readonly DbContextOptions<SchoolManagementDbContext> _inMemoryOptions = new DbContextOptionsBuilder<SchoolManagementDbContext>()
-                            .UseInMemoryDatabase(databaseName: "SchoolManagementDb")
+                            .UseInMemoryDatabase(databaseName: "SchoolManagementDb", x => x.EnableNullChecks(true))
                             .Options;
         private static readonly DbContextOptions<SchoolManagementDbContext> _inMemoryOptionsEmptyDb = new DbContextOptionsBuilder<SchoolManagementDbContext>()
                     .UseInMemoryDatabase(databaseName: "EmptyDb")
@@ -67,6 +67,32 @@ namespace SchoolProject.Management.Persistence.Tests.Integration_Test.Context
             }
             // Assert
             Assert.IsNotNull(listStudents);
+        }
+        [TestMethod]
+        public async Task GetSchoolAsync_WhenDatabaseHasSchools_ReturnsSchool()
+        {
+            //Arrange
+            School school = null;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                school = await inMemoryContext.Schools?.FirstOrDefaultAsync();
+            }
+            // Assert
+            Assert.IsNotNull(school);
+        }
+        [TestMethod]
+        public async Task GetStudentAsync_WhenDatabaseHasStudents_ReturnsStudent()
+        {
+            //Arrange
+            Student student = null;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                student = await inMemoryContext.Students?.FirstOrDefaultAsync();
+            }
+            // Assert
+            Assert.IsNotNull(student);
         }
         [TestMethod]
         public async Task AddSchoolAsync_WhenDatabaseHasSchools_ReturnTrue()
@@ -228,6 +254,75 @@ namespace SchoolProject.Management.Persistence.Tests.Integration_Test.Context
             }
             // Assert
             Assert.IsTrue(listStudents?.Count == 0);
+        }
+        [TestMethod]
+        public async Task GetSchoolAsync_WhenDatabaseIsEmpty_ReturnsNull()
+        {
+            //Arrange
+            School school = null;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptionsEmptyDb))
+            {
+                school = await inMemoryContext.Schools?.FirstOrDefaultAsync();
+            }
+            // Assert
+            Assert.IsNull(school);
+        }
+        [TestMethod]
+        public async Task GetStudentAsync_WhenDatabaseIsEmpty_ReturnsNull()
+        {
+            //Arrange
+            Student student = null;
+            // Act
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptionsEmptyDb))
+            {
+                student = await inMemoryContext.Students?.FirstOrDefaultAsync();
+            }
+            // Assert
+            Assert.IsNull(student);
+        }
+        [TestMethod]
+        public async Task AddSchoolAsync_WhenRequiredFieldsAreNull_ThrowsDbUpdateException()
+        {
+            // Arrange
+            School school = new School
+            {
+                Adress = "TestDummy",
+                Description = "TestDummy",
+                Town = "TestDummy"
+                // La propriété Name (champ requis) est laissée à null intentionnellement
+            };
+
+            // Act & Assert
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                await Assert.ThrowsExceptionAsync<DbUpdateException>(async () => 
+                { 
+                    await inMemoryContext.Schools.AddAsync(school);
+                    await inMemoryContext.SaveChangesAsync();
+                });
+            }
+        }
+        [TestMethod]
+        public async Task AddStudentAsync_WhenRequiredFieldsAreNull_ThrowsDbUpdateException()
+        {
+            //Arrange
+            Student student = new()
+            {
+                LastName = "TestDummy",
+                Adress = "TestDummy",
+                Age = 18
+                // La propriété FirstName (champ requis) est laissée à null intentionnellement
+            };
+            // Act && Assert
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
+                {
+                    await inMemoryContext.Students.AddAsync(student);
+                    await inMemoryContext.SaveChangesAsync();
+                });
+            }
         }
     }
 }
