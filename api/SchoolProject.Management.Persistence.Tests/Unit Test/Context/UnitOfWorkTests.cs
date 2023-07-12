@@ -21,10 +21,10 @@ namespace SchoolProject.Management.Persistence.Tests.Unit_Test.Context
             DbContextOptions<SchoolManagementDbContext> options = new DbContextOptions<SchoolManagementDbContext>();
             var mockDbContext = new Mock<SchoolManagementDbContext>(options);
             mockDbContext.Setup(x => x.SaveChangesAsync(It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(1); // Retourne le nombre d'entités enregistrées
-            var mockUnitOfWork = new UnitOfWork<SchoolManagementDbContext>(mockDbContext.Object);
+            var unitOfWork = new UnitOfWork<SchoolManagementDbContext>(mockDbContext.Object);
 
             // Act
-            var result = await mockUnitOfWork.SaveChangesAsync();
+            var result = await unitOfWork.SaveChangesAsync();
 
             // Assert
             Assert.AreEqual(1, result); // Vérifie si le résultat est égal à 1
@@ -37,10 +37,10 @@ namespace SchoolProject.Management.Persistence.Tests.Unit_Test.Context
             DbContextOptions<SchoolManagementDbContext> options = new DbContextOptions<SchoolManagementDbContext>();
             var mockDbContext = new Mock<SchoolManagementDbContext>(options);
             mockDbContext.Setup(x => x.SaveChangesAsync(It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(0); // Retourne zéro entité enregistrée
-            var mockUnitOfWork = new UnitOfWork<SchoolManagementDbContext>(mockDbContext.Object);
+            var unitOfWork = new UnitOfWork<SchoolManagementDbContext>(mockDbContext.Object);
 
             // Act
-            var result = await mockUnitOfWork.SaveChangesAsync();
+            var result = await unitOfWork.SaveChangesAsync();
 
             // Assert
             Assert.AreEqual(0, result); // Vérifie si le résultat est égal à zéro

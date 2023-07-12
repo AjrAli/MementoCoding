@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ObjectsComparer;
 using SchoolProject.Management.Domain.Entities;
 using SchoolProject.Management.Persistence.Context;
 using System.Collections.Generic;
@@ -137,7 +136,7 @@ namespace SchoolProject.Management.Persistence.Tests.Integration_Test.Context
             {
                 await inMemoryContext.Students.AddAsync(student);
                 result = await inMemoryContext.SaveChangesAsync();
-                addedStudent = inMemoryContext.Students.FirstOrDefault(x => x.FirstName == student.FirstName && 
+                addedStudent = inMemoryContext.Students.FirstOrDefault(x => x.FirstName == student.FirstName &&
                                                                             x.LastName == student.LastName);
 
             }
@@ -296,8 +295,8 @@ namespace SchoolProject.Management.Persistence.Tests.Integration_Test.Context
             // Act & Assert
             using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
             {
-                await Assert.ThrowsExceptionAsync<DbUpdateException>(async () => 
-                { 
+                await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
+                {
                     await inMemoryContext.Schools.AddAsync(school);
                     await inMemoryContext.SaveChangesAsync();
                 });
@@ -320,6 +319,86 @@ namespace SchoolProject.Management.Persistence.Tests.Integration_Test.Context
                 await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
                 {
                     await inMemoryContext.Students.AddAsync(student);
+                    await inMemoryContext.SaveChangesAsync();
+                });
+            }
+        }
+        [TestMethod]
+        public async Task RemoveSchool_WhenSchoolDoesNotExistInDatabase_ThrowsDbUpdateConcurrencyException()
+        {
+            //Arrange
+            int result = default;
+            bool schoolExist = false;
+            School schoolToRemove = new()
+            {
+                Name = "TestDummy",
+                Adress = "TestDummy",
+                Description = "TestDummy",
+                Town = "TestDummy"
+            };
+            // Act & Assert
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
+                {
+                    inMemoryContext.Schools.Remove(schoolToRemove);
+                    await inMemoryContext.SaveChangesAsync();
+                });
+            }
+        }
+        [TestMethod]
+        public async Task RemoveStudent_WhenStudentDoesNotExistInDatabase_ThrowsDbUpdateConcurrencyException()
+        {
+            //Arrange
+            int result = default;
+            bool studentExist = false;
+            Student studentToRemove = new()
+            {
+                FirstName = "TestDummy",
+                LastName = "TestDummy",
+                Adress = "TestDummy",
+                Age = 18
+            };
+            // Act & Assert
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
+                {
+                    inMemoryContext.Students.Remove(studentToRemove);
+                    await inMemoryContext.SaveChangesAsync();
+                });
+            }
+        }
+        [TestMethod]
+        public async Task UpdateSchool_WhenSchoolDoesNotExistInDatabase_ThrowsDbUpdateConcurrencyException()
+        {
+            // Arrange
+            int nonExistentSchoolId = 9999;
+            School schoolToUpdate = new School(nonExistentSchoolId, "NewNameTestDummy", "NewAddressTestDummy", "NewDescriptionTestDummy", "NewTownTestDummy");
+
+            // Act & Assert
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
+                {
+                    inMemoryContext.Schools.Update(schoolToUpdate);
+                    await inMemoryContext.SaveChangesAsync();
+                });
+            }
+        }
+        [TestMethod]
+        public async Task UpdateStudent_WhenStudentDoesNotExistInDatabase_ThrowsDbUpdateConcurrencyException()
+        {
+            // Arrange
+            int nonExistentStudentId = 9999;
+            Student studentToUpdate = new Student(nonExistentStudentId, "NewNameTestDummy", "NewAddressTestDummy", 10, "NewTownTestDummy");
+
+            // Act & Assert
+            using (var inMemoryContext = new SchoolManagementDbContext(_inMemoryOptions))
+            {
+                await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
+                {
+                    inMemoryContext.Students.Update(studentToUpdate);
                     await inMemoryContext.SaveChangesAsync();
                 });
             }

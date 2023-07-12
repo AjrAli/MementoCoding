@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolProject.Management.Do
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolProject.Management.Api.Tests", "SchoolProject.Management.Api.Tests\SchoolProject.Management.Api.Tests.csproj", "{F1CA814A-7D6C-4813-A859-619D2D0B9353}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolProject.Management.Persistence.Tests", "SchoolProject.Management.Persistence.Tests\SchoolProject.Management.Persistence.Tests.csproj", "{8106650C-AE29-4767-B659-9467D3A98CEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolProject.Management.Persistence.Tests", "SchoolProject.Management.Persistence.Tests\SchoolProject.Management.Persistence.Tests.csproj", "{8106650C-AE29-4767-B659-9467D3A98CEC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
