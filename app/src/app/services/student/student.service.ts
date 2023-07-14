@@ -12,7 +12,11 @@ export class StudentService {
   private readonly apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
-
+  
+  getStudentById(studentId: number): Observable<GetStudentDto> {
+    return this.http.get<GetStudentDto>(`${this.apiUrl}/StudentQuery/${studentId}`);
+  }
+  
   getStudents(skip?: number, take?: number): Observable<GetStudentDto[]> {
     let paginateParams: string = '';
     if (take) {
