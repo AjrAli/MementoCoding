@@ -6,23 +6,23 @@ using SchoolProject.Management.Application.Features.Response;
 using SchoolProject.Management.Domain.Entities;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
+using SchoolProject.Management.Application.Features.Students.Queries.GetStudents;
+using System.Collections.Generic;
 
 namespace SchoolProject.Management.Application.Features.Schools.Queries.GetSchool
 {
     public class GetSchoolQueryHandler : IRequestHandler<GetSchoolQuery, GetSchoolQueryResponse>
     {
-        private readonly IBaseRepository<School> _schoolRepository;
-        private readonly IBaseRepository<Student> _studentRepository;
+        private readonly ISchoolRepository _schoolRepository;
         private readonly IMapper _mapper;
         private readonly IResponseFactory<GetSchoolQueryResponse> _responseFactory;
         public GetSchoolQueryHandler(IMapper mapper,
-                                      IBaseRepository<School> schoolRepository,
-                                      IBaseRepository<Student> studentRepository,
+                                      ISchoolRepository schoolRepository,
                                       IResponseFactory<GetSchoolQueryResponse> responseFactory)
         {
             _mapper = mapper;
             _schoolRepository = schoolRepository;
-            _studentRepository = studentRepository;
             _responseFactory = responseFactory;
         }
 
@@ -30,13 +30,14 @@ namespace SchoolProject.Management.Application.Features.Schools.Queries.GetSchoo
         {
             var getSchoolQueryResponse = _responseFactory.CreateResponse();
             long Id = (request?.SchoolId != null) ? (long)request!.SchoolId : 0;
-            var school = await _schoolRepository.GetAsync(Id);
+            var school = await _schoolRepository.GetSchoolWithStudents(Id);
             if (school == null)
             {
                 throw new NotFoundException(nameof(School), Id);
             }
             getSchoolQueryResponse.SchoolDto = _mapper.Map<GetSchoolDto>(school);
-            getSchoolQueryResponse.SchoolDto.Haschildren = _studentRepository.Any(x => x.SchoolId == school.Id);
+            getSchoolQueryResponse.SchoolDto.Students = _mapper.Map<List<GetStudentsDto>>(school.Students);
+            getSchoolQueryResponse.SchoolDto.Haschildren = school.Students.Any(x => x.SchoolId == school.Id);
             return getSchoolQueryResponse;
         }
     }

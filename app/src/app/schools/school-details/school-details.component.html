@@ -1,0 +1,42 @@
+<div class="container  mt-12">
+    <h1 class="my-4">Details of school</h1>
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            Informations of the school
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th scope="row">Name</th>
+                        <td>{{ school.name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Adresse</th>
+                        <td>{{ school.adress }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Town</th>
+                        <td>{{ school.town }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Description</th>
+                        <td>{{ school.description }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"> List of students</th>
+                        <td>
+                            <app-table
+                            [noAction]="false"
+                            [headers]="['firstName', 'lastName', 'age', 'adress']"
+                            [headersTitle]="['FirstName', 'LastName', 'Age', 'Adress']" 
+                            [data]="students"
+                            [totalItems]="pageDetails.totalItems">
+                          </app-table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

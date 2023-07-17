@@ -22,6 +22,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ConfirmModalComponent } from './modals/confirm-modal/confirm-modal.component';
 import { DtoModalComponent } from './modals/dto-modal/dto-modal.component';
+import { SchoolDetailsComponent } from './schools/school-details/school-details.component';
+import { StudentDetailsComponent } from './students/student-details/student-details.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { DtoModalComponent } from './modals/dto-modal/dto-modal.component';
     MenuComponent,
     DtoModalComponent,
     ConfirmModalComponent,
-    DtoModalComponent
+    DtoModalComponent,
+    SchoolDetailsComponent,
+    StudentDetailsComponent
   ],
   imports: [
     BrowserModule,

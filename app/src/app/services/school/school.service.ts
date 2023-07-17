@@ -13,6 +13,10 @@ export class SchoolService {
 
   constructor(private http: HttpClient) {}
 
+  getSchoolById(schoolId: number): Observable<GetSchoolDto> {
+    return this.http.get<GetSchoolDto>(`${this.apiUrl}/SchoolQuery/${schoolId}`);
+  }
+
   getSchools(skip?:number, take?:number): Observable<GetSchoolDto[]> {
       let paginateParams: string = '';
       if(take){

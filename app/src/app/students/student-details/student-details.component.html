@@ -1,0 +1,35 @@
+<div class="container  mt-12">
+    <h1 class="my-4">Details of student</h1>
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            Informations of the student
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th scope="row">FirstName</th>
+                        <td>{{ student.firstName }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">LastName</th>
+                        <td>{{ student.lastName }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Age</th>
+                        <td>{{ student.age }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Adress</th>
+                        <td>{{ student.adress }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">School name</th>
+                        <td>{{ student.parentname }}</td>
+                    </tr>
+                    <!-- Ajouter d'autres détails de l'école ici au besoin -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

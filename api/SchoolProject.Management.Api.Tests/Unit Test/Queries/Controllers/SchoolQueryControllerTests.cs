@@ -163,9 +163,9 @@ namespace SchoolProject.Management.Api.Tests.Unit_Test.Queries.Controllers
         private GetSchoolQueryHandler InitGetSchoolQueryHandler(long? id)
         {
             var mockResponseFactory = new Mock<IResponseFactory<GetSchoolQueryResponse>>();
-            _mockSchoolRepo.Setup(x => x.GetAsync(It.IsAny<long>())).ReturnsAsync(InitSchoolEntity(id));
+            _mockSchoolRepo.Setup(x => x.GetSchoolWithStudents(It.IsAny<long>())).ReturnsAsync(InitSchoolEntity(id));
             mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new GetSchoolQueryResponse());
-            return new GetSchoolQueryHandler(_mapper, _mockSchoolRepo.Object, _mockStudentRepo.Object, mockResponseFactory.Object);
+            return new GetSchoolQueryHandler(_mapper, _mockSchoolRepo.Object, mockResponseFactory.Object);
         }
 
         private GetSchoolsQueryHandler InitGetSchoolsQueryHandler(bool isListExpected)

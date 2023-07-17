@@ -7,6 +7,7 @@ import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.com
 import { ErrorResponse } from '../dto/error/error-response';
 import { DtoModalComponent } from '../modals/dto-modal/dto-modal.component';
 import { PageDetailsDto } from '../dto/utilities/page-details-dto';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-students',
   templateUrl: './students.component.html',
@@ -18,6 +19,7 @@ export class StudentsComponent implements OnInit {
   newStudent: StudentDto = new StudentDto();
   constructor(private studentService: StudentService,
     private _modalService: NgbModal,
+    private router: Router,
     private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
@@ -25,9 +27,9 @@ export class StudentsComponent implements OnInit {
   }
 
   getStudents(skip?: number, take?: number): void {
-    this.studentService.getStudents(skip, take).subscribe((students: any) => {
-      this.pageDetails.totalItems = students.count;
-      this.students = students.studentsDto.map((studentData: any) => {
+    this.studentService.getStudents(skip, take).subscribe((response: any) => {
+      this.pageDetails.totalItems = response.count;
+      this.students = response.studentsDto.map((studentData: any) => {
         const student = new GetStudentDto();
         Object.assign(student, studentData);
         return student;
@@ -89,6 +91,10 @@ export class StudentsComponent implements OnInit {
     this.pageDetails.take = result.take;
     this.getStudents(this.pageDetails.skip, this.pageDetails.take);
     this.changeDetectorRef.detectChanges();
+  }
+  handleReturnStudentToGet(studentReturn: any) {
+    let student = studentReturn as GetStudentDto;
+    this.router.navigate(['/students', student.id]);   
   }
   handleReturnStudentToDelete(studentReturn: any) {
     let student = studentReturn as GetStudentDto;
