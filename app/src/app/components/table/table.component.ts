@@ -7,7 +7,9 @@ import { faTimes, faPencil, faEye } from '@fortawesome/free-solid-svg-icons';
 })
 export class TableComponent implements OnInit{
   @Input() headers: string[] = [];
+  @Input() headersTitle: string[] = [];
   @Input() data: any[] = [];
+  @Input() noAction = true;
   @Input() totalItems: number = 0;
   @Output() nextPage = new EventEmitter<any>();
   @Output() returnDTOToGet = new EventEmitter<any>();

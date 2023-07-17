@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GetSchoolDto } from 'src/app/dto/school/getschool-dto';
+import { GetStudentDto } from 'src/app/dto/student/getstudent-dto';
+import { PageDetailsDto } from 'src/app/dto/utilities/page-details-dto';
 import { SchoolService } from 'src/app/services/school/school.service';
 
 @Component({
@@ -11,6 +13,8 @@ import { SchoolService } from 'src/app/services/school/school.service';
 })
 export class SchoolDetailsComponent implements OnInit {
 
+  students: GetStudentDto[] = [];
+  pageDetails: PageDetailsDto = new PageDetailsDto();
   school: GetSchoolDto = new GetSchoolDto();
   schoolId: number = 0;
   constructor(private route: ActivatedRoute, private schoolService: SchoolService,
@@ -25,6 +29,12 @@ export class SchoolDetailsComponent implements OnInit {
       this.schoolService.getSchoolById(this.schoolId).subscribe((response: any) => {
         this.school = new GetSchoolDto();
         Object.assign(this.school, response.schoolDto);
+        this.pageDetails.totalItems = response.schoolDto.students.length;
+        this.students = response.schoolDto.students.map((studentData: any) => {
+          const student = new GetStudentDto();
+          Object.assign(student, studentData);
+          return student;
+        });
       });
     }
   }

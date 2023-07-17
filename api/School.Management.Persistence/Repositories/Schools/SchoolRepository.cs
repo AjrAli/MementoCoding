@@ -19,5 +19,10 @@ namespace SchoolProject.Management.Persistence.Repositories.Schools
             var allSchools = await _dbContext.Schools?.Include(x => x.Students).ToListAsync();
             return allSchools;
         }
+
+        public async Task<School> GetSchoolWithStudents(long schoolId)
+        {
+            return await _dbContext.Schools.Include(x => x.Students)?.FirstOrDefaultAsync(x => x.Id == schoolId);
+        }
     }
 }

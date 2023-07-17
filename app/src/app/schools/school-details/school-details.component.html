@@ -23,6 +23,18 @@
                         <th scope="row">Description</th>
                         <td>{{ school.description }}</td>
                     </tr>
+                    <tr>
+                        <th scope="row"> List of students</th>
+                        <td>
+                            <app-table
+                            [noAction]="false"
+                            [headers]="['firstName', 'lastName', 'age', 'adress']"
+                            [headersTitle]="['FirstName', 'LastName', 'Age', 'Adress']" 
+                            [data]="students"
+                            [totalItems]="pageDetails.totalItems">
+                          </app-table>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
