@@ -1,4 +1,4 @@
-# GitSchoolProject
+# MementoCoding
  .Net Architecture Test using 
  - .Net 6.0
  - ASP.NET Web APIs
