@@ -9,7 +9,7 @@ using ManagementProject.Identity;
 
 namespace ManagementProject.Identity.Migrations
 {
-    [DbContext(typeof(SchoolIdentityDbContext))]
+    [DbContext(typeof(ManagementProjectIdentityDbContext))]
     [Migration("20210718184552_DBCreation")]
     partial class DBCreation
     {

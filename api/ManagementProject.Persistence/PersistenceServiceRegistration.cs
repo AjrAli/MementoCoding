@@ -15,7 +15,7 @@ namespace ManagementProject.Persistence
         public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ManagementProjectDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("SchoolManagementDbConnectionString")));
+                options.UseSqlServer(configuration.GetConnectionString("ManagementProjectDbConnectionString")));
 
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork<ManagementProjectDbContext>>();

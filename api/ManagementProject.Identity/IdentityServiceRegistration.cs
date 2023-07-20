@@ -19,8 +19,8 @@ namespace ManagementProject.Identity
         {
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 
-            services.AddDbContext<SchoolIdentityDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("SchoolIdentityDbConnectionString"),
-                b => b.MigrationsAssembly(typeof(SchoolIdentityDbContext).Assembly.FullName)));
+            services.AddDbContext<ManagementProjectIdentityDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("ManagementProjectIdentityDbConnectionString"),
+                b => b.MigrationsAssembly(typeof(ManagementProjectIdentityDbContext).Assembly.FullName)));
 
             services.AddIdentity<ApplicationUser, IdentityRole>( config =>
             {
@@ -29,7 +29,7 @@ namespace ManagementProject.Identity
                 config.Password.RequireUppercase = false;
                 config.Password.RequireNonAlphanumeric = false;
             })
-                .AddEntityFrameworkStores<SchoolIdentityDbContext>().AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<ManagementProjectIdentityDbContext>().AddDefaultTokenProviders();
 
             services.AddAuthentication(options =>
             {
