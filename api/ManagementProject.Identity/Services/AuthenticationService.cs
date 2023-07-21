@@ -12,22 +12,20 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using DotNetCore.Results;
 
 namespace ManagementProject.Identity.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly JwtSettings _jwtSettings;
 
         public AuthenticationService(UserManager<ApplicationUser> userManager,
-            IOptions<JwtSettings> jwtSettings,
-            SignInManager<ApplicationUser> signInManager)
+            IOptions<JwtSettings> jwtSettings)
         {
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
-            _signInManager = signInManager;
         }
 
         public async Task<AuthenticationResponse> AuthenticateAsync(string username, string password)
@@ -39,12 +37,18 @@ namespace ManagementProject.Identity.Services
                 throw new NotFoundException(nameof(username), username);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, password, false, lockoutOnFailure: false);
-
-            if (!result.Succeeded)
+            var result = await _userManager.CheckPasswordAsync(user, password);
+            if (!result)
             {
                 throw new ValidationException($"Credentials for '{username} aren't valid'.");
             }
+
+            //TODO For email validation in a real application
+            //var result = await _signInManager.PasswordSignInAsync(user.UserName, password, false, lockoutOnFailure: false);
+            //if (!result.Succeeded)
+            //{
+            //    throw new ValidationException($"Credentials for '{username} aren't valid'.");
+            //}
 
             JwtSecurityToken? jwtSecurityToken = await GenerateToken(user);
 
