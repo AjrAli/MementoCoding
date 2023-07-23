@@ -2,6 +2,7 @@
 using ManagementProject.Application.Features.Schools.Queries.GetSchool;
 using ManagementProject.Application.Features.Search.Queries.GetSearchResults;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace ManagementProject.Api.Controllers.Queries
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class SearchQueryController : ControllerBase
     {

@@ -43,12 +43,14 @@ namespace ManagementProject.Identity.Services
                 throw new ValidationException($"Credentials for '{username} aren't valid'.");
             }
 
-            //TODO For email validation in a real application
-            //var result = await _signInManager.PasswordSignInAsync(user.UserName, password, false, lockoutOnFailure: false);
-            //if (!result.Succeeded)
-            //{
-            //    throw new ValidationException($"Credentials for '{username} aren't valid'.");
-            //}
+            /********TODO For email validation in a real application ********/
+            /*
+                    var result = await _signInManager.PasswordSignInAsync(user.UserName, password, false, lockoutOnFailure: false);
+                    if (!result.Succeeded)
+                    {
+                        throw new ValidationException($"Credentials for '{username} aren't valid'.");
+                    }
+            */
 
             JwtSecurityToken? jwtSecurityToken = await GenerateToken(user);
 
@@ -84,7 +86,7 @@ namespace ManagementProject.Identity.Services
                     issuer: _jwtSettings.Issuer,
                     audience: _jwtSettings.Audience,
                     claims: claims,
-                    expires: DateTime.UtcNow.AddDays(1).AddMinutes(-5),
+                    expires: DateTime.Now.AddMinutes(10),
                     signingCredentials: signingCredentials);
                 return jwtSecurityToken;
             }

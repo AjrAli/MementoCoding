@@ -7,10 +7,12 @@ using ManagementProject.Application.Features.Schools.Commands.CreateSchool;
 using ManagementProject.Application.Features.Schools.Commands.DeleteSchool;
 using ManagementProject.Application.Features.Schools.Commands.UpdateSchool;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ManagementProject.Api.Controllers.Commands
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class SchoolCommandController : ControllerBase
     {

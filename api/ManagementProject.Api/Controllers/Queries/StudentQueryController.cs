@@ -10,10 +10,12 @@ using ManagementProject.Application.Features.Students.Queries.GetStudent;
 using ManagementProject.Application.Features.Students.Queries.GetStudents;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ManagementProject.Api.Controllers.Queries
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class StudentQueryController : ControllerBase
     {

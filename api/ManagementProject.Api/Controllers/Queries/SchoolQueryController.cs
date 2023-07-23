@@ -10,10 +10,12 @@ using ManagementProject.Application.Features.Schools.Queries.GetSchool;
 using ManagementProject.Application.Features.Schools.Queries.GetSchools;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ManagementProject.Api.Controllers.Queries
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class SchoolQueryController : ControllerBase
     {

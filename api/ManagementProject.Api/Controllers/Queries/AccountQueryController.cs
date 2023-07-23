@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace ManagementProject.Api.Controllers.Queries
 {
@@ -34,12 +35,17 @@ namespace ManagementProject.Api.Controllers.Queries
                     var response = await _authenticationService.AuthenticateAsync(request.Username, request.Password);
                     if (response != null && response.Token != null)
                     {
-                        Response?.Cookies?.Append("X-Access-Token", response.Token, new CookieOptions()
-                        {
-                            Expires = DateTimeOffset.UtcNow.AddDays(1).AddMinutes(-5),
-                            HttpOnly = true,
-                            SameSite = SameSiteMode.Strict
-                        });
+                        /******** ONLY FOR TEST WITHOUT USING Postman ********************/
+                        /*
+                                    _logger.LogInformation($"{DateTimeOffset.UtcNow.AddDays(1).AddMinutes(-5)}");
+                                    _logger.LogInformation($"{DateTimeOffset.Now.AddMinutes(2)}");
+                                    Response?.Cookies?.Append("X-Access-Token", response.Token, new CookieOptions()
+                                    {
+                                        Expires = DateTimeOffset.Now.AddMinutes(2),
+                                        HttpOnly = true,
+                                        SameSite = SameSiteMode.Strict
+                                    });
+                        */
                         return Ok(response);
                     }
                 }

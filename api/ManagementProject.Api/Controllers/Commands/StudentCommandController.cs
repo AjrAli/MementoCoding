@@ -7,10 +7,12 @@ using ManagementProject.Application.Features.Students.Commands.CreateStudent;
 using ManagementProject.Application.Features.Students.Commands.DeleteStudent;
 using ManagementProject.Application.Features.Students.Commands.UpdateStudent;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ManagementProject.Api.Controllers.Commands
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class StudentCommandController : ControllerBase
     {
