@@ -8,8 +8,8 @@ using ManagementProject.Identity;
 
 namespace ManagementProject.Identity.Migrations
 {
-    [DbContext(typeof(SchoolIdentityDbContext))]
-    partial class SchoolIdentityDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ManagementProjectIdentityDbContext))]
+    partial class ManagementProjectIdentityDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

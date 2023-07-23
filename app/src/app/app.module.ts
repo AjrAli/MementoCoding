@@ -8,7 +8,7 @@ import { SchoolsComponent } from './schools/schools.component';
 import { StudentsComponent } from './students/students.component';
 import { SchoolFormComponent } from './forms/school/school-form.component';
 import { StudentFormComponent } from './forms/student/student-form.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { SchoolService } from './services/school/school.service';
 import { StudentService } from './services/student/student.service';
 import { AuthenticationService } from './services/authentification/authentication.service';
@@ -24,6 +24,7 @@ import { ConfirmModalComponent } from './modals/confirm-modal/confirm-modal.comp
 import { DtoModalComponent } from './modals/dto-modal/dto-modal.component';
 import { SchoolDetailsComponent } from './schools/school-details/school-details.component';
 import { StudentDetailsComponent } from './students/student-details/student-details.component';
+import { JwtInterceptor } from './services/jwt.interceptor';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { StudentDetailsComponent } from './students/student-details/student-deta
     BrowserAnimationsModule,
     FontAwesomeModule
   ],
-  providers: [SchoolService, StudentService, AuthenticationService],
+  providers: [SchoolService, StudentService, AuthenticationService,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

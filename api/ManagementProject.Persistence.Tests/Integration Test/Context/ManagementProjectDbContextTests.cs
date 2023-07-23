@@ -12,7 +12,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
     public class ManagementProjectDbContextTests
     {
         private static readonly DbContextOptions<ManagementProjectDbContext> _inMemoryOptions = new DbContextOptionsBuilder<ManagementProjectDbContext>()
-                            .UseInMemoryDatabase(databaseName: "SchoolManagementDb", x => x.EnableNullChecks(true))
+                            .UseInMemoryDatabase(databaseName: "ManagementProjectDb", x => x.EnableNullChecks(true))
                             .Options;
         private static readonly DbContextOptions<ManagementProjectDbContext> _inMemoryOptionsEmptyDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
                     .UseInMemoryDatabase(databaseName: "EmptyDb")
@@ -25,7 +25,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         {
             _testContext = testContext;
             var sqlServerOptions = new DbContextOptionsBuilder<ManagementProjectDbContext>()
-                           .UseSqlServer("Server=localhost;Database=SchoolManagementDb;Trusted_Connection=True;MultipleActiveResultSets=True;")
+                           .UseSqlServer("Server=localhost;Database=ManagementProjectDb;Trusted_Connection=True;MultipleActiveResultSets=True;")
                            .Options;
             using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
             using (var sqlServerContext = new ManagementProjectDbContext(sqlServerOptions))

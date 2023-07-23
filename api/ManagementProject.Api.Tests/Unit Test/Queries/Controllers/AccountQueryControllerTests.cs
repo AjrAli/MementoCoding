@@ -87,8 +87,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
             });
-            var signInManager = MockSetupSignInManager(userManager.Object);
-            signInManager.Setup(x => x.PasswordSignInAsync(user.UserName, "admin", false, false)).ReturnsAsync(SignInResult.Success);
+            userManager.Setup(m => m.CheckPasswordAsync(user, "admin")).ReturnsAsync(true);
 
             var jwtSettings = new JwtSettings
             {
@@ -99,22 +98,11 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             };
             var options = Options.Create(jwtSettings);
 
-            var authenticationService = new AuthenticationService(userManager.Object, options, signInManager.Object);
+            var authenticationService = new AuthenticationService(userManager.Object, options);
             return new AccountQueryController(authenticationService, _logger);
         }
 
-        private static Mock<SignInManager<ApplicationUser>> MockSetupSignInManager(UserManager<ApplicationUser> userManager, ILogger logger = null, IdentityOptions identityOptions = null, IAuthenticationSchemeProvider schemeProvider = null)
-        {
-            var contextAccessor = new Mock<IHttpContextAccessor>();
-            var roleManager = MockRoleManager<IUserRoleStore<ApplicationUser>>();
-            identityOptions = identityOptions ?? new IdentityOptions();
-            var options = new Mock<IOptions<IdentityOptions>>();
-            options.Setup(a => a.Value).Returns(identityOptions);
-            var claimsFactory = new UserClaimsPrincipalFactory<ApplicationUser, IUserRoleStore<ApplicationUser>>(userManager, roleManager.Object, options.Object);
-            schemeProvider = schemeProvider ?? Mock.Of<IAuthenticationSchemeProvider>();
-            var signInManager = new Mock<SignInManager<ApplicationUser>>(userManager, contextAccessor.Object, claimsFactory, options.Object, null, schemeProvider, new DefaultUserConfirmation<ApplicationUser>());
-            return signInManager;
-        }
+
 
         public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
         {
