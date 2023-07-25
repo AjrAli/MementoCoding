@@ -102,7 +102,7 @@ namespace ManagementProject.Api
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "School Management API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Management Project API");
             });
 
             app.UseCustomExceptionHandler();

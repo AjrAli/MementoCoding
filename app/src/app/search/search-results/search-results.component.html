@@ -1,0 +1,9 @@
+<div>
+    <div *ngIf="!searchResults || searchResults.length === 0">
+        No results found.
+    </div>
+    <div *ngIf="searchResults && searchResults.length > 0">
+        <!-- Display search results here -->
+        <div *ngFor="let result of searchResults">{{ result.title }}</div>
+    </div>
+</div>

@@ -79,7 +79,7 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
             return results.Select(x => new GetSearchResultsDto
             {
                 Id = x.Id,
-                Type = "school",
+                Type = "schools",
                 Title = x.Name,
                 Subtitle = $"{x.Adress} - {x.Town}",
                 Description = x.Description
@@ -97,7 +97,7 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
             return results.Select(x => new GetSearchResultsDto
             {
                 Id = x.Id,
-                Type = "student",
+                Type = "students",
                 Title = x.FirstName,
                 Subtitle = x.LastName,
                 Description = $"{x.Age} - {x.Adress}"

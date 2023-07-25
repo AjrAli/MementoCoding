@@ -1,0 +1,11 @@
+<ng-container *ngIf="searchResults && searchResults.length > 0; else notfound">
+    <app-search-results [searchResults]="searchResults"></app-search-results>
+</ng-container>
+
+<ng-template #notfound>
+
+    <!-- Content -->
+    <div class="container mt-4">
+        Not found
+    </div>
+</ng-template>
