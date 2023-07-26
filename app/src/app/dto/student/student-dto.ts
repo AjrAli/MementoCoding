@@ -1,3 +1,4 @@
+import { Entity } from "src/app/enum/entity";
 import { TypeDto } from "../utilities/type-dto";
 
 export class StudentDto extends TypeDto {
@@ -9,9 +10,9 @@ export class StudentDto extends TypeDto {
   schoolId: number;
   constructor(typeInstance?: string) {
     if (typeInstance) {
-      super(typeInstance);
+      super(typeInstance, Entity.Students);
     } else {
-      super('StudentDto');
+      super('StudentDto', Entity.Students);
     }
     this.id = 0;
     this.firstName = '';

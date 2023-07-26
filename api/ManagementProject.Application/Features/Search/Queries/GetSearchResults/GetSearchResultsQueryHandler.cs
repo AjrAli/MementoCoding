@@ -67,7 +67,8 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
         private async Task<IEnumerable<GetSearchResultsDto>> SearchSchools(string keyword)
         {
             var results = await _schoolRepository.Queryable
-                .Where(x => x.Name.Contains(keyword) ||
+                .Where(x => x.Id.ToString().Contains(keyword) ||
+                            x.Name.Contains(keyword) ||
                             x.Adress.Contains(keyword) ||
                             x.Town.Contains(keyword) ||
                             x.Description.Contains(keyword))
@@ -87,7 +88,8 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
         private async Task<IEnumerable<GetSearchResultsDto>> SearchStudents(string keyword)
         {
             var results = await _studentRepository.Queryable
-                .Where(x => x.FirstName.Contains(keyword) ||
+                .Where(x => x.Id.ToString().Contains(keyword) ||
+                            x.FirstName.Contains(keyword) ||
                             x.LastName.Contains(keyword) ||
                             x.Age.ToString().Contains(keyword) ||
                             x.Adress.Contains(keyword))

@@ -2,34 +2,10 @@
   <div *ngIf="!searchResults || searchResults.length === 0">
     No results found.
   </div>
-  <div *ngIf="searchResults && searchResults.length > 0" class="table-responsive">
+  <div *ngIf="searchResults && searchResults.length > 0">
     <!-- Display search results here -->
-    <table class="table table-striped table-hover table-bordered">
-      <tbody>
-        <tr *ngFor="let result of searchResults | slice:0:showItems; let i = index" class="justify-content-center">
-          <td class="bg-light">
-            <a class="d-flex link-secondary" [routerLink]="getResultLink(result)" (click)="clearSearch(getResultLink(result))">
-              <div class="col-lg-4 col-md-1 col-sm-1 text-right">
-                <span class="table-row-number text-dark">{{ i + 1 }}</span>
-              </div>
-              <div class="col-lg-8 col-md-11 col-sm-11">
-                <ng-container *ngIf="result.title">
-                  <span class="text-dark text-uppercase" [innerHTML]="result.title | boldText: (keyword$ | async)"></span>
-                </ng-container>
-                <ng-container *ngIf="result.subtitle">
-                  <span class="text-dark text-uppercase"> - </span>
-                  <span class="text-dark text-uppercase" [innerHTML]="result.subtitle | boldText: (keyword$ | async)"></span>
-                </ng-container>
-                <ng-container *ngIf="result.description">
-                  <span class="text-dark text-uppercase"> - </span>
-                  <span class="text-dark text-uppercase" [innerHTML]="'-' + (result.description | boldText: (keyword$ | async))"></span>
-                </ng-container>
-                <span class="text-dark text-uppercase"> - {{ result.type }}</span>
-              </div>
-            </a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <app-table [noAction]="false" [headers]="['id', 'title', 'subtitle', 'description', 'type']"
+      [headersTitle]="['Id', 'Title', 'Subtitle', 'Description', 'Type']" [data]="searchResults" [searchEngine]="true">
+    </app-table>
   </div>
 </div>
