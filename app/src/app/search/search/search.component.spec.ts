@@ -1,21 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
-import { TableComponent } from './table.component';
+import { SearchComponent } from './search.component';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-describe('TableComponent', () => {
-  let component: TableComponent;
-  let fixture: ComponentFixture<TableComponent>;
+import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+describe('SearchComponent', () => {
+  let component: SearchComponent;
+  let fixture: ComponentFixture<SearchComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NgbPaginationModule, HttpClientTestingModule, NgbPaginationModule, RouterTestingModule.withRoutes([])],
-      declarations: [ TableComponent ]
+      declarations: [ SearchComponent ],
+      imports: [HttpClientTestingModule, NgbPaginationModule, RouterTestingModule.withRoutes([])], 
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TableComponent);
+    fixture = TestBed.createComponent(SearchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

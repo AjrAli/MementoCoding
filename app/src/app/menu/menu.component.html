@@ -17,10 +17,30 @@
                     <a class="nav-link" routerLink="/students">Students</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" *ngIf="this.isConnected(); else notConnected" (click)="logout()" routerLink="">Logout</a>
-                    <ng-template #notConnected>
-                        <a class="nav-link" routerLink="/login">Log in</a>
-                    </ng-template>
+                    <div class="row ">
+                        <div class="col-md-10">
+                            <form *ngIf="this.isConnected()" [formGroup]="searchForm" (ngSubmit)="submitSearch()">
+                                <div class="form-group row">
+                                    <div class="col-md-7">
+                                        <input type="text" class="form-control" formControlName="searchField"  (ngModelChange)="submitSearch($event)" />
+                                    </div>
+                                    <div class="col-md-5">
+                                        <button class="btn btn-outline-light" type="submit">
+                                            <fa-icon [icon]="faSearch"></fa-icon>
+                                            Search in DB
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-2">
+                            <a class="nav-link" *ngIf="this.isConnected(); else notConnected" (click)="logout()"
+                                routerLink="">Logout</a>
+                            <ng-template #notConnected>
+                                <a class="nav-link" routerLink="/login">Login</a>
+                            </ng-template>
+                        </div>
+                    </div>
                 </li>
             </ul>
         </div>

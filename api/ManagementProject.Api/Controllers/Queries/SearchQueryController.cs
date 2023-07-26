@@ -24,8 +24,8 @@ namespace ManagementProject.Api.Controllers.Queries
         }
 
         [HttpGet]
-        [Route("")]
-        public async Task<IActionResult> GetSearchResults([FromQuery] string keyword)
+        [Route("{keyword?}")]
+        public async Task<IActionResult> GetSearchResults(string keyword)
         {
             GetSearchResultsQueryResponse? dataReponse = null;
             try

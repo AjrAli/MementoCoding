@@ -25,7 +25,9 @@ import { DtoModalComponent } from './modals/dto-modal/dto-modal.component';
 import { SchoolDetailsComponent } from './schools/school-details/school-details.component';
 import { StudentDetailsComponent } from './students/student-details/student-details.component';
 import { JwtInterceptor } from './services/jwt.interceptor';
-
+import { SearchResultsComponent } from './search/search-results/search-results.component';
+import { SearchComponent } from './search/search/search.component';
+import { BoldTextPipe } from './search/search-results/bold-text.pipe';
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,7 +43,10 @@ import { JwtInterceptor } from './services/jwt.interceptor';
     ConfirmModalComponent,
     DtoModalComponent,
     SchoolDetailsComponent,
-    StudentDetailsComponent
+    StudentDetailsComponent,
+    SearchResultsComponent,
+    SearchComponent,
+    BoldTextPipe
   ],
   imports: [
     BrowserModule,

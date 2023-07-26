@@ -7,6 +7,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { SchoolDetailsComponent } from './schools/school-details/school-details.component';
 import { StudentDetailsComponent } from './students/student-details/student-details.component';
+import { SearchComponent } from './search/search/search.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -16,7 +17,9 @@ const routes: Routes = [
   { path: 'schools/:id', component: SchoolDetailsComponent, canActivate: [AuthGuard] },
   { path: 'students', component: StudentsComponent, canActivate: [AuthGuard] },
   { path: 'students/:id', component: StudentDetailsComponent, canActivate: [AuthGuard] },
+  { path: 'search', component: SearchComponent, canActivate: [AuthGuard] },
 ];
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -4,13 +4,15 @@ import { StudentsComponent } from './students.component';
 import { TableComponent } from '../components/table/table.component';
 import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.component';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 describe('StudentsComponent', () => {
   let component: StudentsComponent;
   let fixture: ComponentFixture<StudentsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, NgbPaginationModule], // Importez HttpClientTestingModule
+      imports: [HttpClientTestingModule, NgbPaginationModule, RouterTestingModule.withRoutes([])], // Importez HttpClientTestingModule
       declarations: [StudentsComponent, TableComponent, ConfirmModalComponent]
     })
     .compileComponents();
