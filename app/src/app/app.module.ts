@@ -27,7 +27,7 @@ import { StudentDetailsComponent } from './students/student-details/student-deta
 import { JwtInterceptor } from './services/jwt.interceptor';
 import { SearchResultsComponent } from './search/search-results/search-results.component';
 import { SearchComponent } from './search/search/search.component';
-
+import { BoldTextPipe } from './search/search-results/bold-text.pipe';
 @NgModule({
   declarations: [
     AppComponent,
@@ -45,7 +45,8 @@ import { SearchComponent } from './search/search/search.component';
     SchoolDetailsComponent,
     StudentDetailsComponent,
     SearchResultsComponent,
-    SearchComponent
+    SearchComponent,
+    BoldTextPipe
   ],
   imports: [
     BrowserModule,

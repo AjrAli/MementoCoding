@@ -32,6 +32,10 @@ export class SearchComponent implements OnDestroy {
   }
 
   private initializeSearchStateService(): void {
+    if(this.route.snapshot.queryParams['keyword']){
+      this.keyword = decodeURIComponent(this.route.snapshot.queryParams['keyword']);
+      this.searchStateService.setSearchKeyword(this.keyword);
+    }
     // Subscribe to changes in the search keyword in the SearchStateService
     this.searchStateService.searchKeyword$
       .pipe(takeUntil(this.destroy$))

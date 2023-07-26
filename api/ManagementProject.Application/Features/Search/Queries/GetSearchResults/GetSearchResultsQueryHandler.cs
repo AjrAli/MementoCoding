@@ -3,6 +3,7 @@ using ManagementProject.Application.Contracts.Persistence;
 using ManagementProject.Application.Features.Response;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -18,9 +19,9 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
         private readonly IResponseFactory<GetSearchResultsQueryResponse> _responseFactory;
 
         public GetSearchResultsQueryHandler(IMapper mapper,
-                                      IStudentRepository studentRepository,
-                                      ISchoolRepository schoolRepository,
-                                      IResponseFactory<GetSearchResultsQueryResponse> responseFactory)
+                                            IStudentRepository studentRepository,
+                                            ISchoolRepository schoolRepository,
+                                            IResponseFactory<GetSearchResultsQueryResponse> responseFactory)
         {
             _mapper = mapper;
             _studentRepository = studentRepository;
@@ -32,83 +33,82 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
         {
             var getStudentsQueryResponse = _responseFactory.CreateResponse();
             var keywords = request.Keyword.ToUpper().Trim().Split();
-            getStudentsQueryResponse.SearchResultsDto = new List<GetSearchResultsDto>();
+            var allSearchResults = new HashSet<GetSearchResultsDto>(new GetSearchResultsDtoComparer());
+
             foreach (var keyword in keywords)
             {
                 // Search for schools
-                getStudentsQueryResponse.SearchResultsDto.AddRange(await SearchSchools(_schoolRepository, keyword));
+                var schoolResults = await SearchSchools(keyword);
+                allSearchResults.UnionWith(schoolResults);
+
                 // Search for students
-                getStudentsQueryResponse.SearchResultsDto.AddRange(await SearchStudents(_studentRepository, keyword));
+                var studentResults = await SearchStudents(keyword);
+                allSearchResults.UnionWith(studentResults);
             }
 
+            // Filter results if multiple keywords were provided
             if (keywords.Length > 1)
             {
-                getStudentsQueryResponse.SearchResultsDto = getStudentsQueryResponse.SearchResultsDto
-                                                // All keywords should match
-                                                .Where(r => FullKeywordMatch(r, keywords))
-                                                .ToList();
-
+                allSearchResults = new HashSet<GetSearchResultsDto>(allSearchResults
+                    .Where(r => FullKeywordMatch(r, keywords)),
+                    new GetSearchResultsDtoComparer());
             }
 
-            if (!getStudentsQueryResponse.SearchResultsDto.Any())
-            {
-                return getStudentsQueryResponse;
-            }
+            // Order results by the number of keyword matches
+            getStudentsQueryResponse.SearchResultsDto = allSearchResults
+                .OrderByDescending(x => NumberOfMatches(x, keywords))
+                .ToList();
 
-            // First show results with highest amount of matches
-            getStudentsQueryResponse.SearchResultsDto = getStudentsQueryResponse.SearchResultsDto
-                                            .OrderByDescending(x => NumberOfMatches(x, keywords))
-                                            .ToList();
             getStudentsQueryResponse.Count = getStudentsQueryResponse.SearchResultsDto.Count;
 
             return getStudentsQueryResponse;
         }
 
-        private static async Task<List<GetSearchResultsDto>> SearchSchools(ISchoolRepository schoolRepository, string keyword)
+        private async Task<IEnumerable<GetSearchResultsDto>> SearchSchools(string keyword)
         {
+            var results = await _schoolRepository.Queryable
+                .Where(x => x.Name.Contains(keyword) ||
+                            x.Adress.Contains(keyword) ||
+                            x.Town.Contains(keyword) ||
+                            x.Description.Contains(keyword))
+                .Select(x => new GetSearchResultsDto
+                {
+                    Id = x.Id,
+                    Type = "schools",
+                    Title = x.Name,
+                    Subtitle = $"{x.Adress} - {x.Town}",
+                    Description = x.Description
+                })
+                .ToListAsync();
 
-
-
-            var results = await schoolRepository.Queryable
-                                                .Where(x => x.Name.Contains(keyword) ||
-                                                            x.Adress.Contains(keyword) ||
-                                                            x.Town.Contains(keyword) ||
-                                                            x.Description.Contains(keyword))
-                                                .ToListAsync();
-
-            return results.Select(x => new GetSearchResultsDto
-            {
-                Id = x.Id,
-                Type = "schools",
-                Title = x.Name,
-                Subtitle = $"{x.Adress} - {x.Town}",
-                Description = x.Description
-            }).ToList();
+            return results;
         }
-        private static async Task<List<GetSearchResultsDto>> SearchStudents(IStudentRepository studentRepository, string keyword)
-        {
-            var results = await studentRepository.Queryable
-                                                 .Where(x => x.FirstName.Contains(keyword) ||
-                                                             x.LastName.Contains(keyword) ||
-                                                             x.Age.ToString().Contains(keyword) ||
-                                                             x.Adress.Contains(keyword))
-                                                 .ToListAsync();
 
-            return results.Select(x => new GetSearchResultsDto
-            {
-                Id = x.Id,
-                Type = "students",
-                Title = x.FirstName,
-                Subtitle = x.LastName,
-                Description = $"{x.Age} - {x.Adress}"
-            }).ToList();
+        private async Task<IEnumerable<GetSearchResultsDto>> SearchStudents(string keyword)
+        {
+            var results = await _studentRepository.Queryable
+                .Where(x => x.FirstName.Contains(keyword) ||
+                            x.LastName.Contains(keyword) ||
+                            x.Age.ToString().Contains(keyword) ||
+                            x.Adress.Contains(keyword))
+                .Select(x => new GetSearchResultsDto
+                {
+                    Id = x.Id,
+                    Type = "students",
+                    Title = x.FirstName,
+                    Subtitle = x.LastName,
+                    Description = $"{x.Age} - {x.Adress}"
+                })
+                .ToListAsync();
+
+            return results;
         }
 
         private bool FullKeywordMatch(GetSearchResultsDto result, string[] keywords)
         {
             foreach (var keyword in keywords)
             {
-                if (result.Title?.Contains(keyword) == true) continue;
+                if (result.Title?.ToUpper().Contains(keyword) == true) continue;
                 if (result.Subtitle?.ToUpper().Contains(keyword) == true) continue;
                 if (result.Description?.ToUpper().Contains(keyword) == true) continue;
 
@@ -118,21 +118,51 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
             return true;
         }
 
-        private static int NumberOfMatches(GetSearchResultsDto result, IEnumerable<string> keywords)
+        private int NumberOfMatches(GetSearchResultsDto result, IEnumerable<string> keywords)
         {
             var counter = 0;
 
             foreach (var keyword in keywords)
             {
-                if (result.Title?.ToUpper().Contains(keyword) == true)
-                    counter++;
-                if (result.Subtitle?.ToUpper().Contains(keyword) == true)
-                    counter++;
-                if (result.Description?.ToUpper().Contains(keyword) == true)
+                var match = false;
+
+                if (result.Title?.IndexOf(keyword, 0, StringComparison.OrdinalIgnoreCase) >= 0)
+                    match = true;
+                else if (result.Subtitle?.IndexOf(keyword, 0, StringComparison.OrdinalIgnoreCase) >= 0)
+                    match = true;
+                else if (result.Description?.IndexOf(keyword, 0, StringComparison.OrdinalIgnoreCase) >= 0)
+                    match = true;
+
+                if (match)
                     counter++;
             }
+
             return counter;
         }
+    }
 
+    // Custom comparer to handle duplicates in the list
+    public class GetSearchResultsDtoComparer : IEqualityComparer<GetSearchResultsDto>
+    {
+        public bool Equals(GetSearchResultsDto x, GetSearchResultsDto y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+
+            return x.Id == y.Id && x.Type == y.Type;
+        }
+
+        public int GetHashCode(GetSearchResultsDto obj)
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + (obj.Id != null ? obj.Id.GetHashCode() : 0);
+                hash = hash * 23 + (obj.Type != null ? obj.Type.GetHashCode() : 0);
+                return hash;
+            }
+        }
     }
 }
