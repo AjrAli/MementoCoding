@@ -8,6 +8,7 @@ import { ErrorResponse } from '../dto/error/error-response';
 import { DtoModalComponent } from '../modals/dto-modal/dto-modal.component';
 import { PageDetailsDto } from '../dto/utilities/page-details-dto';
 import { Router } from '@angular/router';
+import { Command } from '../enum/command';
 
 @Component({
   selector: 'app-schools',
@@ -93,11 +94,27 @@ export class SchoolsComponent implements OnInit {
     this.getSchools(this.pageDetails.skip, this.pageDetails.take);
     this.changeDetectorRef.detectChanges();
   }
-  handleReturnSchoolToGet(schoolReturn: any) {
-    let school = schoolReturn as GetSchoolDto;
-    this.router.navigate(['/schools', school.id]);   
+  handleActionCommands(event: { dto: any, command: Command }) {
+    switch (event.command) {
+      case Command.Read:
+        this.navigateToSchoolById(event.dto);
+        break;
+      case Command.Update:
+        this.updateSchoolByDtoModal(event.dto);
+        break;
+      case Command.Delete:
+        this.deleteSchoolByIdByConfirmModal(event.dto);
+        break;
+      default:
+        console.log(`Error : ${event.command}`);
+        break;
+    }
   }
-  handleReturnSchoolToDelete(schoolReturn: any) {
+  navigateToSchoolById(schoolReturn: any) {
+    let school = schoolReturn as GetSchoolDto;
+    this.router.navigate(['/schools', school.id]);
+  }
+  deleteSchoolByIdByConfirmModal(schoolReturn: any) {
     let school = schoolReturn as GetSchoolDto;
     const modalRef = this._modalService.open(ConfirmModalComponent);
     modalRef.componentInstance.name = school.name;
@@ -120,7 +137,7 @@ export class SchoolsComponent implements OnInit {
       console.log('Erreur :', error);
     });
   }
-  handleReturnSchoolToUpdate(schoolReturn: any) {
+  updateSchoolByDtoModal(schoolReturn: any) {
     let school = schoolReturn as SchoolDto;
     const modalRef = this._modalService.open(DtoModalComponent);
     modalRef.componentInstance.title = 'School Modal';

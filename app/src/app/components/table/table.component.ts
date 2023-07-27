@@ -4,6 +4,7 @@ import { faTimes, faPencil, faEye } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 import { SearchResultDto } from 'src/app/dto/search/searchresult-dto';
 import { Entity } from 'src/app/enum/entity';
+import { Command } from 'src/app/enum/command';
 import { SearchStateService } from 'src/app/services/search/search-state.service';
 @Component({
   selector: 'app-table',
@@ -18,9 +19,7 @@ export class TableComponent implements OnInit {
   @Input() searchEngine = false;
   @Input() totalItems: number = 0;
   @Output() nextPage = new EventEmitter<any>();
-  @Output() returnDTOToGet = new EventEmitter<any>();
-  @Output() returnDTOToDelete = new EventEmitter<any>();
-  @Output() returnDTOToUpdate = new EventEmitter<any>();
+  @Output() actionCommands = new EventEmitter<{dto : any, command: Command}>();
   keyword$!: Observable<string> | null;
   page = 1;
   pageSize = 10;
@@ -55,14 +54,14 @@ export class TableComponent implements OnInit {
   doNextPage() {
     this.nextPage.emit({ skip: ((this.page - 1) * this.pageSize), take: this.pageSize });
   }
-  doReturnDTOToGet(item: any) {
-    this.returnDTOToGet.emit(item);
+  actionCommandRead(item: any) {
+    this.actionCommands.emit({dto : item, command : Command.Read});
   }
-  doReturnDTOToDelete(item: any) {
-    this.returnDTOToDelete.emit(item);
+  actionCommandDelete(item: any) {
+    this.actionCommands.emit({dto : item, command : Command.Delete});
   }
-  doReturnDTOToUpdate(item: any) {
-    this.returnDTOToUpdate.emit(item);
+  actionCommandUpdate(item: any) {
+    this.actionCommands.emit({dto : item, command : Command.Update});
   }
   ngOnInit(): void {
     if (this.searchEngine) {

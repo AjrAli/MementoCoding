@@ -8,6 +8,7 @@ import { ErrorResponse } from '../dto/error/error-response';
 import { DtoModalComponent } from '../modals/dto-modal/dto-modal.component';
 import { PageDetailsDto } from '../dto/utilities/page-details-dto';
 import { Router } from '@angular/router';
+import { Command } from '../enum/command';
 @Component({
   selector: 'app-students',
   templateUrl: './students.component.html',
@@ -92,11 +93,29 @@ export class StudentsComponent implements OnInit {
     this.getStudents(this.pageDetails.skip, this.pageDetails.take);
     this.changeDetectorRef.detectChanges();
   }
-  handleReturnStudentToGet(studentReturn: any) {
-    let student = studentReturn as GetStudentDto;
-    this.router.navigate(['/students', student.id]);   
+
+  handleActionCommands(event: { dto: any, command: Command }) {
+    switch (event.command) {
+      case Command.Read:
+        this.navigateToStudentById(event.dto);
+        break;
+      case Command.Update:
+        this.updateStudentByDtoModal(event.dto);
+        break;
+      case Command.Delete:
+        this.deleteStudentByIdByConfirmModal(event.dto);
+        break;
+      default:
+        console.log(`Error : ${event.command}`);
+        break;
+    }
   }
-  handleReturnStudentToDelete(studentReturn: any) {
+
+  navigateToStudentById(studentReturn: any) {
+    let student = studentReturn as GetStudentDto;
+    this.router.navigate(['/students', student.id]);
+  }
+  deleteStudentByIdByConfirmModal(studentReturn: any) {
     let student = studentReturn as GetStudentDto;
     const modalRef = this._modalService.open(ConfirmModalComponent);
     modalRef.componentInstance.name = student.firstName;
@@ -119,7 +138,7 @@ export class StudentsComponent implements OnInit {
       console.log('Erreur :', error);
     });
   }
-  handleReturnStudentToUpdate(studentReturn: any) {
+  updateStudentByDtoModal(studentReturn: any) {
     let student = studentReturn as StudentDto;
     const modalRef = this._modalService.open(DtoModalComponent);
     modalRef.componentInstance.title = 'Student Modal';
@@ -130,9 +149,4 @@ export class StudentsComponent implements OnInit {
       modalRef.close();
     });
   }
-
-
-
-
-
 }
