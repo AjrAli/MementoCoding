@@ -29,22 +29,11 @@ namespace ManagementProject.Api.Controllers.Commands
         [Route("CreateStudent")]
         public async Task<IActionResult> CreateStudent([FromBody] StudentDto createStudentDto)
         {
-            CreateStudentCommandResponse? dataReponse;
-            try
+            CreateStudentCommandResponse? dataReponse = await _mediator.Send(new CreateStudentCommand
             {
-                if (createStudentDto == null)
-                    throw new BadRequestException("Student DTO is null");
-                dataReponse = await _mediator.Send(new CreateStudentCommand
-                {
-                    Student = createStudentDto
-                });
-            }
-            catch (BadRequestException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                var errorResponse = ex.CreateErrorResponse();
-                return BadRequest(errorResponse);
-            }
+                Student = createStudentDto
+            });
+
             return Ok(dataReponse);
         }
 
@@ -52,20 +41,11 @@ namespace ManagementProject.Api.Controllers.Commands
         [Route("DeleteStudent")]
         public async Task<IActionResult> DeleteStudent([FromBody] long studentId)
         {
-            DeleteStudentCommandResponse? dataReponse;
-            try
+            DeleteStudentCommandResponse? dataReponse = await _mediator.Send(new DeleteStudentCommand
             {
-                dataReponse = await _mediator.Send(new DeleteStudentCommand
-                {
-                    StudentId = studentId
-                });
-            }
-            catch (BadRequestException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                var errorResponse = ex.CreateErrorResponse();
-                return BadRequest(errorResponse);
-            }
+                StudentId = studentId
+            });
+
             return Ok(dataReponse);
 
         }
@@ -73,22 +53,11 @@ namespace ManagementProject.Api.Controllers.Commands
         [Route("UpdateStudent")]
         public async Task<IActionResult> UpdateStudent([FromBody] StudentDto updateStudentDto)
         {
-            UpdateStudentCommandResponse? dataReponse;
-            try
+            UpdateStudentCommandResponse? dataReponse = await _mediator.Send(new UpdateStudentCommand
             {
-                if (updateStudentDto == null)
-                    throw new BadRequestException("Student DTO is null");
-                dataReponse = await _mediator.Send(new UpdateStudentCommand
-                {
-                    Student = updateStudentDto
-                });
-            }
-            catch (BadRequestException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                var errorResponse = ex.CreateErrorResponse();
-                return BadRequest(errorResponse);
-            }
+                Student = updateStudentDto
+            });
+
             return Ok(dataReponse);
         }
     }

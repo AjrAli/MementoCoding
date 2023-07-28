@@ -38,34 +38,22 @@ namespace ManagementProject.Application.Features.Schools.Commands.DeleteSchool
 
         private async Task DeleteSchoolResponseHandling(DeleteSchoolCommand request, DeleteSchoolCommandResponse deleteSchoolCommandResponse)
         {
-            try
+
+            long Id = (request?.SchoolId != null) ? (long)request!.SchoolId : 0;
+            var schoolToDelete = await _schoolRepository.GetAsync(Id);
+            if (!(_studentRepository.Any(x => x.SchoolId == schoolToDelete.Id)))
             {
-                long Id = (request?.SchoolId != null) ? (long)request!.SchoolId : 0;
-                var schoolToDelete = await _schoolRepository.GetAsync(Id);
 
-                if (schoolToDelete == null)
-                    throw new NotFoundException(nameof(School), Id);
-
-                if (!(_studentRepository.Any(x => x.SchoolId == schoolToDelete.Id)))
-                {
-
-                    await _schoolRepository.DeleteAsync(schoolToDelete.Id);
-                    if (await _unitOfWork.SaveChangesAsync() <= 0)
-                        deleteSchoolCommandResponse.Success = false;
-                }
-                else
-                {
-                    deleteSchoolCommandResponse.Success = false;
-                    deleteSchoolCommandResponse.Message = "We can't delete a school that still have Students, first delete all students!";
-                }
+                await _schoolRepository.DeleteAsync(schoolToDelete.Id);
+                if (await _unitOfWork.SaveChangesAsync() <= 0)
+                    throw new BadRequestException($"Failed to delete school id : {Id}");
             }
-            catch (Exception ex)
+            else
             {
-                var exception = new BadRequestException($"Delete school failed : {ex}");
                 deleteSchoolCommandResponse.Success = false;
-                deleteSchoolCommandResponse.Message = exception.Message;
-                throw exception;
+                deleteSchoolCommandResponse.Message = "We can't delete a school that still have Students, first delete all students!";
             }
         }
     }
 }
+

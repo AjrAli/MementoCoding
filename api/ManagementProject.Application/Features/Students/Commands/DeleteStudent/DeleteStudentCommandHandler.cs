@@ -18,7 +18,7 @@ namespace ManagementProject.Application.Features.Students.Commands.DeleteStudent
         private readonly IBaseRepository<Student> _studentRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IResponseFactory<DeleteStudentCommandResponse> _responseFactory;
-        public DeleteStudentCommandHandler( IBaseRepository<Student> studentRepository,
+        public DeleteStudentCommandHandler(IBaseRepository<Student> studentRepository,
                                             IUnitOfWork unitOfWork,
                                             IResponseFactory<DeleteStudentCommandResponse> responseFactory)
         {
@@ -36,26 +36,13 @@ namespace ManagementProject.Application.Features.Students.Commands.DeleteStudent
 
         private async Task DeleteStudentResponseHandling(DeleteStudentCommand request, DeleteStudentCommandResponse deleteStudentCommandResponse)
         {
-            try
-            {
-                long Id = (request?.StudentId != null) ? (long)request!.StudentId : 0;
-                var studentToDelete = await _studentRepository.GetAsync(Id);
 
-                if (studentToDelete == null)
-                    throw new NotFoundException(nameof(Student), Id);
+            long Id = (request?.StudentId != null) ? (long)request!.StudentId : 0;
+            var studentToDelete = await _studentRepository.GetAsync(Id);
+            await _studentRepository.DeleteAsync(studentToDelete.Id);
+            if (await _unitOfWork.SaveChangesAsync() <= 0)
+                throw new BadRequestException($"Failed to delete student by id : {Id}");
 
-
-                await _studentRepository.DeleteAsync(studentToDelete.Id);
-                if (await _unitOfWork.SaveChangesAsync() <= 0)
-                    deleteStudentCommandResponse.Success = false;
-            }
-            catch (Exception ex)
-            {
-                var exception = new BadRequestException($"Delete student failed : {ex}");
-                deleteStudentCommandResponse.Success = false;
-                deleteStudentCommandResponse.Message = exception.Message;
-                throw exception;
-            }
         }
     }
 }

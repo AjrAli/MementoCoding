@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ManagementProject.Application.Contracts.Persistence;
+using ManagementProject.Application.Exceptions;
 using ManagementProject.Application.Features.Response;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +54,8 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
                     .Where(r => FullKeywordMatch(r, keywords)),
                     new GetSearchResultsDtoComparer());
             }
-
+            if (allSearchResults.Count == 0)
+                throw new NotFoundException($"No results found with keyword : {request.Keyword}");
             // Order results by the number of keyword matches
             getStudentsQueryResponse.SearchResultsDto = allSearchResults
                 .OrderByDescending(x => NumberOfMatches(x, keywords))

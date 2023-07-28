@@ -41,24 +41,13 @@ namespace ManagementProject.Application.Features.Students.Commands.UpdateStudent
 
         private async Task UpdateStudentResponseHandling(UpdateStudentCommand request, UpdateStudentCommandResponse updateStudentCommandResponse)
         {
-            try
-            {
-                var studentToUpdate = await _studentRepository.GetAsync(request?.Student?.Id);
-                if (studentToUpdate == null)
-                    throw new NotFoundException(nameof(Student), request?.Student?.Id ?? 0);
 
-                _mapper.Map(request?.Student, studentToUpdate);
-                await _studentRepository.UpdateAsync(studentToUpdate);
-                if (await _unitOfWork.SaveChangesAsync() <= 0)
-                    updateStudentCommandResponse.Success = false;
-            }
-            catch (Exception ex)
-            {
-                var exception = new BadRequestException($"Update student failed : {ex}");
-                updateStudentCommandResponse.Success = false;
-                updateStudentCommandResponse.Message = exception.Message;
-                throw exception;
-            }
+            var studentToUpdate = await _studentRepository.GetAsync(request?.Student?.Id);
+            _mapper.Map(request?.Student, studentToUpdate);
+            await _studentRepository.UpdateAsync(studentToUpdate);
+            if (await _unitOfWork.SaveChangesAsync() <= 0)
+                throw new BadRequestException($"Failed to update student by id : {request?.Student?.FirstName}");
+
         }
     }
 }

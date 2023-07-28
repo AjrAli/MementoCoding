@@ -27,20 +27,10 @@ namespace ManagementProject.Api.Controllers.Queries
         [Route("{keyword?}")]
         public async Task<IActionResult> GetSearchResults(string keyword)
         {
-            GetSearchResultsQueryResponse? dataReponse = null;
-            try
+            GetSearchResultsQueryResponse? dataReponse = await _mediator.Send(new GetSearchResultsQuery
             {
-                dataReponse = await _mediator.Send(new GetSearchResultsQuery
-                {
-                    Keyword = keyword
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                if (dataReponse?.SearchResultsDto == null)
-                    return NotFound();
-            }
+                Keyword = keyword
+            });
             return Ok(dataReponse);
         }
     }

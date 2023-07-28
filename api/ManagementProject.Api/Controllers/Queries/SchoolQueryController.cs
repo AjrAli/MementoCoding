@@ -32,41 +32,21 @@ namespace ManagementProject.Api.Controllers.Queries
         [Route("{schoolId}")]
         public async Task<IActionResult> GetSchool(long? schoolId)
         {
-            GetSchoolQueryResponse? dataReponse = null;
-            try
+            GetSchoolQueryResponse? dataReponse = await _mediator.Send(new GetSchoolQuery
             {
-                dataReponse = await _mediator.Send(new GetSchoolQuery
-                {
-                    SchoolId = schoolId
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                if (dataReponse?.SchoolDto == null)
-                    return NotFound();
-            }
+                SchoolId = schoolId
+            });
             return Ok(dataReponse);
         }
         [HttpGet]
         [Route("{skip?}/{take?}")]
         public async Task<IActionResult> GetSchools(int skip = 0, int take = 0)
         {
-            GetSchoolsQueryResponse? dataReponse = null;
-            try
+            GetSchoolsQueryResponse? dataReponse = await _mediator.Send(new GetSchoolsQuery()
             {
-                dataReponse = await _mediator.Send(new GetSchoolsQuery()
-                {
-                    Skip = skip,
-                    Take = take
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                if (dataReponse?.SchoolsDto == null)
-                    return NotFound();
-            }
+                Skip = skip,
+                Take = take
+            });
             return Ok(dataReponse);
         }
     }
