@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ErrorResponse } from 'src/app/dto/error/error-response';
+import { ErrorResponse } from 'src/app/dto/response/error/error-response';
 
 @Component({
   selector: 'app-confirm-modal',

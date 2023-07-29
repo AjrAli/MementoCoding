@@ -30,22 +30,11 @@ namespace ManagementProject.Api.Controllers.Commands
         [Route("CreateSchool")]
         public async Task<IActionResult> CreateSchool([FromBody] SchoolDto createSchoolDto)
         {
-            CreateSchoolCommandResponse? dataReponse;
-            try
+            CreateSchoolCommandResponse? dataReponse = await _mediator.Send(new CreateSchoolCommand
             {
-                if (createSchoolDto == null)
-                    throw new BadRequestException("School DTO is null");
-                dataReponse = await _mediator.Send(new CreateSchoolCommand
-                {
-                    School = createSchoolDto
-                });
-            }
-            catch (BadRequestException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                var errorResponse = ex.CreateErrorResponse();
-                return BadRequest(errorResponse);
-            }
+                School = createSchoolDto
+            });
+
             return Ok(dataReponse);
         }
 
@@ -53,42 +42,21 @@ namespace ManagementProject.Api.Controllers.Commands
         [Route("DeleteSchool")]
         public async Task<IActionResult> DeleteSchool([FromBody] long schoolId)
         {
-            DeleteSchoolCommandResponse? dataReponse;
-            try
+            DeleteSchoolCommandResponse? dataReponse = await _mediator.Send(new DeleteSchoolCommand
             {
-                dataReponse = await _mediator.Send(new DeleteSchoolCommand
-                {
-                    SchoolId = schoolId
-                });
-            }
-            catch (BadRequestException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                var errorResponse = ex.CreateErrorResponse();
-                return BadRequest(errorResponse);
-            }
+                SchoolId = schoolId
+            });
+
             return Ok(dataReponse);
         }
         [HttpPost]
         [Route("UpdateSchool")]
         public async Task<IActionResult> UpdateSchool([FromBody] SchoolDto updateSchoolDto)
         {
-            UpdateSchoolCommandResponse? dataReponse;
-            try
+            UpdateSchoolCommandResponse? dataReponse = await _mediator.Send(new UpdateSchoolCommand
             {
-                if (updateSchoolDto == null)
-                    throw new BadRequestException("School DTO is null");
-                dataReponse = await _mediator.Send(new UpdateSchoolCommand
-                {
-                    School = updateSchoolDto
-                });
-            }
-            catch (BadRequestException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                var errorResponse = ex.CreateErrorResponse();
-                return BadRequest(errorResponse);
-            }
+                School = updateSchoolDto
+            });
             return Ok(dataReponse);
         }
     }

@@ -10,6 +10,7 @@ using ManagementProject.Domain.Entities;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Features.Students.Commands.UpdateStudent;
 
 namespace ManagementProject.Application.Features.Schools.Commands.UpdateSchool
 {
@@ -35,29 +36,19 @@ namespace ManagementProject.Application.Features.Schools.Commands.UpdateSchool
         {
             var updateSchoolCommandResponse = _responseFactory.CreateResponse();
             await UpdateSchoolResponseHandling(request, updateSchoolCommandResponse);
+            updateSchoolCommandResponse.Message = $"School {request.School?.Name} successfully updated";
             return updateSchoolCommandResponse;
         }
 
         private async Task UpdateSchoolResponseHandling(UpdateSchoolCommand request, UpdateSchoolCommandResponse updateSchoolCommandResponse)
         {
-            try
-            {
-                var schoolToUpdate = await _schoolRepository.GetAsync(request?.School?.Id);
-                if (schoolToUpdate == null)
-                    throw new NotFoundException(nameof(School), request?.School?.Id ?? 0);
 
-                _mapper.Map(request?.School, schoolToUpdate);
-                await _schoolRepository.UpdateAsync(schoolToUpdate);
-                if (await _unitOfWork.SaveChangesAsync() <= 0)
-                    updateSchoolCommandResponse.Success = false;
-            }
-            catch (Exception ex)
-            {
-                var exception = new BadRequestException($"Update school failed : {ex}");
-                updateSchoolCommandResponse.Success = false;
-                updateSchoolCommandResponse.Message = exception.Message;
-                throw exception;
-            }
+            var schoolToUpdate = await _schoolRepository.GetAsync(request?.School?.Id);
+            _mapper.Map(request?.School, schoolToUpdate);
+            await _schoolRepository.UpdateAsync(schoolToUpdate);
+            if (await _unitOfWork.SaveChangesAsync() <= 0)
+                throw new BadRequestException($"Failed to update school : {request?.School?.Name}");
+
         }
     }
 }

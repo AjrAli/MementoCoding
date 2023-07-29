@@ -11,6 +11,7 @@ using ManagementProject.Domain.Entities;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Features.Schools.Commands.DeleteSchool;
 
 namespace ManagementProject.Application.Features.Schools.Commands.CreateSchool
 {
@@ -35,25 +36,18 @@ namespace ManagementProject.Application.Features.Schools.Commands.CreateSchool
         {
             var createSchoolCommandResponse = _responseFactory.CreateResponse();
             await CreateSchoolResponseHandling(request, createSchoolCommandResponse);
+            createSchoolCommandResponse.Message = $"School {request.School?.Name} successfully created";
             return createSchoolCommandResponse;
         }
 
         private async Task CreateSchoolResponseHandling(CreateSchoolCommand request, CreateSchoolCommandResponse createSchoolCommandResponse)
         {
-            try
-            {
-                var school = _mapper.Map<School>(request.School);
-                await _schoolRepository.AddAsync(school);
-                if (await _unitOfWork.SaveChangesAsync() <= 0)
-                    createSchoolCommandResponse.Success = false;
-            }
-            catch (Exception ex)
-            {
-                var exception = new BadRequestException($"Create school failed : {ex}");
-                createSchoolCommandResponse.Success = false;
-                createSchoolCommandResponse.Message = exception.Message;
-                throw exception;
-            }
+
+            var school = _mapper.Map<School>(request.School);
+            await _schoolRepository.AddAsync(school);
+            if (await _unitOfWork.SaveChangesAsync() <= 0)
+                throw new BadRequestException($"Failed to create school : {request.School?.Name}");
+
         }
     }
 }

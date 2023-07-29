@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
+using ManagementProject.Application.Features.Schools.Commands.CreateSchool;
 
 namespace ManagementProject.Api.Controllers.Queries
 {
@@ -28,36 +29,25 @@ namespace ManagementProject.Api.Controllers.Queries
         [HttpPost("authenticate")]
         public async Task<ActionResult<AuthenticationResponse>> AuthenticateAsync([FromBody] AuthenticationRequest request)
         {
-            try
-            {
-                if (!string.IsNullOrEmpty(request?.Username) && !string.IsNullOrEmpty(request?.Password))
-                {
-                    var response = await _authenticationService.AuthenticateAsync(request.Username, request.Password);
-                    if (response != null && response.Token != null)
-                    {
-                        /******** ONLY FOR TEST WITHOUT USING Postman ********************/
-                        /*
-                                    _logger.LogInformation($"{DateTimeOffset.UtcNow.AddDays(1).AddMinutes(-5)}");
-                                    _logger.LogInformation($"{DateTimeOffset.Now.AddMinutes(2)}");
-                                    Response?.Cookies?.Append("X-Access-Token", response.Token, new CookieOptions()
-                                    {
-                                        Expires = DateTimeOffset.Now.AddMinutes(2),
-                                        HttpOnly = true,
-                                        SameSite = SameSiteMode.Strict
-                                    });
-                        */
-                        return Ok(response);
-                    }
-                }
-                throw new BadRequestException("Invalid username or password.");
+            if(request?.Username == null || request?.Password == null)
+                throw new BadRequestException($"One of the credentials given is empty");
+            var response = await _authenticationService.AuthenticateAsync(request.Username, request.Password);
+            response.Message = $"User {response.UserName} successfully connected";
+            return Ok(response);
+            #region Store token on a Cookie connection
+            /******** ONLY FOR TEST WITHOUT USING Postman ********************/
+            /*
+                        _logger.LogInformation($"{DateTimeOffset.UtcNow.AddDays(1).AddMinutes(-5)}");
+                        _logger.LogInformation($"{DateTimeOffset.Now.AddMinutes(2)}");
+                        Response?.Cookies?.Append("X-Access-Token", response.Token, new CookieOptions()
+                        {
+                            Expires = DateTimeOffset.Now.AddMinutes(2),
+                            HttpOnly = true,
+                            SameSite = SameSiteMode.Strict
+                        });
+            */
+            #endregion
 
-            }
-            catch (BadRequestException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                var errorResponse = ex.CreateErrorResponse();
-                return BadRequest(errorResponse);
-            }
         }
     }
 }

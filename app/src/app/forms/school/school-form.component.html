@@ -4,14 +4,14 @@
       <div class="row mb-4">
         <h3>{{title}}</h3>
       </div>
-      <form [formGroup]="schoolForm" (ngSubmit)="addSchool()">
+      <form [formGroup]="baseForm" (ngSubmit)="addSchool()">
         <div class="form-group row mb-1">
           <label class="col-md-4" for="name">Name</label>
           <div class="col-md-8">
             <input type="text" class="form-control" formControlName="name" required />
           </div>
           <div
-            *ngIf="schoolForm.get('name')!.invalid && (schoolForm.get('name')!.dirty || schoolForm.get('name')!.touched)"
+            *ngIf="baseForm.get('name')!.invalid && (baseForm.get('name')!.dirty || baseForm.get('name')!.touched)"
             class="text-danger">
             Name is required.
           </div>
@@ -22,7 +22,7 @@
             <input type="text" class="form-control" formControlName="adress" required />
           </div>
           <div
-            *ngIf="schoolForm.get('adress')!.invalid && (schoolForm.get('adress')!.dirty || schoolForm.get('adress')!.touched)"
+            *ngIf="baseForm.get('adress')!.invalid && (baseForm.get('adress')!.dirty || baseForm.get('adress')!.touched)"
             class="text-danger">
             Adress is required.
           </div>
@@ -33,7 +33,7 @@
             <input type="text" class="form-control" formControlName="town" required />
           </div>
           <div
-            *ngIf="schoolForm.get('town')!.invalid && (schoolForm.get('town')!.dirty || schoolForm.get('town')!.touched)"
+            *ngIf="baseForm.get('town')!.invalid && (baseForm.get('town')!.dirty || baseForm.get('town')!.touched)"
             class="text-danger">
             Town is required.
           </div>
@@ -45,7 +45,7 @@
           </div>
         </div>
         <div class="row">
-          <button type="submit" class="btn btn-primary" [disabled]="!schoolForm.valid">{{title}}</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!baseForm.valid">{{title}}</button>
         </div>
 
       </form>

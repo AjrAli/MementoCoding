@@ -1,5 +1,4 @@
-<h3 *ngIf="data.length === 0"> No Data </h3>
-<div *ngIf="data.length > 0" class="table-responsive">
+<div *ngIf="data.length > 0; else notfound" class="table-responsive">
   <table class="table table-striped table-hover table-bordered">
     <thead class="table-primary">
       <tr>
@@ -11,20 +10,20 @@
     <tbody>
       <tr *ngFor="let item of data | slice:0:showItems;" [routerLink]="getResultLink(item)"
         (click)="clearSearch(getResultLink(item))" [class.custom-cursor]="!noAction">
-        <td *ngFor="let header of headers"><span *ngIf="searchEngine; else normal"
+        <td *ngFor="let header of headers" class="text-wrap text-break"><span *ngIf="searchEngine; else normal"
             [innerHTML]="item[header] | boldText: (keyword$ | async)"></span>
           <ng-template #normal>
             {{item[header] }}
           </ng-template>
         </td>
         <td *ngIf="noAction">
-          <button type="button" class="btn btn-success" (click)="doReturnDTOToGet(item)">
+          <button type="button" class="btn btn-success" (click)="actionCommandRead(item)">
             <fa-icon [icon]="faEye"></fa-icon>
           </button>
-          <button type="button" class="btn btn-primary" (click)="doReturnDTOToUpdate(item)">
+          <button type="button" class="btn btn-primary" (click)="actionCommandUpdate(item)">
             <fa-icon [icon]="faPencil"></fa-icon>
           </button>
-          <button type="button" class="btn btn-danger" (click)="doReturnDTOToDelete(item)">
+          <button type="button" class="btn btn-danger" (click)="actionCommandDelete(item)">
             <fa-icon [icon]="faTimes"></fa-icon>
           </button>
 
@@ -37,3 +36,9 @@
     </tfoot>
   </table>
 </div>
+<ng-template #notfound>
+  <!-- Content -->
+  <div class="container mt-4">
+      Loading data(s)...
+  </div>
+</ng-template>

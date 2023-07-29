@@ -6,16 +6,24 @@ import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.com
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ToastrModule } from 'ngx-toastr';
+import { ToastService } from '../services/message-popup/toast.service';
+
 describe('StudentsComponent', () => {
   let component: StudentsComponent;
   let fixture: ComponentFixture<StudentsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, NgbPaginationModule, RouterTestingModule.withRoutes([])], // Importez HttpClientTestingModule
-      declarations: [StudentsComponent, TableComponent, ConfirmModalComponent]
-    })
-    .compileComponents();
+      imports: [
+        HttpClientTestingModule,
+        NgbPaginationModule,
+        RouterTestingModule.withRoutes([]),
+        ToastrModule.forRoot(), // Only import ToastrModule once
+      ],
+      providers: [ToastService],
+      declarations: [StudentsComponent, TableComponent, ConfirmModalComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(StudentsComponent);
     component = fixture.componentInstance;

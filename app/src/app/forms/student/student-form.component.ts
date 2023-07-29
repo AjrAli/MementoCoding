@@ -7,24 +7,23 @@ import { StudentService } from '../../services/student/student.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { GetSchoolDto } from 'src/app/dto/school/getschool-dto';
 import { interval, firstValueFrom, lastValueFrom } from 'rxjs';
+import { BaseFormComponent } from '../base-form.component';
+import { ToastService } from 'src/app/services/message-popup/toast.service';
+import { ErrorResponse } from 'src/app/dto/response/error/error-response';
 @Component({
   selector: 'app-student-form',
   templateUrl: './student-form.component.html',
   styleUrls: ['./student-form.component.css']
 })
-export class StudentFormComponent implements OnInit {
-  @Input()
-  dto: any;
+export class StudentFormComponent extends BaseFormComponent implements OnInit {
+
   student: StudentDto = new StudentDto();
   schools: GetSchoolDto[] = [];
-  @Output() passBackDTO = new EventEmitter<any>();
-  studentForm!: FormGroup;
   title: string = 'Add Student';
   constructor(
-    private router: Router,
-    private studentService: StudentService,
-    private schoolService: SchoolService
-  ) { }
+    private schoolService: SchoolService,
+    private toastService: ToastService
+  ) { super(); }
   async fetchSchools(): Promise<void> {
     try {
       const response: any = await lastValueFrom(this.schoolService.getSchools());
@@ -34,6 +33,7 @@ export class StudentFormComponent implements OnInit {
         return school;
       });
     } catch (error) {
+      this.toastService.showError(error as ErrorResponse);
       console.log(error);
     }
   }
@@ -42,10 +42,10 @@ export class StudentFormComponent implements OnInit {
     this.student = this.dto as StudentDto;
     if (this.student?.firstName) {
       this.title = 'Update Student';
-    }else{
+    } else {
       this.student.schoolId = this.schools[0]?.id;
     }
-    this.studentForm = new FormGroup({
+    this.baseForm = new FormGroup({
       id: new FormControl(this.student?.id),
       firstName: new FormControl(this.student?.firstName),
       lastName: new FormControl(this.student?.lastName),
@@ -54,18 +54,8 @@ export class StudentFormComponent implements OnInit {
       schoolId: new FormControl(this.student?.schoolId)
     });
   }
-
   addStudent(): void {
-    this.student = this.studentForm.value;
-    this.clearForm();
+    this.student = this.baseForm.value;
     this.passBackDTO.emit(this.student);
   }
-  clearForm() {
-    this.studentForm.reset();
-    Object.keys(this.studentForm.controls).forEach(controlName => {
-      this.studentForm.get(controlName)?.patchValue('');
-    });
-  }
-
-
 }

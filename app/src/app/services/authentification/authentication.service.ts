@@ -37,4 +37,6 @@ export class AuthenticationService {
 
 interface AuthenticationResponse {
   token: string;
+  message: string;
+  userName: string;
 }

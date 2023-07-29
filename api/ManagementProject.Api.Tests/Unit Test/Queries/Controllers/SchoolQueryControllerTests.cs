@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Exceptions;
 
 namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 {
@@ -43,7 +44,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             _testContext = testContext;
         }
         [TestMethod]
-        public async Task GetSchool_ReturnNullSchoolDto()
+        public async Task GetSchool_ReturnNotFoundException()
         {
             //Arrange
             long schoolIdRequested = 0;
@@ -52,15 +53,14 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             Mock<IMediator> mediatorMock = MockMediatorGetSchoolQuery();
             var schoolControllerTest = new SchoolQueryController(mediatorMock.Object, _logger);
 
-            //Act
-            var resultSchoolCall = await schoolControllerTest.GetSchool(schoolIdRequested);
-
-            //Assert
-            Assert.IsNotNull(resultSchoolCall);
-            Assert.IsTrue(resultSchoolCall is NotFoundResult);
+            // Act && Assert
+            await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
+            {
+                await schoolControllerTest.GetSchool(schoolIdRequested);
+            });
         }
         [TestMethod]
-        public async Task GetSchools_ReturnNullListSchoolDto()
+        public async Task GetSchools_ReturnNotFoundException()
         {
             //Arrange
             _allSchoolDto = InitListOfSchoolDto(false);
@@ -68,12 +68,11 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             Mock<IMediator> mediatorMock = MockMediatorGetSchoolsQuery(false);
             var schoolControllerTest = new SchoolQueryController(mediatorMock.Object, _logger);
 
-            //Act
-            var resultSchoolCall = await schoolControllerTest.GetSchools();
-
-            //Assert
-            Assert.IsNotNull(resultSchoolCall);
-            Assert.IsTrue(resultSchoolCall is NotFoundResult);
+            // Act && Assert
+            await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
+            {
+                await schoolControllerTest.GetSchools();
+            });
         }
         [TestMethod]
         public async Task GetSchool_ReturnCorrectSchoolDto()

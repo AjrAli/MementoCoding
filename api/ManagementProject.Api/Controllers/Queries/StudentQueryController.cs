@@ -32,20 +32,11 @@ namespace ManagementProject.Api.Controllers.Queries
         [Route("{studentId}")]
         public async Task<IActionResult> GetStudent(long? studentId)
         {
-            GetStudentQueryResponse? dataReponse = null;
-            try
+            GetStudentQueryResponse? dataReponse = await _mediator.Send(new GetStudentQuery
             {
-                dataReponse = await _mediator.Send(new GetStudentQuery
-                {
-                    StudentId = studentId
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                if (dataReponse?.StudentDto == null)
-                    return NotFound();
-            }
+                StudentId = studentId
+            });
+
             return Ok(dataReponse);
         }
 
@@ -53,21 +44,12 @@ namespace ManagementProject.Api.Controllers.Queries
         [Route("{skip?}/{take?}")]
         public async Task<IActionResult> GetStudents(int skip = 0, int take = 0)
         {
-            GetStudentsQueryResponse? dataReponse = null;
-            try
+            GetStudentsQueryResponse? dataReponse = await _mediator.Send(new GetStudentsQuery()
             {
-                dataReponse = await _mediator.Send(new GetStudentsQuery()
-                {
-                    Skip = skip,
-                    Take = take
-                });
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.LogWarning(ex.Message);
-                if (dataReponse?.StudentsDto == null)
-                    return NotFound();
-            }
+                Skip = skip,
+                Take = take
+            });
+
             return Ok(dataReponse);
         }
     }

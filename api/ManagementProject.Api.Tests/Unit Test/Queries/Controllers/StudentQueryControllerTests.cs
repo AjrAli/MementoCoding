@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Exceptions;
 
 namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 {
@@ -44,7 +45,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             _testContext = testContext;
         }
         [TestMethod]
-        public async Task GetStudent_ReturnNullStudentDto()
+        public async Task GetStudent_ReturnNotFoundException()
         {
             //Arrange
             long studentIdRequested = 0;
@@ -53,15 +54,14 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             Mock<IMediator> mediatorMock = MockMediatorGetStudentQuery();
             var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
 
-            //Act
-            var resultStudentCall = await studentControllerTest.GetStudent(studentIdRequested);
-
-            //Assert
-            Assert.IsNotNull(resultStudentCall);
-            Assert.IsTrue(resultStudentCall is NotFoundResult);
+            // Act && Assert
+            await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
+            {
+                await studentControllerTest.GetStudent(studentIdRequested);
+            });
         }
         [TestMethod]
-        public async Task GetStudents_ReturnNullListStudentDto()
+        public async Task GetStudents_ReturnNotFoundException()
         {
             //Arrange
             _allStudentDto = InitListOfStudentDto(false);
@@ -69,12 +69,11 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             Mock<IMediator> mediatorMock = MockMediatorGetStudentsQuery(false);
             var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
 
-            //Act
-            var resultStudentCall = await studentControllerTest.GetStudents();
-
-            //Assert
-            Assert.IsNotNull(resultStudentCall);
-            Assert.IsTrue(resultStudentCall is NotFoundResult);
+            // Act && Assert
+            await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
+            {
+                await studentControllerTest.GetStudents();
+            });
         }
         [TestMethod]
         public async Task GetStudent_ReturnCorrectStudentDto()

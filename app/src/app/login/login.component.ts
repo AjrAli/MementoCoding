@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../services/authentification/authentication.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ErrorResponse } from '../dto/error/error-response';
+import { ErrorResponse } from '../dto/response/error/error-response';
+import { ToastService } from '../services/message-popup/toast.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -10,8 +11,11 @@ import { ErrorResponse } from '../dto/error/error-response';
 export class LoginComponent implements OnInit {
   username: string = '';
   password: string = '';
-  errorMessage!: ErrorResponse;
-  constructor(private authService: AuthenticationService, private router: Router, private route: ActivatedRoute) { }
+  errorResponse!: ErrorResponse;
+  constructor(private authService: AuthenticationService,
+              private router: Router, 
+              private route: ActivatedRoute,
+              private toastService: ToastService) { }
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
@@ -25,7 +29,7 @@ export class LoginComponent implements OnInit {
           this.authService.setToken(r.token);
           // Récupérer l'URL demandée avant la connexion
           const returnUrl = this.route.snapshot.queryParams['returnUrl'];
-
+          this.toastService.showSuccess(r.message);
           // Rediriger vers l'URL demandée ou vers '/home' par défaut
           this.router.navigateByUrl(returnUrl || '/home');
         } else {
@@ -33,13 +37,14 @@ export class LoginComponent implements OnInit {
         }
       },
       error: (e) => {
-        if (e.status === 400 || e.status === 404) {
-          this.errorMessage = e.error as ErrorResponse;
-          console.error(this.errorMessage);
+        this.errorResponse = e.error as ErrorResponse;
+        if (e.status === 400 || e.status === 404) {         
+          console.error(this.errorResponse);
         } else {
           console.error('Error:', e);
           alert('Error: ' + e.message);
         }
+        this.toastService.showError(this.errorResponse);
       },
       complete: () => console.info('complete')
     });

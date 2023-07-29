@@ -1,15 +1,19 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, Type, ViewChild } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { GetSchoolDto } from 'src/app/dto/school/getschool-dto';
 import { SchoolDto } from 'src/app/dto/school/school-dto';
 import { GetStudentDto } from 'src/app/dto/student/getstudent-dto';
 import { StudentDto } from 'src/app/dto/student/student-dto';
+import { BaseFormComponent } from 'src/app/forms/base-form.component';
+import { SchoolFormComponent } from 'src/app/forms/school/school-form.component';
+import { StudentFormComponent } from 'src/app/forms/student/student-form.component';
 @Component({
   selector: 'app-dto-modal',
   templateUrl: './dto-modal.component.html',
   styleUrls: ['./dto-modal.component.css']
 })
 export class DtoModalComponent {
+  @ViewChild('formComponent') formComponent!: BaseFormComponent;
   @Input()
   title!: string;
   @Input()
@@ -39,5 +43,8 @@ export class DtoModalComponent {
   closeModal() {
     console.log(this.dto);
     this.modal.dismiss('Cross click')
+  }
+  doClearForm() {
+    this.formComponent.clearForm();
   }
 }

@@ -13,26 +13,26 @@ export class StudentService {
 
   constructor(private http: HttpClient) { }
   
-  getStudentById(studentId: number): Observable<GetStudentDto> {
+  getStudentById(studentId: number): Observable<any> {
     return this.http.get<GetStudentDto>(`${this.apiUrl}/StudentQuery/${studentId}`);
   }
   
-  getStudents(skip?: number, take?: number): Observable<GetStudentDto[]> {
+  getStudents(skip?: number, take?: number): Observable<any> {
     let paginateParams: string = '';
     if (take) {
       paginateParams = `/${skip}/${take}`;
     }
     return this.http.get<GetStudentDto[]>(`${this.apiUrl}/StudentQuery${paginateParams}`);
   }
-  createStudent(student: StudentDto): Observable<StudentDto> {
+  createStudent(student: StudentDto): Observable<any> {
     return this.http.post<StudentDto>(`${this.apiUrl}/StudentCommand/CreateStudent`, student);
   }
 
-  updateStudent(student: StudentDto): Observable<StudentDto> {
+  updateStudent(student: StudentDto): Observable<any> {
     return this.http.post<StudentDto>(`${this.apiUrl}/StudentCommand/UpdateStudent`, student);
   }
 
-  deleteStudent(studentId: number): Observable<void> {
+  deleteStudent(studentId: number): Observable<any> {
     return this.http.post<void>(`${this.apiUrl}/StudentCommand/DeleteStudent`, studentId);
   }
 }

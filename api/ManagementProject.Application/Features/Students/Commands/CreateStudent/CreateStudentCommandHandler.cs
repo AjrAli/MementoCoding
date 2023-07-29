@@ -35,25 +35,18 @@ namespace ManagementProject.Application.Features.Students.Commands.CreateStudent
         {
             var createStudentCommandResponse = _responseFactory.CreateResponse();
             await CreateStudentResponseHandling(request, createStudentCommandResponse);
+            createStudentCommandResponse.Message = $"Student {request.Student?.FirstName} successfully created";
             return createStudentCommandResponse;
         }
 
         private async Task CreateStudentResponseHandling(CreateStudentCommand request, CreateStudentCommandResponse createStudentCommandResponse)
         {
-            try
-            {
-                var student = _mapper.Map<Student>(request.Student);
-                await _studentRepository.AddAsync(student);
-                if (await _unitOfWork.SaveChangesAsync() <= 0)
-                    createStudentCommandResponse.Success = false;
-            }
-            catch (Exception ex)
-            {
-                var exception = new BadRequestException($"Create student failed : {ex}");
-                createStudentCommandResponse.Success = false;
-                createStudentCommandResponse.Message = exception.Message;
-                throw exception;
-            }
+
+            var student = _mapper.Map<Student>(request.Student);
+            await _studentRepository.AddAsync(student);
+            if (await _unitOfWork.SaveChangesAsync() <= 0)
+                throw new BadRequestException($"Failed to create student : {request?.Student?.FirstName}");
+
         }
 
     }

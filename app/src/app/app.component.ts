@@ -8,7 +8,7 @@ import { AuthenticationService } from './services/authentification/authenticatio
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'school-management';
+  title = 'schools-management';
   constructor(private router: Router, private authenticationService: AuthenticationService) {}
 
 }

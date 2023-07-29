@@ -17,8 +17,8 @@
                             <input [(ngModel)]="password" type="password" class="form-control" id="password" required
                                 name="password">
                         </div>
-                        <div *ngIf="errorMessage" class="row  mb-3 text-danger">
-                            {{errorMessage.message}}
+                        <div *ngIf="errorResponse" class="row  mb-3 text-danger">
+                            {{errorResponse.message}}
                         </div>
                         <div class="row mb-3">
                             <button type="submit" class="btn btn-primary">Log in</button>
