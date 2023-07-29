@@ -13,11 +13,11 @@ export class SchoolService {
 
   constructor(private http: HttpClient) {}
 
-  getSchoolById(schoolId: number): Observable<GetSchoolDto> {
+  getSchoolById(schoolId: number): Observable<any> {
     return this.http.get<GetSchoolDto>(`${this.apiUrl}/SchoolQuery/${schoolId}`);
   }
 
-  getSchools(skip?:number, take?:number): Observable<GetSchoolDto[]> {
+  getSchools(skip?:number, take?:number): Observable<any> {
       let paginateParams: string = '';
       if(take){
         paginateParams = `/${skip}/${take}`;
@@ -25,15 +25,15 @@ export class SchoolService {
     return this.http.get<GetSchoolDto[]>(`${this.apiUrl}/SchoolQuery${paginateParams}`);
   }
 
-  createSchool(school: SchoolDto): Observable<SchoolDto> {
+  createSchool(school: SchoolDto): Observable<any> {
     return this.http.post<SchoolDto>(`${this.apiUrl}/SchoolCommand/CreateSchool`, school);
   }
 
-  updateSchool(school: SchoolDto): Observable<SchoolDto> {
+  updateSchool(school: SchoolDto): Observable<any> {
     return this.http.post<SchoolDto>(`${this.apiUrl}/SchoolCommand/UpdateSchool`, school);
   }
 
-  deleteSchool(schoolId: number): Observable<void> {
+  deleteSchool(schoolId: number): Observable<any> {
     return this.http.post<void>(`${this.apiUrl}/SchoolCommand/DeleteSchool`, schoolId);
   }
 }

@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { ToastService } from './message-popup/toast.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-    constructor(private router: Router) { }
+    constructor(private router: Router, private toastService : ToastService) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         // Récupérer le jeton JWT depuis le local storage ou tout autre emplacement où vous l'avez stocké
@@ -23,6 +24,7 @@ export class JwtInterceptor implements HttpInterceptor {
         // Passer la requête modifiée à la suite de l'intercepteur
         return next.handle(request).pipe(
             catchError((error: HttpErrorResponse) => {
+                this.toastService.showSimpleError(error.message);
                 if (error.status === 401) {
                     // Supprimer le token invalide/expiré
                     localStorage.removeItem('authToken');

@@ -8,6 +8,8 @@ using ManagementProject.Domain.Entities;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Features.Schools.Commands.UpdateSchool;
+using ManagementProject.Application.Features.Students.Commands.DeleteStudent;
 
 
 namespace ManagementProject.Application.Features.Schools.Commands.DeleteSchool
@@ -39,14 +41,16 @@ namespace ManagementProject.Application.Features.Schools.Commands.DeleteSchool
         private async Task DeleteSchoolResponseHandling(DeleteSchoolCommand request, DeleteSchoolCommandResponse deleteSchoolCommandResponse)
         {
 
-            long Id = (request?.SchoolId != null) ? (long)request!.SchoolId : 0;
+            long Id = request.SchoolId;
             var schoolToDelete = await _schoolRepository.GetAsync(Id);
             if (!(_studentRepository.Any(x => x.SchoolId == schoolToDelete.Id)))
             {
 
-                await _schoolRepository.DeleteAsync(schoolToDelete.Id);
+                await _schoolRepository.DeleteAsync(Id);
                 if (await _unitOfWork.SaveChangesAsync() <= 0)
                     throw new BadRequestException($"Failed to delete school id : {Id}");
+                else
+                    deleteSchoolCommandResponse.Message = $"School {schoolToDelete.Name} successfully deleted";
             }
             else
             {

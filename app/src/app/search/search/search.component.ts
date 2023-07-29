@@ -1,10 +1,12 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil, debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
+import { Subject, of } from 'rxjs';
+import { takeUntil, catchError, debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
 import { SearchResultDto } from 'src/app/dto/search/searchresult-dto';
 import { SearchService } from 'src/app/services/search/search.service';
 import { SearchStateService } from 'src/app/services/search/search-state.service';
+import { ToastService } from 'src/app/services/message-popup/toast.service';
+import { ErrorResponse } from 'src/app/dto/response/error/error-response';
 
 @Component({
   selector: 'app-search',
@@ -21,7 +23,8 @@ export class SearchComponent implements OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private searchService: SearchService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    private toastService: ToastService
   ) {
     this.initializeSearchStateService();
   }
@@ -32,7 +35,7 @@ export class SearchComponent implements OnDestroy {
   }
 
   private initializeSearchStateService(): void {
-    if(this.route.snapshot.queryParams['keyword']){
+    if (this.route.snapshot.queryParams['keyword']) {
       this.keyword = decodeURIComponent(this.route.snapshot.queryParams['keyword']);
       this.searchStateService.setSearchKeyword(this.keyword);
     }
@@ -40,10 +43,11 @@ export class SearchComponent implements OnDestroy {
     this.searchStateService.searchKeyword$
       .pipe(takeUntil(this.destroy$))
       .subscribe((keyword: string) => {
-        this.keyword = keyword;
+        if (!keyword)
+          this.router.navigate(['/home']);
         // Emit the new search keyword to the searchKeyword$ Subject
         // whenever it changes in the SearchStateService
-        this.searchKeyword$.next(this.keyword);
+        this.searchKeyword$.next(keyword);
       });
 
     // Use the startWith operator to trigger the initial search
@@ -56,17 +60,20 @@ export class SearchComponent implements OnDestroy {
         takeUntil(this.destroy$) // Unsubscribe from the observable when the component is destroyed
       )
       .subscribe((keyword: string) => {
-        this.keyword = keyword;
-        if(!this.keyword)
-        this.router.navigate(['/home']);
-        this.onSearch(this.keyword);
+        this.onSearch(keyword);
       });
   }
 
   onSearch(keyword: string): void {
     this.searchService
       .getSearchResults(keyword)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((error) => {
+          this.toastService.showError(error as ErrorResponse);
+          return of(null); // Return a new observable with null value to continue the observable chain
+        })
+      )
       .subscribe((response: any) => {
         this.searchResults = response.searchResultsDto.map(
           (searchData: any) => {

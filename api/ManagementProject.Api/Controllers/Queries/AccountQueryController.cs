@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
+using ManagementProject.Application.Features.Schools.Commands.CreateSchool;
 
 namespace ManagementProject.Api.Controllers.Queries
 {
@@ -28,9 +29,10 @@ namespace ManagementProject.Api.Controllers.Queries
         [HttpPost("authenticate")]
         public async Task<ActionResult<AuthenticationResponse>> AuthenticateAsync([FromBody] AuthenticationRequest request)
         {
-            if(request.Username == null || request.Password == null)
-                throw new NotFoundException($"One of the credentials given is empty");
+            if(request?.Username == null || request?.Password == null)
+                throw new BadRequestException($"One of the credentials given is empty");
             var response = await _authenticationService.AuthenticateAsync(request.Username, request.Password);
+            response.Message = $"User {response.UserName} successfully connected";
             return Ok(response);
             #region Store token on a Cookie connection
             /******** ONLY FOR TEST WITHOUT USING Postman ********************/

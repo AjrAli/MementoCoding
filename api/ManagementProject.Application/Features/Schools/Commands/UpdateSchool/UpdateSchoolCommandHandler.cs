@@ -10,6 +10,7 @@ using ManagementProject.Domain.Entities;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Features.Students.Commands.UpdateStudent;
 
 namespace ManagementProject.Application.Features.Schools.Commands.UpdateSchool
 {
@@ -35,6 +36,7 @@ namespace ManagementProject.Application.Features.Schools.Commands.UpdateSchool
         {
             var updateSchoolCommandResponse = _responseFactory.CreateResponse();
             await UpdateSchoolResponseHandling(request, updateSchoolCommandResponse);
+            updateSchoolCommandResponse.Message = $"School {request.School?.Name} successfully updated";
             return updateSchoolCommandResponse;
         }
 

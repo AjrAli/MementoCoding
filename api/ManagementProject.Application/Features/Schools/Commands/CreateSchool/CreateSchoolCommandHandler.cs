@@ -11,6 +11,7 @@ using ManagementProject.Domain.Entities;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Features.Schools.Commands.DeleteSchool;
 
 namespace ManagementProject.Application.Features.Schools.Commands.CreateSchool
 {
@@ -35,6 +36,7 @@ namespace ManagementProject.Application.Features.Schools.Commands.CreateSchool
         {
             var createSchoolCommandResponse = _responseFactory.CreateResponse();
             await CreateSchoolResponseHandling(request, createSchoolCommandResponse);
+            createSchoolCommandResponse.Message = $"School {request.School?.Name} successfully created";
             return createSchoolCommandResponse;
         }
 

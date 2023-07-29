@@ -10,7 +10,7 @@
     <tbody>
       <tr *ngFor="let item of data | slice:0:showItems;" [routerLink]="getResultLink(item)"
         (click)="clearSearch(getResultLink(item))" [class.custom-cursor]="!noAction">
-        <td *ngFor="let header of headers"><span *ngIf="searchEngine; else normal"
+        <td *ngFor="let header of headers" class="text-wrap text-break"><span *ngIf="searchEngine; else normal"
             [innerHTML]="item[header] | boldText: (keyword$ | async)"></span>
           <ng-template #normal>
             {{item[header] }}

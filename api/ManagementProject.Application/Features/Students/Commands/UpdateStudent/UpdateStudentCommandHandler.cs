@@ -36,6 +36,7 @@ namespace ManagementProject.Application.Features.Students.Commands.UpdateStudent
         {
             var updateStudentCommandResponse = _responseFactory.CreateResponse();
             await UpdateStudentResponseHandling(request, updateStudentCommandResponse);
+            updateStudentCommandResponse.Message = $"Student {request.Student?.FirstName} successfully updated";
             return updateStudentCommandResponse;
         }
 

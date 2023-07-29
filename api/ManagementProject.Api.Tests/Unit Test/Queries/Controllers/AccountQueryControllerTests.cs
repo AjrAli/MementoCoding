@@ -18,6 +18,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AuthenticationService = ManagementProject.Identity.Services.AuthenticationService;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+using ManagementProject.Application.Exceptions;
 
 namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 {
@@ -51,14 +52,11 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             AuthenticationRequest request = null;
             var accountController = InitAccountController();
 
-            // Act
-            var resultAuthCall = await accountController.AuthenticateAsync(request);
-            var result = resultAuthCall?.Result;
-
-            // Assert
-            Assert.IsTrue(result is BadRequestObjectResult);
-            var success = (((result as BadRequestObjectResult)?.Value) as ErrorResponse)?.Success;
-            Assert.IsTrue(!success);
+            // Act && Assert
+            await Assert.ThrowsExceptionAsync<BadRequestException>(async () =>
+            {
+                await accountController.AuthenticateAsync(request);
+            });
         }
 
         private AccountQueryController InitAccountController()

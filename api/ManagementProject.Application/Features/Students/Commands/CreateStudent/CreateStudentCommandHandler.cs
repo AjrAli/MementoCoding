@@ -35,6 +35,7 @@ namespace ManagementProject.Application.Features.Students.Commands.CreateStudent
         {
             var createStudentCommandResponse = _responseFactory.CreateResponse();
             await CreateStudentResponseHandling(request, createStudentCommandResponse);
+            createStudentCommandResponse.Message = $"Student {request.Student?.FirstName} successfully created";
             return createStudentCommandResponse;
         }
 

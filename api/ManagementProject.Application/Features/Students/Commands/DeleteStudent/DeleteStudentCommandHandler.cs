@@ -37,11 +37,13 @@ namespace ManagementProject.Application.Features.Students.Commands.DeleteStudent
         private async Task DeleteStudentResponseHandling(DeleteStudentCommand request, DeleteStudentCommandResponse deleteStudentCommandResponse)
         {
 
-            long Id = (request?.StudentId != null) ? (long)request!.StudentId : 0;
+            long Id = request.StudentId;
             var studentToDelete = await _studentRepository.GetAsync(Id);
-            await _studentRepository.DeleteAsync(studentToDelete.Id);
+            await _studentRepository.DeleteAsync(Id);
             if (await _unitOfWork.SaveChangesAsync() <= 0)
                 throw new BadRequestException($"Failed to delete student by id : {Id}");
+            else
+                deleteStudentCommandResponse.Message = $"Student {studentToDelete.FirstName} successfully deleted";
 
         }
     }

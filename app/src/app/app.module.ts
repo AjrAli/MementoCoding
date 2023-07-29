@@ -28,6 +28,9 @@ import { JwtInterceptor } from './services/jwt.interceptor';
 import { SearchResultsComponent } from './search/search-results/search-results.component';
 import { SearchComponent } from './search/search/search.component';
 import { BoldTextPipe } from './search/search-results/bold-text.pipe';
+import { ToastService } from './services/message-popup/toast.service';
+import { ToastrModule } from 'ngx-toastr';
+import { BaseFormComponent } from './forms/base-form.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,6 +49,7 @@ import { BoldTextPipe } from './search/search-results/bold-text.pipe';
     StudentDetailsComponent,
     SearchResultsComponent,
     SearchComponent,
+    BaseFormComponent,
     BoldTextPipe
   ],
   imports: [
@@ -57,9 +61,10 @@ import { BoldTextPipe } from './search/search-results/bold-text.pipe';
     ReactiveFormsModule,
     NgbModule,
     BrowserAnimationsModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    ToastrModule.forRoot()
   ],
-  providers: [SchoolService, StudentService, AuthenticationService,
+  providers: [SchoolService, StudentService, AuthenticationService, ToastService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
