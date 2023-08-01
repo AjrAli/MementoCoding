@@ -85,6 +85,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
             });
+            userManager.Setup(u => u.GetRolesAsync(user)).ReturnsAsync(new List<string>() { "Administrator" });
             userManager.Setup(m => m.CheckPasswordAsync(user, "admin")).ReturnsAsync(true);
 
             var jwtSettings = new JwtSettings

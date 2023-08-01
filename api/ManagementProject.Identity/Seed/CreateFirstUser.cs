@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ManagementProject.Identity.Entity;
 using System.Threading.Tasks;
+using ManagementProject.Identity.Roles;
 
 namespace ManagementProject.Identity.Seed
 {
@@ -16,12 +17,16 @@ namespace ManagementProject.Identity.Seed
                 UserName = "admin",
                 EmailConfirmed = true
             };
-
-            if((await userManager.FindByNameAsync(newUser.UserName)) == null)
+            var user = await userManager.FindByNameAsync(newUser.UserName);
+            if (user == null)
             {
                 await userManager.CreateAsync(newUser, "admin");
+                await userManager.AddToRoleAsync(newUser, RoleNames.Administrator);
+            }
+            if (user != null && (await userManager.GetRolesAsync(user)).Count == 0)
+            {
+                await userManager.AddToRoleAsync(user, RoleNames.Administrator);
             }
         }
-
     }
 }

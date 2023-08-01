@@ -10,6 +10,7 @@ using ManagementProject.Identity.JwtModel;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace ManagementProject.Identity
 {
@@ -17,7 +18,7 @@ namespace ManagementProject.Identity
     {
         public static void AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+            var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
 
             services.AddDbContext<ManagementProjectIdentityDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("ManagementProjectIdentityDbConnectionString"),
                 b => b.MigrationsAssembly(typeof(ManagementProjectIdentityDbContext).Assembly.FullName)));
@@ -47,9 +48,9 @@ namespace ManagementProject.Identity
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero,
-                        ValidIssuer = configuration["JwtSettings:Issuer"],
-                        ValidAudience = configuration["JwtSettings:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]))
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
                     };
 
                     o.Events = new JwtBearerEvents()

@@ -35,16 +35,17 @@ namespace ManagementProject.Api
 
                 try
                 {
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    await CreateRoles.SeedAsync(roleManager);
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                     await CreateFirstUser.SeedAsync(userManager);
                     var dbContext = services.GetRequiredService<ManagementProjectDbContext>();
                     await DatabaseSeeder.SeedAsync(dbContext);
                     Log.Information("Starting web host");
-                    CreateHostBuilder(args).Build().Run();
                 }
                 catch (Exception ex)
                 {
-                    Log.Fatal(ex, "An error occured while starting the application");
+                    Log.Fatal(ex, "An error occurred while starting the application");
                 }
                 finally
                 {
@@ -52,8 +53,9 @@ namespace ManagementProject.Api
                 }
             }
 
-            host.Run();
+            await host.RunAsync();
         }
+
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

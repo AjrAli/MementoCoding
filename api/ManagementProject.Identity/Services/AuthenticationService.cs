@@ -13,6 +13,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using DotNetCore.Results;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace ManagementProject.Identity.Services
 {
@@ -51,33 +53,34 @@ namespace ManagementProject.Identity.Services
                         throw new ValidationException($"Credentials for '{username} aren't valid'.");
                     }
             */
-
-            JwtSecurityToken? jwtSecurityToken = await GenerateToken(user);
+            var userRoles = await _userManager.GetRolesAsync(user); // Get the roles of the user
+            JwtSecurityToken? jwtSecurityToken = await GenerateToken(user, userRoles);
 
             AuthenticationResponse response = new()
             {
                 Id = user.Id,
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
                 Email = user.Email,
-                UserName = user.UserName
+                UserName = user.UserName,
+                Role = userRoles.FirstOrDefault()
             };
 
             return response;
         }
 
-        private async Task<JwtSecurityToken?> GenerateToken(ApplicationUser user)
+        private async Task<JwtSecurityToken?> GenerateToken(ApplicationUser user, IList<string> userRoles)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
-
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
             }
-            .Union(userClaims);
+            .Union(userClaims)
+            .Union(userRoles.Select(role => new Claim(ClaimTypes.Role, role))); // Add the roles as claims
 
-            if(_jwtSettings.Key != null)
+            if (_jwtSettings.Key != null)
             {
                 var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
                 var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
