@@ -15,7 +15,7 @@ namespace ManagementProject.Identity.Seed
                 LastName = "Admin",
                 Email = "ali@gmail.com",
                 UserName = "admin",
-                EmailConfirmed = true
+                EmailConfirmed = true //For test app only
             };
             var user = await userManager.FindByNameAsync(newUser.UserName);
             if (user == null)

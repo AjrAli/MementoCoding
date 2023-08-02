@@ -11,5 +11,8 @@ namespace ManagementProject.Application.Exceptions
         public BadRequestException(string message) : base(message)
         {
         }
+        public BadRequestException(string message, IList<string> errors) : base(message, errors)
+        {
+        }
     }
 }

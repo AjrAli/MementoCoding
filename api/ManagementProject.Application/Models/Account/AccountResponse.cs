@@ -1,17 +1,17 @@
 ﻿using ManagementProject.Application.Features.Response;
 using System.Collections.Generic;
 
-namespace ManagementProject.Application.Models.Authentication
+namespace ManagementProject.Application.Models.Account
 {
-    public class AuthenticationResponse : BaseResponse
+    public class AccountResponse : BaseResponse
     {
-        public AuthenticationResponse() : base()
+        public AccountResponse() : base()
         {
 
         }
         public string? Id { get; set; }
         public string? UserName { get; set; }
-        public string? Role { get;set; }
+        public string? Role { get; set; }
         public string? Email { get; set; }
         public string? Token { get; set; }
 
