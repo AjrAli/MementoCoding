@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import jwt_decode from 'jwt-decode';
 import { Role } from 'src/app/enum/role';
+import { AccountDto } from 'src/app/dto/account/account-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,10 @@ export class AuthenticationService {
     const body = { username, password };
     return this.http.post<AuthenticationResponse>(`${this.apiUrl}/authenticate`, body);
   }
-
+  
+  createSimpleUser(account: AccountDto): Observable<AuthenticationResponse> {
+    return this.http.post<AuthenticationResponse>(`${this.apiUrl}/create-simple-user`, account);
+  }
   setToken(token: string) {
     localStorage.setItem('authToken', token);
   }
@@ -67,7 +71,7 @@ interface DecodedToken {
   aud: string;
 }
 
-interface AuthenticationResponse {
+export interface AuthenticationResponse {
   token: string;
   message: string;
 }

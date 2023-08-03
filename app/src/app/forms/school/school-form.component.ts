@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { SchoolDto } from '../../dto/school/school-dto';
 import { SchoolService } from '../../services/school/school.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BaseFormComponent } from '../base-form.component';
 @Component({
   selector: 'app-school-form',
@@ -27,9 +27,9 @@ export class SchoolFormComponent extends BaseFormComponent implements OnInit {
     }
     this.baseForm = new FormGroup({
       id: new FormControl(this.school?.id),
-      name: new FormControl(this.school?.name),
-      adress: new FormControl(this.school?.adress),
-      town: new FormControl(this.school?.town),
+      name: new FormControl(this.school?.name, [Validators.required, Validators.maxLength(100)]),
+      adress: new FormControl(this.school?.adress, [Validators.required, Validators.maxLength(100)]),
+      town: new FormControl(this.school?.town, [Validators.required, Validators.maxLength(100)]),
       description: new FormControl(this.school?.description)
     });
   }

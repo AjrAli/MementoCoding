@@ -1,0 +1,23 @@
+<div  class="text-danger" *ngIf="control && control.errors && control.touched">
+    <div *ngIf="control.errors['required']">
+        This field is required.
+    </div>
+    <div *ngIf="control.errors['minlength']">
+        Minimum length is {{ control.errors['minlength']['requiredLength'] }} characters.
+    </div>
+    <div *ngIf="control.errors['maxlength']">
+        Maximum length is {{ control.errors['maxlength']['requiredLength'] }} characters.
+    </div>
+    <div *ngIf="control.errors['email']">
+        Invalid email address
+    </div>
+    <div *ngIf="control.errors['min']">
+        Minimum value is {{ control.errors['min']['min'] }}.
+    </div>
+    <div *ngIf="control.errors['max']">
+        Maximum value is {{ control.errors['max']['max'] }}.
+    </div>
+    <div *ngIf="control.errors['pattern']">
+        Only alphabets and spaces are allowed.
+    </div>
+</div>

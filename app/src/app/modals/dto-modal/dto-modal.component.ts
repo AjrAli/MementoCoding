@@ -24,10 +24,16 @@ export class DtoModalComponent {
   handleEvent(dto: any) {
     this.passBackDTOToMainComponent.emit(dto);
   }
+  isAccount() {
+    if (this.dto) {
+      const isAccount = this.dto.typeInstance === 'AccountDto';
+      return isAccount;
+    }
+    return false;
+  }
   isSchool() {
     if (this.dto) {
       const isSchool = this.dto.typeInstance === 'SchoolDto' || this.dto.typeInstance === 'GetSchoolDto';
-      console.log(isSchool);
       return isSchool;
     }
     return false;
@@ -35,13 +41,11 @@ export class DtoModalComponent {
   isStudent() {
     if (this.dto) {
       const isStudent = this.dto.typeInstance === 'StudentDto' || this.dto.typeInstance === 'GetStudentDto';
-      console.log(isStudent);
       return isStudent;
     }
     return false;
   }
   closeModal() {
-    console.log(this.dto);
     this.modal.dismiss('Cross click')
   }
   doClearForm() {

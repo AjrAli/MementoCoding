@@ -10,5 +10,6 @@
   <div class="modal-body">
     <app-school-form #formComponent *ngIf="isSchool()" (passBackDTO)="handleEvent($event)"  [dto]= "dto"></app-school-form>
     <app-student-form  #formComponent *ngIf="isStudent()" (passBackDTO)="handleEvent($event)"  [dto]= "dto"></app-student-form>
+    <app-account-form  #formComponent *ngIf="isAccount()" (passBackDTO)="handleEvent($event)"  [dto]= "dto"></app-account-form>
   </div>
   

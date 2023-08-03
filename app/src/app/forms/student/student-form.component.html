@@ -10,40 +10,28 @@
                     <div class="col-md-8">
                         <input type="text" class="form-control" formControlName="firstName" required />
                     </div>
-                    <div *ngIf="baseForm.get('firstName')!.invalid && (baseForm.get('firstName')!.dirty || baseForm.get('firstName')!.touched)"
-                        class="text-danger">
-                        FirstName is required.
-                    </div>
+                    <app-form-validation-error [control]="baseForm.get('firstName')"></app-form-validation-error>
                 </div>
                 <div class="form-group row mb-1">
                     <label class="col-md-4" for="lastName">Last Name</label>
                     <div class="col-md-8">
                         <input type="text" class="form-control" formControlName="lastName" required />
                     </div>
-                    <div *ngIf="baseForm.get('lastName')!.invalid && (baseForm.get('lastName')!.dirty || baseForm.get('lastName')!.touched)"
-                        class="text-danger">
-                        LastName is required.
-                    </div>
+                    <app-form-validation-error [control]="baseForm.get('lastName')"></app-form-validation-error>
                 </div>
                 <div class="form-group row mb-1">
                     <label class="col-md-4" for="age">Age</label>
                     <div class="col-md-8">
                         <input type="number" class="form-control" formControlName="age" required />
                     </div>
-                    <div *ngIf="baseForm.get('age')!.invalid && (baseForm.get('age')!.dirty || baseForm.get('age')!.touched)"
-                        class="text-danger">
-                        Age is required.
-                    </div>
+                    <app-form-validation-error [control]="baseForm.get('age')"></app-form-validation-error>
                 </div>
                 <div class="form-group row mb-1">
                     <label class="col-md-4" for="adress">Adress</label>
                     <div class="col-md-8">
                         <input type="text" class="form-control" formControlName="adress" required />
                     </div>
-                    <div *ngIf="baseForm.get('adress')!.invalid && (baseForm.get('adress')!.dirty || baseForm.get('adress')!.touched)"
-                        class="text-danger">
-                        Adress is required.
-                    </div>
+                    <app-form-validation-error [control]="baseForm.get('adress')"></app-form-validation-error>
                 </div>
                 <div class="form-group row mb-4">
                     <label class="col-md-4" for="schoolId">School</label>

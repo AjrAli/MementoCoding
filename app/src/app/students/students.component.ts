@@ -52,8 +52,7 @@ export class StudentsComponent implements OnInit {
       return response;
     } catch (e) {
       this.toastService.showError(e as ErrorResponse);
-      console.error('Create student error:', e);
-      alert('Failed to create student. Please try again later.');
+      this.toastService.showSimpleError('Failed to create student. Please try again later.');
       throw e; 
     }
   }
@@ -65,8 +64,7 @@ export class StudentsComponent implements OnInit {
       return response;
     } catch (e) {
       this.toastService.showError(e as ErrorResponse);
-      console.error('Update student error:', e);
-      alert('Failed to update student. Please try again later.');
+      this.toastService.showSimpleError('Failed to update student. Please try again later.');
       throw e; 
     }
   }
@@ -79,8 +77,7 @@ export class StudentsComponent implements OnInit {
       },
       error: (e: ErrorResponse) => {
         this.toastService.showError(e);
-        console.error('Delete student error:', e);
-        alert('Failed to delete student. Please try again later.');
+        this.toastService.showSimpleError('Failed to delete student. Please try again later.');
       },
       complete: () => console.info('complete')
     });
@@ -152,8 +149,6 @@ export class StudentsComponent implements OnInit {
       }
     }).catch((error) => {
       this.toastService.showError(error as ErrorResponse);  
-      // La boîte de dialogue a été fermée avec une erreur
-      console.log('Erreur :', error);
     });
   }
   async updateStudentByDtoModal(studentReturn: any) {
