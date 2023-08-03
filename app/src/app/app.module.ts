@@ -31,6 +31,8 @@ import { BoldTextPipe } from './search/search-results/bold-text.pipe';
 import { ToastService } from './services/message-popup/toast.service';
 import { ToastrModule } from 'ngx-toastr';
 import { BaseFormComponent } from './forms/base-form.component';
+import { AccountFormComponent } from './forms/account/account-form.component';
+import { FormValidationErrorComponent } from './shared/validation/form-validation-error/form-validation-error.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -50,7 +52,9 @@ import { BaseFormComponent } from './forms/base-form.component';
     SearchResultsComponent,
     SearchComponent,
     BaseFormComponent,
-    BoldTextPipe
+    BoldTextPipe,
+    AccountFormComponent,
+    FormValidationErrorComponent
   ],
   imports: [
     BrowserModule,

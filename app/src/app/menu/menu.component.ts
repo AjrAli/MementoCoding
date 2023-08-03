@@ -37,6 +37,9 @@ export class MenuComponent implements OnInit {
       this.searchStateService.setSearchKeyword(this.searchForm.value.searchField);
     }
   }
+  isAdminConnected(): boolean{
+    return this.authService.isAdmin();
+  }
   isConnected() {
     return this.authService.isLoggedIn();
   }

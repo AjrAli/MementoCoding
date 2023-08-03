@@ -1,53 +1,31 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ManagementProject.Application.Models.Account;
+using ManagementProject.Application.Models.Account.Query.Authenticate;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using ManagementProject.Application.Contracts.Identity;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Models.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
-using ManagementProject.Application.Features.Schools.Commands.CreateSchool;
 
 namespace ManagementProject.Api.Controllers.Queries
 {
     [ApiController]
+    [AllowAnonymous]
     public class AccountQueryController : ControllerBase
     {
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IMediator _mediator;
         private readonly ILogger<AccountQueryController> _logger;
-        public AccountQueryController(IAuthenticationService authenticationService,
-                                 ILogger<AccountQueryController> logger)
+        public AccountQueryController(IMediator mediator,
+                                ILogger<AccountQueryController> logger)
         {
+            _mediator = mediator;
             _logger = logger;
-            _authenticationService = authenticationService;
         }
 
         [HttpPost("authenticate")]
-        public async Task<ActionResult<AuthenticationResponse>> AuthenticateAsync([FromBody] AuthenticationRequest request)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateQuery request)
         {
-            if(request?.Username == null || request?.Password == null)
-                throw new BadRequestException($"One of the credentials given is empty");
-            var response = await _authenticationService.AuthenticateAsync(request.Username, request.Password);
-            response.Message = $"User {response.UserName} successfully connected";
-            return Ok(response);
-            #region Store token on a Cookie connection
-            /******** ONLY FOR TEST WITHOUT USING Postman ********************/
-            /*
-                        _logger.LogInformation($"{DateTimeOffset.UtcNow.AddDays(1).AddMinutes(-5)}");
-                        _logger.LogInformation($"{DateTimeOffset.Now.AddMinutes(2)}");
-                        Response?.Cookies?.Append("X-Access-Token", response.Token, new CookieOptions()
-                        {
-                            Expires = DateTimeOffset.Now.AddMinutes(2),
-                            HttpOnly = true,
-                            SameSite = SameSiteMode.Strict
-                        });
-            */
-            #endregion
-
+            AccountResponse? dataReponse = await _mediator.Send(request);
+            return Ok(dataReponse);
         }
     }
 }

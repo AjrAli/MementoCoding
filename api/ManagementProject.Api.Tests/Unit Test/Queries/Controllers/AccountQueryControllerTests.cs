@@ -8,7 +8,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ManagementProject.Api.Controllers.Queries;
 using ManagementProject.Application.Features.Response;
-using ManagementProject.Application.Models.Authentication;
 using ManagementProject.Identity.Entity;
 using ManagementProject.Identity.JwtModel;
 using System;
@@ -19,6 +18,11 @@ using System.Threading.Tasks;
 using AuthenticationService = ManagementProject.Identity.Services.AuthenticationService;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 using ManagementProject.Application.Exceptions;
+using ManagementProject.Application.Models.Account;
+using ManagementProject.Application.Models.Account.Query.Authenticate;
+using ManagementProject.Application.Features.Schools.Queries.GetSchools;
+using MediatR;
+using System.Threading;
 
 namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 {
@@ -31,7 +35,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         public async Task AuthenticateAsync_ReturnToken()
         {
             // Arrange
-            var request = new AuthenticationRequest()
+            var request = new AuthenticateQuery()
             {
                 Username = "admin",
                 Password = "admin"
@@ -40,7 +44,9 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 
             // Act
             var resultAuthCall = await accountController.AuthenticateAsync(request);
-            var val = (resultAuthCall.Result as OkObjectResult)?.Value as AuthenticationResponse;
+
+            var result = resultAuthCall as OkObjectResult;
+            var val = result?.Value as AccountResponse;
 
             // Assert
             Assert.IsTrue(val?.Token != null);
@@ -49,7 +55,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         public async Task AuthenticateAsync_ReturnBadRequest()
         {
             // Arrange
-            AuthenticationRequest request = null;
+            AuthenticateQuery request = null;
             var accountController = InitAccountController();
 
             // Act && Assert
@@ -61,6 +67,22 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 
         private AccountQueryController InitAccountController()
         {
+            Mock<IMediator> mediatorMock = MockMediatorAuthenticateQuery();
+            return new AccountQueryController(mediatorMock.Object, _logger);
+        }
+
+        private Mock<IMediator> MockMediatorAuthenticateQuery()
+        {
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.Send(It.IsAny<AuthenticateQuery>(), default)).Returns(
+                async (AuthenticateQuery q, CancellationToken token) =>
+                await InitAuthenticateQueryHandler().Handle(q, token));
+            return mediatorMock;
+        }
+
+        private AuthenticateQueryHandler InitAuthenticateQueryHandler()
+        {
+
             var user = new ApplicationUser
             {
                 Id = "3c112624-eff3-41bf-9359-2d4ca50ce130",
@@ -85,6 +107,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
             });
+            userManager.Setup(u => u.GetRolesAsync(user)).ReturnsAsync(new List<string>() { "Administrator" });
             userManager.Setup(m => m.CheckPasswordAsync(user, "admin")).ReturnsAsync(true);
 
             var jwtSettings = new JwtSettings
@@ -97,10 +120,8 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             var options = Options.Create(jwtSettings);
 
             var authenticationService = new AuthenticationService(userManager.Object, options);
-            return new AccountQueryController(authenticationService, _logger);
+            return new AuthenticateQueryHandler(authenticationService);
         }
-
-
 
         public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
         {

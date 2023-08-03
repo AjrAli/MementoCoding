@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Events;
+using System.Configuration;
 
 namespace ManagementProject.Identity.Integration_Test.Services.Tests
 {
@@ -34,6 +35,7 @@ namespace ManagementProject.Identity.Integration_Test.Services.Tests
                                       webHost.UseStartup<Startup>();
                                       webHost.ConfigureServices(services =>
                                       {
+                                          services.AddOptions<JwtSettings>().Bind(configuration.GetSection("JwtSettings"));
                                           services.AddDbContext<ManagementProjectIdentityDbContext>(options =>
                                           {
                                               options.UseSqlServer("Server=localhost;Database=ManagementProjectIdentityDb;Trusted_Connection=True;MultipleActiveResultSets=True;");
@@ -60,10 +62,8 @@ namespace ManagementProject.Identity.Integration_Test.Services.Tests
             using var scope = _host.Services.CreateScope();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var jwtSettings = scope.ServiceProvider.GetRequiredService<IOptions<JwtSettings>>();
-            jwtSettings.Value.Key = "84322CFB66934ECC86D547C5CF4F2EFC";
-            jwtSettings.Value.Issuer = "localhost";
-            jwtSettings.Value.Audience = "localhost";
-            jwtSettings.Value.DurationInMinutes = 60;
+
+
             var authenticationService = new AuthenticationService(userManager, jwtSettings);
 
             // Act

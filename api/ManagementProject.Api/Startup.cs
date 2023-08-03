@@ -16,6 +16,11 @@ using ManagementProject.Identity.Services;
 using ManagementProject.Persistence;
 using Serilog;
 using System.Collections.Generic;
+using ManagementProject.Identity.JwtModel;
+using System.Configuration;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.Extensions.Options;
+using Humanizer.Configuration;
 
 namespace ManagementProject.Api
 {
@@ -28,6 +33,7 @@ namespace ManagementProject.Api
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions<JwtSettings>().Bind(Configuration.GetSection("JwtSettings"));
             AddSwagger(services);
             services.AddApplicationServices();
             services.AddPersistenceServices(Configuration);

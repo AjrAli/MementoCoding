@@ -1,0 +1,49 @@
+<div class="container mt-12">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row mb-4">
+                <h3>{{title}}</h3>
+            </div>
+            <form [formGroup]="baseForm" (ngSubmit)="createAccount()">
+                <div class="form-group row mb-1">
+                    <label class="col-md-4" for="username">UserName</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" formControlName="username" required />
+                    </div>
+                    <app-form-validation-error [control]="baseForm.get('username')"></app-form-validation-error>
+                </div>
+                <div class="form-group row mb-1">
+                    <label class="col-md-4" for="adress">Password</label>
+                    <div class="col-md-8">
+                        <input type="password" class="form-control" formControlName="password" required />
+                    </div>
+                    <app-form-validation-error [control]="baseForm.get('password')"></app-form-validation-error>
+                </div>
+                <div class="form-group row mb-1">
+                    <label class="col-md-4" for="firstName">First Name</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" formControlName="firstName" required />
+                    </div>
+                    <app-form-validation-error [control]="baseForm.get('firstName')"></app-form-validation-error>
+                </div>
+                <div class="form-group row mb-1">
+                    <label class="col-md-4" for="lastName">Last Name</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" formControlName="lastName" required />
+                    </div>
+                    <app-form-validation-error [control]="baseForm.get('lastName')"></app-form-validation-error>
+                </div>
+                <div class="form-group row mb-3">
+                    <label class="col-md-4" for="email">Email</label>
+                    <div class="col-md-8">
+                        <input type="email" class="form-control" formControlName="email" required />
+                    </div>
+                    <app-form-validation-error [control]="baseForm.get('email')"></app-form-validation-error>
+                </div>
+                <div class="row">
+                    <button type="submit" class="btn btn-primary" [disabled]="!baseForm.valid">{{title}}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

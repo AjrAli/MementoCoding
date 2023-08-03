@@ -8,14 +8,15 @@ import { HomeComponent } from './home/home.component';
 import { SchoolDetailsComponent } from './schools/school-details/school-details.component';
 import { StudentDetailsComponent } from './students/student-details/student-details.component';
 import { SearchComponent } from './search/search/search.component';
+import { AuthAdminGuard } from './guards/auth.admin.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'home', component: HomeComponent},
   { path: 'login', component: LoginComponent},
-  { path: 'schools', component: SchoolsComponent, canActivate: [AuthGuard] },
+  { path: 'schools', component: SchoolsComponent, canActivate: [AuthAdminGuard] },
   { path: 'schools/:id', component: SchoolDetailsComponent, canActivate: [AuthGuard] },
-  { path: 'students', component: StudentsComponent, canActivate: [AuthGuard] },
+  { path: 'students', component: StudentsComponent, canActivate: [AuthAdminGuard] },
   { path: 'students/:id', component: StudentDetailsComponent, canActivate: [AuthGuard] },
   { path: 'search', component: SearchComponent, canActivate: [AuthGuard] },
 ];

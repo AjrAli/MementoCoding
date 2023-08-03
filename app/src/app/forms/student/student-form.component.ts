@@ -4,7 +4,7 @@ import { SchoolDto } from '../../dto/school/school-dto';
 import { StudentDto } from '../../dto/student/student-dto';
 import { SchoolService } from '../../services/school/school.service';
 import { StudentService } from '../../services/student/student.service';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GetSchoolDto } from 'src/app/dto/school/getschool-dto';
 import { interval, firstValueFrom, lastValueFrom } from 'rxjs';
 import { BaseFormComponent } from '../base-form.component';
@@ -34,7 +34,6 @@ export class StudentFormComponent extends BaseFormComponent implements OnInit {
       });
     } catch (error) {
       this.toastService.showError(error as ErrorResponse);
-      console.log(error);
     }
   }
   async ngOnInit(): Promise<void> {
@@ -47,10 +46,10 @@ export class StudentFormComponent extends BaseFormComponent implements OnInit {
     }
     this.baseForm = new FormGroup({
       id: new FormControl(this.student?.id),
-      firstName: new FormControl(this.student?.firstName),
-      lastName: new FormControl(this.student?.lastName),
-      age: new FormControl(this.student?.age),
-      adress: new FormControl(this.student?.adress),
+      firstName: new FormControl(this.student?.firstName, [Validators.required, Validators.maxLength(100)]),
+      lastName: new FormControl(this.student?.lastName, [Validators.required, Validators.maxLength(100)]),
+      age: new FormControl(this.student?.age, [Validators.required, Validators.min(5), Validators.max(20)]),
+      adress: new FormControl(this.student?.adress, [Validators.required, Validators.maxLength(100)]),
       schoolId: new FormControl(this.student?.schoolId)
     });
   }

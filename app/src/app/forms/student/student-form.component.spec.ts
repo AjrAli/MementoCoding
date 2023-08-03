@@ -4,6 +4,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { StudentFormComponent } from './student-form.component';
 import { ToastrModule } from 'ngx-toastr';
 import { ToastService } from 'src/app/services/message-popup/toast.service';
+import { FormValidationErrorComponent } from 'src/app/shared/validation/form-validation-error/form-validation-error.component';
 
 describe('StudentFormComponent', () => {
   let component: StudentFormComponent;
@@ -14,7 +15,7 @@ describe('StudentFormComponent', () => {
       imports: [FormsModule, ReactiveFormsModule, HttpClientTestingModule, ToastrModule.forRoot(),
       ],
       providers: [ToastService], // Importez les modules nécessaires ici
-      declarations: [StudentFormComponent]
+      declarations: [StudentFormComponent, FormValidationErrorComponent]
     })
       .compileComponents();
 
