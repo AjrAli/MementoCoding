@@ -8,11 +8,12 @@ using ManagementProject.Application.Features.Students.Commands.DeleteStudent;
 using ManagementProject.Application.Features.Students.Commands.UpdateStudent;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using ManagementProject.Identity.Roles;
 
 namespace ManagementProject.Api.Controllers.Commands
 {
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = RoleNames.Administrator)]
     [Route("[controller]")]
     public class StudentCommandController : ControllerBase
     {

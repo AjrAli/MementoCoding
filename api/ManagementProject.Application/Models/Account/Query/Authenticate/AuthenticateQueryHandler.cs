@@ -21,7 +21,7 @@ namespace ManagementProject.Application.Models.Account.Query.Authenticate
             if (request?.Username == null || request?.Password == null)
                 throw new BadRequestException($"One of the credentials given is empty");
             var response = await _authenticationService.AuthenticateAsync(request.Username, request.Password);
-            response.Message = $"User {response.UserName} successfully connected";
+            response.Message = $"User {request.Username} successfully connected";
             return response;
         }
     }

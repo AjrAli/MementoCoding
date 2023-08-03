@@ -1,6 +1,7 @@
 ﻿using ManagementProject.Application.Models.Account;
 using ManagementProject.Application.Models.Account.Command;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 namespace ManagementProject.Api.Controllers.Commands
 {
     [ApiController]
+    [AllowAnonymous]
     public class AccountCommandController : ControllerBase
     {
         private readonly IMediator _mediator;

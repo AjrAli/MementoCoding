@@ -60,10 +60,7 @@ namespace ManagementProject.Identity.Services
             return new AccountResponse
             {
                 Id = user.Id,
-                Token = _jwtTokenHandler.WriteToken(jwtSecurityToken),
-                Email = user.Email,
-                UserName = user.UserName,
-                Role = userRoles.FirstOrDefault()
+                Token = _jwtTokenHandler.WriteToken(jwtSecurityToken)
             };
         }
 
@@ -90,10 +87,7 @@ namespace ManagementProject.Identity.Services
             return new AccountResponse
             {
                 Id = user.Id,
-                Token = _jwtTokenHandler.WriteToken(jwtSecurityToken),
-                Email = user.Email,
-                UserName = user.UserName,
-                Role = userRoles.FirstOrDefault()
+                Token = _jwtTokenHandler.WriteToken(jwtSecurityToken)
             };
         }
 
@@ -107,7 +101,7 @@ namespace ManagementProject.Identity.Services
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
             }
             .Union(userClaims)
-            .Union(userRoles.Select(role => new Claim(ClaimTypes.Role, role))); // Add the roles as claims
+            .Union(userRoles.Select(role => new Claim("role", role))); // Add the roles as claims
 
             if (_jwtSettings.Key != null)
             {

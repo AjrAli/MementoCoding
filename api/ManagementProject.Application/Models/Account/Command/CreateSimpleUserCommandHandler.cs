@@ -24,7 +24,7 @@ namespace ManagementProject.Application.Models.Account.Command
         public async Task<AccountResponse> Handle(CreateSimpleUserCommand request, CancellationToken cancellationToken)
         {
             var response = await _authenticationService.CreateSimpleUserAsync(request);
-            response.Message = $"User {response.UserName} successfully connected";
+            response.Message = $"User {request.Account.Username} successfully connected";
             return response;
         }
     }

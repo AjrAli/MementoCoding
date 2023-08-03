@@ -10,10 +10,10 @@
                 <li class="nav-item active">
                     <a class="nav-link" routerLink="/home">Home</a>
                 </li>
-                <li class="nav-item">
+                <li *ngIf="isAdminConnected()" class="nav-item">
                     <a class="nav-link" routerLink="/schools">Schools</a>
                 </li>
-                <li class="nav-item">
+                <li *ngIf="isAdminConnected()" class="nav-item">
                     <a class="nav-link" routerLink="/students">Students</a>
                 </li>
                 <li class="nav-item">
@@ -27,7 +27,7 @@
                                     <div class="col-md-5">
                                         <button class="btn btn-outline-light" type="submit">
                                             <fa-icon [icon]="faSearch"></fa-icon>
-                                            Search in DB
+                                            Search
                                         </button>
                                     </div>
                                 </div>
