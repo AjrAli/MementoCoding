@@ -1,28 +1,25 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { StudentDto } from '../dto/student/student-dto';
-import { GetStudentDto } from '../dto/student/getstudent-dto';
 import { StudentService } from '../services/student/student.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.component';
 import { ErrorResponse } from '../dto/response/error/error-response';
-import { DtoModalComponent } from '../modals/dto-modal/dto-modal.component';
 import { PageDetailsDto } from '../dto/utilities/page-details-dto';
 import { Router } from '@angular/router';
 import { Command } from '../enum/command';
 import { BaseResponse } from '../dto/response/base-response';
 import { ToastService } from '../services/message-popup/toast.service';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { ModalService } from '../services/modal/modal.service';
 @Component({
   selector: 'app-students',
   templateUrl: './students.component.html',
   styleUrls: ['./students.component.css']
 })
 export class StudentsComponent implements OnInit {
-  students: GetStudentDto[] = [];
+  students: StudentDto[] = [];
   pageDetails: PageDetailsDto = new PageDetailsDto();
   newStudent: StudentDto = new StudentDto();
   constructor(private studentService: StudentService,
-    private _modalService: NgbModal,
+    private modalService: ModalService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private toastService: ToastService) { }
@@ -35,71 +32,65 @@ export class StudentsComponent implements OnInit {
     this.studentService.getStudents(skip, take).subscribe((response: any) => {
       this.pageDetails.totalItems = response.count;
       this.students = response.studentsDto.map((studentData: any) => {
-        const student = new GetStudentDto();
+        const student = new StudentDto();
         Object.assign(student, studentData);
         return student;
       });
     },
-    (error : ErrorResponse) => {
-      this.toastService.showError(error);
-    });
+      (error: ErrorResponse) => {
+        this.toastService.showError(error);
+      });
   }
 
   async createStudent(student: StudentDto): Promise<BaseResponse> {
     try {
-      const response: BaseResponse = await firstValueFrom (this.studentService.createStudent(student));
+      const response: BaseResponse = await firstValueFrom(this.studentService.createStudent(student));
       this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       return response;
     } catch (e) {
       this.toastService.showError(e as ErrorResponse);
       this.toastService.showSimpleError('Failed to create student. Please try again later.');
-      throw e; 
+      throw e;
     }
   }
 
-  async updateStudent(student: StudentDto): Promise<BaseResponse>  {
+  async updateStudent(student: StudentDto): Promise<BaseResponse> {
     try {
-      const response: BaseResponse = await firstValueFrom (this.studentService.updateStudent(student));
+      const response: BaseResponse = await firstValueFrom(this.studentService.updateStudent(student));
       this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       return response;
     } catch (e) {
       this.toastService.showError(e as ErrorResponse);
       this.toastService.showSimpleError('Failed to update student. Please try again later.');
-      throw e; 
+      throw e;
     }
   }
 
-  deleteStudent(studentId: number): void {
-    this.studentService.deleteStudent(studentId).subscribe({
-      next: (response: BaseResponse) => {
-        this.toastService.showSuccess(response.message);
-        this.getStudents(this.pageDetails.skip, this.pageDetails.take);
-      },
-      error: (e: ErrorResponse) => {
-        this.toastService.showError(e);
-        this.toastService.showSimpleError('Failed to delete student. Please try again later.');
-      },
-      complete: () => console.info('complete')
-    });
+  async deleteStudent(studentId: number): Promise<BaseResponse> {
+    try {
+      const response: BaseResponse = await firstValueFrom(this.studentService.deleteStudent(studentId));
+      this.getStudents(this.pageDetails.skip, this.pageDetails.take);
+      return response;
+    } catch (e) {
+      this.toastService.showError(e as ErrorResponse);
+      this.toastService.showSimpleError('Failed to delete student. Please try again later.');
+      throw e;
+    }
   }
 
-  async openAddModal() {
-    const modalRef = this._modalService.open(DtoModalComponent);
-    modalRef.componentInstance.title = 'Student Modal';
-    modalRef.componentInstance.dto = this.newStudent;
-    modalRef.componentInstance.passBackDTOToMainComponent.subscribe(async (receivedStudent: StudentDto) => {
-      const result = await this.createStudent(receivedStudent);
-      if (result?.success) {
-        this.toastService.showSuccess(result.message);
-        this.changeDetectorRef.detectChanges();
-        modalRef.componentInstance.doClearForm();
-        modalRef.close();
-      } else {
-        let responseError = result as ErrorResponse;
-        this.toastService.showError(responseError);
-      }
-    });
+  async openAddModal(): Promise<void> {
+    await this.modalService.openDtoModal(this.newStudent, 'School Modal', this.createStudent.bind(this));
   }
+  async deleteStudentByIdByConfirmModal(studentReturn: any) {
+    let student = studentReturn as StudentDto;
+    await this.modalService.openConfirmModal(student.id, student.haschildren, student.firstName, this.deleteStudent.bind(this));
+  }
+  async updateStudentByDtoModal(studentReturn: any) {
+    let student = studentReturn as StudentDto;
+    await this.modalService.openDtoModal(student, 'School Modal', this.updateStudent.bind(this));
+  }
+
+
   handleNextPage(result: any) {
     this.pageDetails.skip = result.skip;
     this.pageDetails.take = result.take;
@@ -125,48 +116,7 @@ export class StudentsComponent implements OnInit {
   }
 
   navigateToStudentById(studentReturn: any) {
-    let student = studentReturn as GetStudentDto;
-    this.router.navigate(['/students', student.id]);
-  }
-  deleteStudentByIdByConfirmModal(studentReturn: any) {
-    let student = studentReturn as GetStudentDto;
-    const modalRef = this._modalService.open(ConfirmModalComponent);
-    modalRef.componentInstance.name = student.firstName;
-    if (student.haschildren) {
-      const errorMessage: ErrorResponse = {
-        success: false,
-        message: '',
-        validationErrors: []
-      };
-      modalRef.componentInstance.errorMessage = errorMessage;
-      modalRef.componentInstance.errorMessage.message = `(Impossible to delete ${student.firstName}, sub table linked to it!)`;
-    }
-    modalRef.result.then((result) => {
-      if (result === 'yes' && !student.haschildren) {
-        this.deleteStudent(student.id);
-      } else {
-        console.log('Action annulée');
-      }
-    }).catch((error) => {
-      this.toastService.showError(error as ErrorResponse);  
-    });
-  }
-  async updateStudentByDtoModal(studentReturn: any) {
     let student = studentReturn as StudentDto;
-    const modalRef = this._modalService.open(DtoModalComponent);
-    modalRef.componentInstance.title = 'Student Modal';
-    modalRef.componentInstance.dto = student;
-    modalRef.componentInstance.passBackDTOToMainComponent.subscribe(async (receivedStudent: StudentDto) => {
-      const result = await this.updateStudent(receivedStudent);
-      if (result?.success) {
-        this.toastService.showSuccess(result.message);
-        this.changeDetectorRef.detectChanges();
-        modalRef.componentInstance.doClearForm();
-        modalRef.close();
-      } else {
-        let responseError = result as ErrorResponse;
-        this.toastService.showError(responseError);
-      }
-    });
+    this.router.navigate(['/students', student.id]);
   }
 }

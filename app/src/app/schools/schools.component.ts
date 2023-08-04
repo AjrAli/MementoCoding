@@ -1,17 +1,14 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { SchoolService } from '../services/school/school.service';
 import { SchoolDto } from '../dto/school/school-dto';
-import { GetSchoolDto } from '../dto/school/getschool-dto';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ConfirmModalComponent } from '../modals/confirm-modal/confirm-modal.component';
 import { ErrorResponse } from '../dto/response/error/error-response';
-import { DtoModalComponent } from '../modals/dto-modal/dto-modal.component';
 import { PageDetailsDto } from '../dto/utilities/page-details-dto';
 import { Router } from '@angular/router';
 import { Command } from '../enum/command';
 import { ToastService } from '../services/message-popup/toast.service';
 import { BaseResponse } from '../dto/response/base-response';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { ModalService } from '../services/modal/modal.service';
 
 @Component({
   selector: 'app-schools',
@@ -19,11 +16,11 @@ import { firstValueFrom, lastValueFrom } from 'rxjs';
   styleUrls: ['./schools.component.css']
 })
 export class SchoolsComponent implements OnInit {
-  schools: GetSchoolDto[] = [];
+  schools: SchoolDto[] = [];
   newSchool: SchoolDto = new SchoolDto();
   pageDetails: PageDetailsDto = new PageDetailsDto();
   constructor(private schoolService: SchoolService,
-    private _modalService: NgbModal,
+    private modalService: ModalService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private toastService: ToastService) { }
@@ -33,73 +30,68 @@ export class SchoolsComponent implements OnInit {
   }
 
   getSchools(skip?: number, take?: number): void {
-    this.schoolService.getSchools(skip, take).subscribe((response: any) => {
-      this.pageDetails.totalItems = response.count;
-      this.schools = response.schoolsDto.map((schoolData: any) => {
-        const school = new GetSchoolDto();
-        Object.assign(school, schoolData);
-        return school;
-      });
-    },
-    (error : ErrorResponse) => {
-      this.toastService.showError(error);
-    });
-  }
-
-  async createSchool(school: SchoolDto): Promise<BaseResponse> {
-    try {
-      const response: BaseResponse = await firstValueFrom (this.schoolService.createSchool(school));
-      this.getSchools(this.pageDetails.skip, this.pageDetails.take);
-      return response;
-    } catch (e) {
-      this.toastService.showError(e as ErrorResponse);
-      this.toastService.showSimpleError('Failed to create school. Please try again later.');
-      throw e; 
-    }
-  }
-
-  async updateSchool(school: SchoolDto): Promise<BaseResponse>  {
-    try {
-      const response: BaseResponse = await firstValueFrom (this.schoolService.updateSchool(school));
-      this.getSchools(this.pageDetails.skip, this.pageDetails.take);
-      return response;
-    } catch (e) {
-      this.toastService.showError(e as ErrorResponse);
-      this.toastService.showSimpleError('Failed to update school. Please try again later.');
-      throw e; 
-    }
-  }
-
-  deleteSchool(schoolId: number): void {
-    this.schoolService.deleteSchool(schoolId).subscribe({
-      next: (response: BaseResponse) => {
-        this.toastService.showSuccess(response.message);
-        this.getSchools(this.pageDetails.skip, this.pageDetails.take);
+    this.schoolService.getSchools(skip, take).subscribe({
+      next: (response: any) => {
+        this.pageDetails.totalItems = response.count;
+        this.schools = response.schoolsDto.map((schoolData: any) => {
+          const school = new SchoolDto();
+          Object.assign(school, schoolData);
+          return school;
+        });
       },
-      error: (e: ErrorResponse) => {
-        this.toastService.showError(e);
-        this.toastService.showSimpleError('Failed to delete school. Please try again later.');
+      error: (error: ErrorResponse) => {
+        this.toastService.showError(error);
       },
       complete: () => console.info('complete')
     });
   }
 
-  async openAddModal(): Promise<void>  {
-    const modalRef = this._modalService.open(DtoModalComponent);
-    modalRef.componentInstance.title = 'School Modal';
-    modalRef.componentInstance.dto = this.newSchool;
-    modalRef.componentInstance.passBackDTOToMainComponent.subscribe(async (receivedSchool: SchoolDto) => {
-      const result = await this.createSchool(receivedSchool);
-      if (result?.success) {
-        this.toastService.showSuccess(result.message);
-        this.changeDetectorRef.detectChanges();
-        modalRef.componentInstance.doClearForm();
-        modalRef.close();
-      } else {
-        let responseError = result as ErrorResponse;
-        this.toastService.showError(responseError);
-      }
-    });
+  async createSchool(school: SchoolDto): Promise<BaseResponse> {
+    try {
+      const response: BaseResponse = await firstValueFrom(this.schoolService.createSchool(school));
+      this.getSchools(this.pageDetails.skip, this.pageDetails.take);
+      return response;
+    } catch (e) {
+      this.toastService.showError(e as ErrorResponse);
+      this.toastService.showSimpleError('Failed to create school. Please try again later.');
+      throw e;
+    }
+  }
+
+  async updateSchool(school: SchoolDto): Promise<BaseResponse> {
+    try {
+      const response: BaseResponse = await firstValueFrom(this.schoolService.updateSchool(school));
+      this.getSchools(this.pageDetails.skip, this.pageDetails.take);
+      return response;
+    } catch (e) {
+      this.toastService.showError(e as ErrorResponse);
+      this.toastService.showSimpleError('Failed to update school. Please try again later.');
+      throw e;
+    }
+  }
+
+  async deleteSchool(schoolId: number): Promise<BaseResponse> {
+    try {
+      const response: BaseResponse = await firstValueFrom(this.schoolService.deleteSchool(schoolId));
+      this.getSchools(this.pageDetails.skip, this.pageDetails.take);
+      return response;
+    } catch (e) {
+      this.toastService.showError(e as ErrorResponse);
+      this.toastService.showSimpleError('Failed to delete school. Please try again later.');
+      throw e;
+    }
+  }
+
+  async openAddModal(): Promise<void> {
+    await this.modalService.openDtoModal(this.newSchool, 'School Modal', this.createSchool.bind(this));
+  }
+  async deleteSchoolByIdByConfirmModal(schoolReturn: any) {
+    let school = schoolReturn as SchoolDto;
+    await this.modalService.openConfirmModal(school.id, school.haschildren, school.name, this.deleteSchool.bind(this));
+  }
+  async updateSchoolByDtoModal(schoolReturn: any) {
+    let school = schoolReturn as SchoolDto;
+    await this.modalService.openDtoModal(school, 'School Modal', this.updateSchool.bind(this));
   }
   handleNextPage(result: any) {
     this.pageDetails.skip = result.skip;
@@ -124,48 +116,8 @@ export class SchoolsComponent implements OnInit {
     }
   }
   navigateToSchoolById(schoolReturn: any) {
-    let school = schoolReturn as GetSchoolDto;
+    let school = schoolReturn as SchoolDto;
     this.router.navigate(['/schools', school.id]);
   }
-  deleteSchoolByIdByConfirmModal(schoolReturn: any) {
-    let school = schoolReturn as GetSchoolDto;
-    const modalRef = this._modalService.open(ConfirmModalComponent);
-    modalRef.componentInstance.name = school.name;
-    if (school.haschildren) {
-      const errorMessage: ErrorResponse = {
-        message: '',
-        success: false,
-        validationErrors: []
-      };
-      modalRef.componentInstance.errorMessage = errorMessage;
-      modalRef.componentInstance.errorMessage.message = `(Impossible to delete ${school.name}, some students are linked to it!)`;
-    }
-    modalRef.result.then((result) => {
-      if (result === 'yes' && !school.haschildren) {
-        this.deleteSchool(school.id);
-      } else {
-        console.log('Action annulée');
-      }
-    }).catch((error) => {
-      this.toastService.showError(error as ErrorResponse);
-    });
-  }
-  async updateSchoolByDtoModal(schoolReturn: any) {
-    let school = schoolReturn as SchoolDto;
-    const modalRef = this._modalService.open(DtoModalComponent);
-    modalRef.componentInstance.title = 'School Modal';
-    modalRef.componentInstance.dto = school;
-    modalRef.componentInstance.passBackDTOToMainComponent.subscribe(async (receivedSchool: SchoolDto) => {
-      const result = await this.updateSchool(receivedSchool);
-      if (result?.success) {
-        this.toastService.showSuccess(result.message);
-        this.changeDetectorRef.detectChanges();
-        modalRef.componentInstance.doClearForm();
-        modalRef.close();
-      } else {
-        let responseError = result as ErrorResponse;
-        this.toastService.showError(responseError);
-      }
-    });
-  }
+
 }

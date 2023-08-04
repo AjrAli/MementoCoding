@@ -1,7 +1,7 @@
 import { Entity } from "src/app/enum/entity";
-import { TypeDto } from "../utilities/type-dto";
+import { BaseDto } from "../utilities/base-dto";
 
-export class StudentDto extends TypeDto {
+export class StudentDto extends BaseDto {
   id: number;
   firstName: string;
   lastName: string;

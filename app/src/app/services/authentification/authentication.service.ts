@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import jwt_decode from 'jwt-decode';
 import { Role } from 'src/app/enum/role';
 import { AccountDto } from 'src/app/dto/account/account-dto';
+import { BaseResponse } from 'src/app/dto/response/base-response';
 
 @Injectable({
   providedIn: 'root'
@@ -71,7 +72,6 @@ interface DecodedToken {
   aud: string;
 }
 
-export interface AuthenticationResponse {
+export interface AuthenticationResponse extends BaseResponse {
   token: string;
-  message: string;
 }
