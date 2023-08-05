@@ -33,6 +33,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { BaseFormComponent } from './forms/base-form.component';
 import { AccountFormComponent } from './forms/account/account-form.component';
 import { FormValidationErrorComponent } from './shared/validation/form-validation-error/form-validation-error.component';
+import { ModalService } from './services/modal/modal.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -68,7 +69,7 @@ import { FormValidationErrorComponent } from './shared/validation/form-validatio
     FontAwesomeModule,
     ToastrModule.forRoot()
   ],
-  providers: [SchoolService, StudentService, AuthenticationService, ToastService,
+  providers: [SchoolService, StudentService, AuthenticationService, ToastService, ModalService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })

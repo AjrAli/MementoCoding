@@ -2,6 +2,7 @@
 using ManagementProject.Application.Contracts.Persistence;
 using ManagementProject.Application.Exceptions;
 using ManagementProject.Application.Features.Response;
+using ManagementProject.Application.Features.Students.Queries.GetStudents;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,22 +18,18 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
         private readonly IStudentRepository _studentRepository;
         private readonly ISchoolRepository _schoolRepository;
         private readonly IMapper _mapper;
-        private readonly IResponseFactory<GetSearchResultsQueryResponse> _responseFactory;
 
         public GetSearchResultsQueryHandler(IMapper mapper,
                                             IStudentRepository studentRepository,
-                                            ISchoolRepository schoolRepository,
-                                            IResponseFactory<GetSearchResultsQueryResponse> responseFactory)
+                                            ISchoolRepository schoolRepository)
         {
             _mapper = mapper;
             _studentRepository = studentRepository;
             _schoolRepository = schoolRepository;
-            _responseFactory = responseFactory;
         }
 
         public async Task<GetSearchResultsQueryResponse> Handle(GetSearchResultsQuery request, CancellationToken cancellationToken)
         {
-            var getStudentsQueryResponse = _responseFactory.CreateResponse();
             var keywords = request.Keyword.ToUpper().Trim().Split();
             var allSearchResults = new HashSet<GetSearchResultsDto>(new GetSearchResultsDtoComparer());
 
@@ -55,13 +52,15 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
                     new GetSearchResultsDtoComparer());
             }
             // Order results by the number of keyword matches
-            getStudentsQueryResponse.SearchResultsDto = allSearchResults
+
+            return new GetSearchResultsQueryResponse
+            {
+                SearchResultsDto = allSearchResults
                 .OrderByDescending(x => NumberOfMatches(x, keywords))
-                .ToList();
-
-            getStudentsQueryResponse.Count = getStudentsQueryResponse.SearchResultsDto.Count;
-
-            return getStudentsQueryResponse;
+                .ToList(),
+                Count = allSearchResults
+                .OrderByDescending(x => NumberOfMatches(x, keywords)).Count()
+            };
         }
 
         private async Task<IEnumerable<GetSearchResultsDto>> SearchSchools(string keyword)

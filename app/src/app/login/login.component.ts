@@ -1,12 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AuthenticationResponse, AuthenticationService } from '../services/authentification/authentication.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorResponse } from '../dto/response/error/error-response';
 import { ToastService } from '../services/message-popup/toast.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DtoModalComponent } from '../modals/dto-modal/dto-modal.component';
 import { AccountDto } from '../dto/account/account-dto';
 import { firstValueFrom } from 'rxjs';
+import { ModalService } from '../services/modal/modal.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -20,7 +19,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private toastService: ToastService,
-    private _modalService: NgbModal) { }
+    private modalService: ModalService) { }
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
@@ -29,29 +28,19 @@ export class LoginComponent implements OnInit {
   }
 
   async openAddModal(): Promise<void> {
-    const modalRef = this._modalService.open(DtoModalComponent);
-    modalRef.componentInstance.title = 'Account Modal';
-    modalRef.componentInstance.dto = new AccountDto();
-    modalRef.componentInstance.passBackDTOToMainComponent.subscribe(async (receivedAccount: AccountDto) => {
-      const result = await this.createAccount(receivedAccount);
-      if (result?.token) {
-        this.authService.setToken(result?.token);
-        // Récupérer l'URL demandée avant la connexion
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'];
-        this.toastService.showSuccess(result?.message);
-        modalRef.componentInstance.doClearForm();
-        modalRef.close();
-        // Rediriger vers l'URL demandée ou vers '/home' par défaut
-        this.router.navigateByUrl(returnUrl || '/home');
-      } else {
-        this.toastService.showSimpleError('Invalid credentials');
-      }
-    });
+    await this.modalService.openDtoModal(new AccountDto(), 'Account Modal', this.createAccount.bind(this));
   }
 
   async createAccount(account: AccountDto): Promise<AuthenticationResponse> {
     try {
       const response: AuthenticationResponse = await firstValueFrom(this.authService.createSimpleUser(account));
+      if (response?.token) {
+        this.authService.setToken(response?.token);
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+        this.router.navigateByUrl(returnUrl || '/home');
+      } else {
+        throw new ErrorResponse('Invalid credentials', false);
+      }
       return response;
     } catch (e) {
       this.toastService.showError(e as ErrorResponse);

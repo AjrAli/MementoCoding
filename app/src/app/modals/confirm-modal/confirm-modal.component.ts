@@ -8,7 +8,7 @@ import { ErrorResponse } from 'src/app/dto/response/error/error-response';
   styleUrls: ['./confirm-modal.component.css']
 })
 export class ConfirmModalComponent {
-  @Input() name!: string;
+  @Input() title!: string;
   @Input() errorMessage!: ErrorResponse;
   constructor(public modal: NgbActiveModal) {}
 

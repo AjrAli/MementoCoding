@@ -42,12 +42,18 @@ export class SearchComponent implements OnDestroy {
     // Subscribe to changes in the search keyword in the SearchStateService
     this.searchStateService.searchKeyword$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((keyword: string) => {
-        if (!keyword)
-          this.router.navigate(['/home']);
-        // Emit the new search keyword to the searchKeyword$ Subject
-        // whenever it changes in the SearchStateService
-        this.searchKeyword$.next(keyword);
+      .subscribe({
+        next: (keyword: string) => {
+          if (!keyword)
+            this.router.navigate(['/home']);
+          // Emit the new search keyword to the searchKeyword$ Subject
+          // whenever it changes in the SearchStateService
+          this.searchKeyword$.next(keyword);
+        },
+        error: (error: any) => {
+          this.toastService.showSimpleError(error.toString());
+        },
+        complete: () => console.info('complete')
       });
 
     // Use the startWith operator to trigger the initial search
@@ -59,8 +65,14 @@ export class SearchComponent implements OnDestroy {
         distinctUntilChanged(), // Ignore consecutive identical requests
         takeUntil(this.destroy$) // Unsubscribe from the observable when the component is destroyed
       )
-      .subscribe((keyword: string) => {
-        this.onSearch(keyword);
+      .subscribe({
+        next: (keyword: string) => {
+          this.onSearch(keyword);
+        },
+        error: (error: any) => {
+          this.toastService.showSimpleError(error.toString());
+        },
+        complete: () => console.info('complete')
       });
   }
 
@@ -74,16 +86,22 @@ export class SearchComponent implements OnDestroy {
           return of(null); // Return a new observable with null value to continue the observable chain
         })
       )
-      .subscribe((response: any) => {
-        this.searchResults = response.searchResultsDto.map(
-          (searchData: any) => {
-            const searchResult = new SearchResultDto(
-              searchData.type?.toLowerCase()
-            );
-            Object.assign(searchResult, searchData);
-            return searchResult;
-          }
-        );
+      .subscribe({
+        next: (response: any) => {
+          this.searchResults = response.searchResultsDto.map(
+            (searchData: any) => {
+              const searchResult = new SearchResultDto(
+                searchData.type?.toLowerCase()
+              );
+              Object.assign(searchResult, searchData);
+              return searchResult;
+            }
+          );
+        },
+        error: (error: any) => {
+          this.toastService.showSimpleError(error.toString());
+        },
+        complete: () => console.info('complete')
       });
   }
 }

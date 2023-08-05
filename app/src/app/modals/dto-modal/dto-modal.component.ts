@@ -1,8 +1,6 @@
 import { Component, EventEmitter, Input, Output, Type, ViewChild } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { GetSchoolDto } from 'src/app/dto/school/getschool-dto';
 import { SchoolDto } from 'src/app/dto/school/school-dto';
-import { GetStudentDto } from 'src/app/dto/student/getstudent-dto';
 import { StudentDto } from 'src/app/dto/student/student-dto';
 import { BaseFormComponent } from 'src/app/forms/base-form.component';
 import { SchoolFormComponent } from 'src/app/forms/school/school-form.component';
@@ -33,14 +31,14 @@ export class DtoModalComponent {
   }
   isSchool() {
     if (this.dto) {
-      const isSchool = this.dto.typeInstance === 'SchoolDto' || this.dto.typeInstance === 'GetSchoolDto';
+      const isSchool = this.dto.typeInstance === 'SchoolDto';
       return isSchool;
     }
     return false;
   }
   isStudent() {
     if (this.dto) {
-      const isStudent = this.dto.typeInstance === 'StudentDto' || this.dto.typeInstance === 'GetStudentDto';
+      const isStudent = this.dto.typeInstance === 'StudentDto';
       return isStudent;
     }
     return false;

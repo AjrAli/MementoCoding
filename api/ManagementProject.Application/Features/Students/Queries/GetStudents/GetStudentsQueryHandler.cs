@@ -1,50 +1,61 @@
 ﻿using AutoMapper;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
 using ManagementProject.Application.Contracts.Persistence;
 using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Response;
+using ManagementProject.Domain.Entities;
+using MediatR;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-
-#nullable disable
 namespace ManagementProject.Application.Features.Students.Queries.GetStudents
 {
     public class GetStudentsQueryHandler : IRequestHandler<GetStudentsQuery, GetStudentsQueryResponse>
     {
         private readonly IStudentRepository _studentRepository;
         private readonly IMapper _mapper;
-        private readonly IResponseFactory<GetStudentsQueryResponse> _responseFactory;
 
-        public GetStudentsQueryHandler(IMapper mapper,
-                                      IStudentRepository studentRepository,
-                                      IResponseFactory<GetStudentsQueryResponse> responseFactory)
+        public GetStudentsQueryHandler(IMapper mapper, IStudentRepository studentRepository)
         {
             _mapper = mapper;
             _studentRepository = studentRepository;
-            _responseFactory = responseFactory;
         }
 
         public async Task<GetStudentsQueryResponse> Handle(GetStudentsQuery request, CancellationToken cancellationToken)
         {
-            var getStudentsQueryResponse = _responseFactory.CreateResponse();
             var query = _studentRepository.GetDbSetQueryable();
+            var count = await _studentRepository.CountAsync();
+            if (request.Options != null)
+            {
+                query = (IQueryable<Student>)request.Options.ApplyTo(query);
 
-            if (request.Take != 0)
-                query = query.OrderBy(x => x.LastName).Skip(request.Skip).Take(request.Take);
+                if (request.Options.Filter != null)
+                {
+                    var filterExpression = request.Options.Filter;
+                    var filteredQuery = (IQueryable<Student>)filterExpression.ApplyTo(_studentRepository.GetDbSetQueryable(), new ODataQuerySettings());
+                    count = await filteredQuery.CountAsync();
+                    return await GetStudentsResponse(query, count);
+                }
+            }
 
-            var listStudents = query != null ? await query.Include(x => x.School).OrderBy(x => x.LastName).ToListAsync() : null;
+            return await GetStudentsResponse(query, count);
+        }
 
+        private async Task<GetStudentsQueryResponse> GetStudentsResponse(IQueryable<Student> query, long count)
+        {
+            var listStudents = await (query != null ? query.Include(x => x.School).ToListAsync() : Task.FromResult<List<Student>>(null));
             if (listStudents == null)
             {
                 throw new NotFoundException($"No students found");
             }
-            getStudentsQueryResponse.StudentsDto = _mapper.Map<List<GetStudentsDto>>(listStudents);
-            getStudentsQueryResponse.Count = (await _studentRepository.CountAsync());
-            return getStudentsQueryResponse;
+
+            return new GetStudentsQueryResponse
+            {
+                Count = count,
+                StudentsDto = _mapper.Map<List<GetStudentsDto>>(listStudents)
+            };
         }
     }
 }

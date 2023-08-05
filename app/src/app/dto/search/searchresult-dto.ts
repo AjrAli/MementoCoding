@@ -1,4 +1,4 @@
-import { Entity } from "src/app/enum/entity";
+import { EntityUrl } from "src/app/enum/entity";
 import { TypeDto } from "../utilities/type-dto";
 
 export class SearchResultDto extends TypeDto {
@@ -6,8 +6,8 @@ export class SearchResultDto extends TypeDto {
   title: string;
   subtitle: string;
   description: string;
-  type: Entity ;
-  constructor(type: Entity) {
+  type: EntityUrl ;
+  constructor(type: EntityUrl) {
     super('SearchResultDto', type);
     this.id = 0;
     this.title = '';

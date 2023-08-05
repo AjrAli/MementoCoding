@@ -26,15 +26,13 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
     [TestClass]
     public class SchoolQueryControllerTests
     {
-        private readonly ILogger<SchoolQueryController> _logger = new SerilogLoggerFactory(new LoggerConfiguration()
-                                                                                          .WriteTo.Debug()
-                                                                                          .CreateLogger())
-                                                                  .CreateLogger<SchoolQueryController>();
+        private readonly ILogger<SchoolQueryController> _logger = new Mock<ILogger<SchoolQueryController>>().Object;
         private readonly IMapper _mapper = new MapperConfiguration(x => x.AddProfile<SchoolMappingProfile>()).CreateMapper();
         private GetSchoolDto? _schoolDto;
         private List<GetSchoolDto>? _allSchoolDto;
         private IBaseResponse? _schoolResponse;
         private static TestContext? _testContext;
+        private Mock<IMediator> _mediatorMock = new Mock<IMediator>();
         private Mock<ISchoolRepository> _mockSchoolRepo = new Mock<ISchoolRepository>();
         private Mock<IStudentRepository> _mockStudentRepo = new Mock<IStudentRepository>();
 
@@ -43,15 +41,14 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         {
             _testContext = testContext;
         }
+
         [TestMethod]
         public async Task GetSchool_ReturnNotFoundException()
         {
             //Arrange
             long schoolIdRequested = 0;
-            _schoolDto = InitSchoolDto(schoolIdRequested);
-            _schoolResponse = InitGetSchoolQueryResponse();
-            Mock<IMediator> mediatorMock = MockMediatorGetSchoolQuery();
-            var schoolControllerTest = new SchoolQueryController(mediatorMock.Object, _logger);
+            SetupGetSchoolQueryResponse(schoolIdRequested);
+            var schoolControllerTest = new SchoolQueryController(_mediatorMock.Object, _logger);
 
             // Act && Assert
             await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
@@ -59,14 +56,13 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                 await schoolControllerTest.GetSchool(schoolIdRequested);
             });
         }
+
         [TestMethod]
         public async Task GetSchools_ReturnNotFoundException()
         {
             //Arrange
-            _allSchoolDto = InitListOfSchoolDto(false);
-            _schoolResponse = InitGetSchoolsQueryResponse();
-            Mock<IMediator> mediatorMock = MockMediatorGetSchoolsQuery(false);
-            var schoolControllerTest = new SchoolQueryController(mediatorMock.Object, _logger);
+            SetupGetSchoolsQueryResponse(false);
+            var schoolControllerTest = new SchoolQueryController(_mediatorMock.Object, _logger);
 
             // Act && Assert
             await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
@@ -74,15 +70,14 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                 await schoolControllerTest.GetSchools();
             });
         }
+
         [TestMethod]
         public async Task GetSchool_ReturnCorrectSchoolDto()
         {
             //Arrange
             long schoolIdRequested = 3;
-            _schoolDto = InitSchoolDto(schoolIdRequested);
-            _schoolResponse = InitGetSchoolQueryResponse();
-            Mock<IMediator> mediatorMock = MockMediatorGetSchoolQuery();
-            var schoolControllerTest = new SchoolQueryController(mediatorMock.Object, _logger);
+            SetupGetSchoolQueryResponse(schoolIdRequested);
+            var schoolControllerTest = new SchoolQueryController(_mediatorMock.Object, _logger);
 
             //Act
             var resultSchoolCall = await schoolControllerTest.GetSchool(schoolIdRequested);
@@ -94,15 +89,12 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             Assert.IsTrue(resultCompare);
         }
 
-
         [TestMethod]
         public async Task GetSchools_ReturnCorrectListOfSchoolDto()
         {
             //Arrange
-            _allSchoolDto = InitListOfSchoolDto(true);
-            _schoolResponse = InitGetSchoolsQueryResponse();
-            Mock<IMediator> mediatorMock = MockMediatorGetSchoolsQuery(true);
-            var schoolControllerTest = new SchoolQueryController(mediatorMock.Object, _logger);
+            SetupGetSchoolsQueryResponse(true);
+            var schoolControllerTest = new SchoolQueryController(_mediatorMock.Object, _logger);
 
             //Act
             var resultSchoolCall = await schoolControllerTest.GetSchools();
@@ -112,36 +104,35 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             Assert.IsNotNull(modelAllDto);
             bool resultCompare = CompareListOfSchoolDtoReceivedByListExpected(modelAllDto);
             Assert.IsTrue(resultCompare);
-
         }
 
-        private Mock<IMediator> MockMediatorGetSchoolsQuery(bool isListExpected)
+        private void SetupGetSchoolsQueryResponse(bool isListExpected)
         {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<GetSchoolsQuery>(), default)).Returns(
-                async (GetSchoolsQuery q, CancellationToken token) =>
-                await InitGetSchoolsQueryHandler(isListExpected).Handle(q, token));
-            return mediatorMock;
+            _allSchoolDto = InitListOfSchoolDto(isListExpected);
+            _schoolResponse = InitGetSchoolsQueryResponse();
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetSchoolsQuery>(), default))
+                         .Returns((GetSchoolsQuery q, CancellationToken token) =>
+                             InitGetSchoolsQueryHandler(isListExpected).Handle(q, token));
         }
 
-        private Mock<IMediator> MockMediatorGetSchoolQuery()
+        private void SetupGetSchoolQueryResponse(long? id)
         {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<GetSchoolQuery>(), default)).Returns(
-                async (GetSchoolQuery q, CancellationToken token) =>
-                await InitGetSchoolQueryHandler(q.SchoolId).Handle(q, token));
-            return mediatorMock;
+            _schoolDto = InitSchoolDto(id);
+            _schoolResponse = InitGetSchoolQueryResponse();
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetSchoolQuery>(), default))
+                         .Returns((GetSchoolQuery q, CancellationToken token) =>
+                             InitGetSchoolQueryHandler(q.SchoolId).Handle(q, token));
         }
 
         private bool CompareSchoolDtoReceivedByTheExpected(GetSchoolDto modelDto)
         {
-
             var comparerDto = new ObjectsComparer.Comparer<GetSchoolDto>();
             var schoolResponse = _schoolResponse as GetSchoolQueryResponse;
             bool resultCompare = comparerDto.Compare(schoolResponse?.SchoolDto!, modelDto, out var differences);
             WriteOnConsoleDifferencesIfNotEqual(differences);
             return resultCompare;
         }
+
         private bool CompareListOfSchoolDtoReceivedByListExpected(List<GetSchoolsDto> modelAllDto)
         {
             var comparerDto = new ObjectsComparer.Comparer<List<GetSchoolsDto>>();
@@ -161,20 +152,17 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 
         private GetSchoolQueryHandler InitGetSchoolQueryHandler(long? id)
         {
-            var mockResponseFactory = new Mock<IResponseFactory<GetSchoolQueryResponse>>();
-            _mockSchoolRepo.Setup(x => x.GetSchoolWithStudents(It.IsAny<long>())).ReturnsAsync(InitSchoolEntity(id));
-            mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new GetSchoolQueryResponse());
-            return new GetSchoolQueryHandler(_mapper, _mockSchoolRepo.Object, mockResponseFactory.Object);
+            _mockSchoolRepo.Setup(x => x.GetAsync(It.IsAny<long>())).ReturnsAsync(InitSchoolEntity(id));
+            return new GetSchoolQueryHandler(_mapper, _mockSchoolRepo.Object);
         }
 
         private GetSchoolsQueryHandler InitGetSchoolsQueryHandler(bool isListExpected)
         {
 
-            var mockResponseFactory = new Mock<IResponseFactory<GetSchoolsQueryResponse>>();
             var test = InitQueryOfSchoolEntity();
             _mockSchoolRepo.Setup(x => x.GetDbSetQueryable()).Returns(isListExpected ? InitListOfSchoolEntity().BuildMock() : null);
-            mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new GetSchoolsQueryResponse());
-            return new GetSchoolsQueryHandler(_mapper, _mockSchoolRepo.Object, _mockStudentRepo.Object, mockResponseFactory.Object);
+            _mockSchoolRepo.Setup(x => x.CountAsync()).ReturnsAsync(isListExpected ? InitListOfSchoolEntity().Count : 0);
+            return new GetSchoolsQueryHandler(_mapper, _mockSchoolRepo.Object, _mockStudentRepo.Object);
         }
         private GetSchoolsQueryResponse InitGetSchoolsQueryResponse()
         {

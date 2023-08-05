@@ -1,23 +1,20 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Students;
-using ManagementProject.Application.Features.Students.Commands.CreateStudent;
-using ManagementProject.Application.Features.Students.Commands.DeleteStudent;
-using ManagementProject.Application.Features.Students.Commands.UpdateStudent;
-using ManagementProject.Application.Features.Students.Queries.GetStudent;
+﻿using ManagementProject.Application.Features.Students.Queries.GetStudent;
 using ManagementProject.Application.Features.Students.Queries.GetStudents;
-using System;
-using System.Threading.Tasks;
+using ManagementProject.Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace ManagementProject.Api.Controllers.Queries
 {
     [ApiController]
     [Authorize]
     [Route("[controller]")]
-    public class StudentQueryController : ControllerBase
+    public class StudentQueryController : ODataController
     {
         private readonly IMediator _mediator;
         private readonly ILogger<StudentQueryController> _logger;
@@ -41,13 +38,11 @@ namespace ManagementProject.Api.Controllers.Queries
         }
 
         [HttpGet]
-        [Route("{skip?}/{take?}")]
-        public async Task<IActionResult> GetStudents(int skip = 0, int take = 0)
+        public async Task<IActionResult> GetStudents(ODataQueryOptions<Student>? options = null)
         {
             GetStudentsQueryResponse? dataReponse = await _mediator.Send(new GetStudentsQuery()
             {
-                Skip = skip,
-                Take = take
+                Options = options
             });
 
             return Ok(dataReponse);

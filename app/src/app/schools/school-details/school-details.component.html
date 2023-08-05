@@ -27,6 +27,7 @@
                         <th scope="row"> List of students</th>
                         <td>
                             <app-table
+                            (nextPage)="handleNextPage($event)"
                             [noAction]="false"
                             [headers]="['firstName', 'lastName', 'age', 'adress']"
                             [headersTitle]="['FirstName', 'LastName', 'Age', 'Adress']" 

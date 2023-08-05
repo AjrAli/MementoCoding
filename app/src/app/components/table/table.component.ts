@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { faTimes, faPencil, faEye } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 import { SearchResultDto } from 'src/app/dto/search/searchresult-dto';
-import { Entity } from 'src/app/enum/entity';
+import { EntityUrl } from 'src/app/enum/entity';
 import { Command } from 'src/app/enum/command';
 import { SearchStateService } from 'src/app/services/search/search-state.service';
 @Component({
@@ -33,7 +33,7 @@ export class TableComponent implements OnInit {
 
   getResultLink(result: SearchResultDto): string[] | undefined {
     if (!this.noAction) {
-      const routeType = result?.urlEntity?.toLowerCase() as Entity;
+      const routeType = result?.urlEntity?.toLowerCase() as EntityUrl;
       const routeCommands = [`/${routeType}`, String(result.id)];
       return routeCommands;
     }

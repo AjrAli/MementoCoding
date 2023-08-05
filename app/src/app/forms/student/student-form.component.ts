@@ -5,7 +5,6 @@ import { StudentDto } from '../../dto/student/student-dto';
 import { SchoolService } from '../../services/school/school.service';
 import { StudentService } from '../../services/student/student.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { GetSchoolDto } from 'src/app/dto/school/getschool-dto';
 import { interval, firstValueFrom, lastValueFrom } from 'rxjs';
 import { BaseFormComponent } from '../base-form.component';
 import { ToastService } from 'src/app/services/message-popup/toast.service';
@@ -18,7 +17,7 @@ import { ErrorResponse } from 'src/app/dto/response/error/error-response';
 export class StudentFormComponent extends BaseFormComponent implements OnInit {
 
   student: StudentDto = new StudentDto();
-  schools: GetSchoolDto[] = [];
+  schools: SchoolDto[] = [];
   title: string = 'Add Student';
   constructor(
     private schoolService: SchoolService,
@@ -28,7 +27,7 @@ export class StudentFormComponent extends BaseFormComponent implements OnInit {
     try {
       const response: any = await lastValueFrom(this.schoolService.getSchools());
       this.schools = response.schoolsDto.map((schoolData: any) => {
-        const school = new GetSchoolDto();
+        const school = new SchoolDto();
         Object.assign(school, schoolData);
         return school;
       });
