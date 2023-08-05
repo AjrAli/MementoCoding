@@ -1,4 +1,4 @@
-import { Entity } from "src/app/enum/entity";
+import { EntityUrl } from "src/app/enum/entity";
 import { BaseDto } from "../utilities/base-dto";
 
 export class SchoolDto extends BaseDto {
@@ -9,9 +9,9 @@ export class SchoolDto extends BaseDto {
   description: string;
   constructor(typeInstance?: string) {
     if (typeInstance) {
-      super(typeInstance, Entity.Schools);
+      super(typeInstance, EntityUrl.Schools);
     } else {
-      super('SchoolDto', Entity.Schools);
+      super('SchoolDto', EntityUrl.Schools);
     }
     this.id = 0;
     this.name = '';

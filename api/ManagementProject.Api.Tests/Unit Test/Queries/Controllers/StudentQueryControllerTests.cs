@@ -21,6 +21,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using ManagementProject.Application.Exceptions;
+using System.Linq;
 
 namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 {
@@ -161,19 +162,15 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 
         private GetStudentQueryHandler InitGetStudentQueryHandler(long? id)
         {
-            var mockResponseFactory = new Mock<IResponseFactory<GetStudentQueryResponse>>();
             _mockStudentRepo.Setup(x => x.GetByIdWithIncludeAsync(It.IsAny<Expression<Func<Student, bool>>>(),
                 It.IsAny<Expression<Func<Student, object>>>())).ReturnsAsync(InitStudentEntity(id));
-            mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new GetStudentQueryResponse());
-            return new GetStudentQueryHandler(_mapper, _mockStudentRepo.Object, mockResponseFactory.Object);
+            return new GetStudentQueryHandler(_mapper, _mockStudentRepo.Object);
         }
 
         private GetStudentsQueryHandler InitGetStudentsQueryHandler(bool isListExpected)
         {
-            var mockResponseFactory = new Mock<IResponseFactory<GetStudentsQueryResponse>>();
-            _mockStudentRepo.Setup(x => x.GetDbSetQueryable()).Returns(isListExpected ? InitListOfStudentEntity().BuildMock() : null);
-            mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new GetStudentsQueryResponse());
-            return new GetStudentsQueryHandler(_mapper, _mockStudentRepo.Object, mockResponseFactory.Object);
+            _mockStudentRepo.Setup(x => x.GetDbSetQueryable()).Returns(isListExpected ? InitListOfStudentEntity().AsQueryable().BuildMock() : null);
+            return new GetStudentsQueryHandler(_mapper, _mockStudentRepo.Object);
         }
         private GetStudentsQueryResponse InitGetStudentsQueryResponse()
         {

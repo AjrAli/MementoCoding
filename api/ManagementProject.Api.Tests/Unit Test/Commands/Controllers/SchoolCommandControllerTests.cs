@@ -117,7 +117,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
             });
         }
         [TestMethod]
-        public async Task Update_School_ReturnBadRequest()
+        public async Task Update_School_ReturnNotFoundException()
         {
             //Arrange
 
@@ -127,13 +127,13 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
 
             //Act && Assert
 
-            await Assert.ThrowsExceptionAsync<BadRequestException>(async () =>
+            await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
                 await schoolControllerTest.UpdateSchool(schoolDto);
             });
         }
         [TestMethod]
-        public async Task Delete_School_ReturnBadRequest()
+        public async Task Delete_School_ReturnNotFoundException()
         {
             //Arrange
             Mock<IMediator> mediatorMock = MockMediatorDeleteSchoolCommand(0);
@@ -141,7 +141,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
 
             //Act && Assert
 
-            await Assert.ThrowsExceptionAsync<BadRequestException>(async () =>
+            await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
                 await schoolControllerTest.DeleteSchool(0);
             });
@@ -157,10 +157,11 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         private CreateSchoolCommandHandler InitCreateSchoolCommandHandler(SchoolDto? createSchoolDto)
         {
             int result = (createSchoolDto == null) ? -1 : 1;
-            var mockResponseFactory = new Mock<IResponseFactory<CreateSchoolCommandResponse>>();
-            _mockSchoolRepo.Setup(x => x.AddAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
-            mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new CreateSchoolCommandResponse());
-            return new CreateSchoolCommandHandler(_mapper, _mockSchoolRepo.Object, InitUnitOfWork(result), mockResponseFactory.Object);
+            if(result == -1)
+                _mockSchoolRepo.Setup(x => x.AddAsync(It.IsAny<School>())).ThrowsAsync(new BadRequestException("Failed to add school"));
+            else
+                _mockSchoolRepo.Setup(x => x.AddAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
+            return new CreateSchoolCommandHandler(_mapper, _mockSchoolRepo.Object, InitUnitOfWork(result));
         }
         private Mock<IMediator> MockMediatorUpdateSchoolCommand(SchoolDto dto)
         {
@@ -173,11 +174,12 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         private UpdateSchoolCommandHandler InitUpdateSchoolCommandHandler(SchoolDto? updateSchoolDto)
         {
             int result = (updateSchoolDto == null) ? -1 : 1;
-            var mockResponseFactory = new Mock<IResponseFactory<UpdateSchoolCommandResponse>>();
+            if (result == -1)
+                _mockSchoolRepo.Setup(x => x.UpdateAsync(It.IsAny<School>())).ThrowsAsync(new BadRequestException("Failed to update school"));
+            else
+                _mockSchoolRepo.Setup(x => x.UpdateAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
             _mockSchoolRepo.Setup(x => x.GetAsync(It.IsAny<long>())).ReturnsAsync(InitSchoolEntity());
-            _mockSchoolRepo.Setup(x => x.UpdateAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
-            mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new UpdateSchoolCommandResponse());
-            return new UpdateSchoolCommandHandler(_mapper, _mockSchoolRepo.Object, InitUnitOfWork(result), mockResponseFactory.Object);
+            return new UpdateSchoolCommandHandler(_mapper, _mockSchoolRepo.Object, InitUnitOfWork(result));
         }
 
         private Mock<IMediator> MockMediatorDeleteSchoolCommand(long id)
@@ -191,12 +193,13 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         private DeleteSchoolCommandHandler InitDeleteSchoolCommandHandler(long id)
         {
             int result = (id == 0) ? -1 : 1;
-            var mockResponseFactory = new Mock<IResponseFactory<DeleteSchoolCommandResponse>>();
+            if (result == -1)
+                _mockSchoolRepo.Setup(x => x.DeleteAsync(It.IsAny<School>())).ThrowsAsync(new BadRequestException("Failed to delete school"));
+            else
+                _mockSchoolRepo.Setup(x => x.DeleteAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
             _mockSchoolRepo.Setup(x => x.GetAsync(It.IsAny<long>())).ReturnsAsync(InitSchoolEntity(id));
             _mockStudentRepo.Setup(x => x.Any(It.IsAny<Expression<Func<Student, bool>>>())).Returns(false);
-            _mockSchoolRepo.Setup(x => x.DeleteAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
-            mockResponseFactory.Setup(x => x.CreateResponse()).Returns(new DeleteSchoolCommandResponse());
-            return new DeleteSchoolCommandHandler(_mockSchoolRepo.Object, _mockStudentRepo.Object, InitUnitOfWork(result), mockResponseFactory.Object);
+            return new DeleteSchoolCommandHandler(_mockSchoolRepo.Object, _mockStudentRepo.Object, InitUnitOfWork(result));
         }
         private UnitOfWork<ManagementProjectDbContext> InitUnitOfWork(int result)
         {

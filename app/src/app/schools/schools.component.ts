@@ -9,6 +9,9 @@ import { ToastService } from '../services/message-popup/toast.service';
 import { BaseResponse } from '../dto/response/base-response';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { ModalService } from '../services/modal/modal.service';
+import { ODataQueryDto } from '../dto/utilities/odata-query-dto';
+import { SchoolProperties } from '../enum/school-properties';
+import { OrderByChoice } from '../enum/orderby-choice';
 
 @Component({
   selector: 'app-schools',
@@ -30,7 +33,11 @@ export class SchoolsComponent implements OnInit {
   }
 
   getSchools(skip?: number, take?: number): void {
-    this.schoolService.getSchools(skip, take).subscribe({
+    let query: ODataQueryDto = new ODataQueryDto();
+    query.top = take?.toString() || '0';
+    query.skip = skip?.toString() || '0';
+    query.orderBy.push(`${SchoolProperties.Name} ${OrderByChoice.Ascending}`);
+    this.schoolService.getSchools(query).subscribe({
       next: (response: any) => {
         this.pageDetails.totalItems = response.count;
         this.schools = response.schoolsDto.map((schoolData: any) => {

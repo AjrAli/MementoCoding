@@ -1,15 +1,11 @@
-﻿using DotNetCore.EntityFrameworkCore;
-using MediatR;
-using Microsoft.Extensions.Logging;
+﻿using MediatR;
 using ManagementProject.Application.Contracts.Persistence;
 using ManagementProject.Application.Exceptions;
 using ManagementProject.Application.Features.Response;
-using ManagementProject.Application.Features.Schools.Commands.CreateSchool;
 using ManagementProject.Domain.Entities;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-
+using DotNetCore.EntityFrameworkCore;
 
 namespace ManagementProject.Application.Features.Students.Commands.DeleteStudent
 {
@@ -17,34 +13,29 @@ namespace ManagementProject.Application.Features.Students.Commands.DeleteStudent
     {
         private readonly IBaseRepository<Student> _studentRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IResponseFactory<DeleteStudentCommandResponse> _responseFactory;
-        public DeleteStudentCommandHandler(IBaseRepository<Student> studentRepository,
-                                            IUnitOfWork unitOfWork,
-                                            IResponseFactory<DeleteStudentCommandResponse> responseFactory)
+
+        public DeleteStudentCommandHandler(IBaseRepository<Student> studentRepository, IUnitOfWork unitOfWork)
         {
             _studentRepository = studentRepository;
             _unitOfWork = unitOfWork;
-            _responseFactory = responseFactory;
         }
 
         public async Task<DeleteStudentCommandResponse> Handle(DeleteStudentCommand request, CancellationToken cancellationToken)
         {
-            var deleteStudentCommandResponse = _responseFactory.CreateResponse();
-            await DeleteStudentResponseHandling(request, deleteStudentCommandResponse);
-            return deleteStudentCommandResponse;
-        }
+            var studentToDelete = await _studentRepository.GetAsync(request.StudentId);
 
-        private async Task DeleteStudentResponseHandling(DeleteStudentCommand request, DeleteStudentCommandResponse deleteStudentCommandResponse)
-        {
+            if (studentToDelete == null)
+            {
+                throw new NotFoundException(nameof(Student), request.StudentId);
+            }
 
-            long Id = request.StudentId;
-            var studentToDelete = await _studentRepository.GetAsync(Id);
-            await _studentRepository.DeleteAsync(Id);
-            if (await _unitOfWork.SaveChangesAsync() <= 0)
-                throw new BadRequestException($"Failed to delete student by id : {Id}");
-            else
-                deleteStudentCommandResponse.Message = $"Student {studentToDelete.FirstName} successfully deleted";
+            await _studentRepository.DeleteAsync(request.StudentId);
+            await _unitOfWork.SaveChangesAsync();
 
+            return new DeleteStudentCommandResponse
+            {
+                Message = $"Student {studentToDelete.FirstName} successfully deleted"
+            };
         }
     }
 }

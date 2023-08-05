@@ -9,6 +9,9 @@ import { BaseResponse } from '../dto/response/base-response';
 import { ToastService } from '../services/message-popup/toast.service';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { ModalService } from '../services/modal/modal.service';
+import { ODataQueryDto } from '../dto/utilities/odata-query-dto';
+import { StudentProperties } from '../enum/student-properties';
+import { OrderByChoice } from '../enum/orderby-choice';
 @Component({
   selector: 'app-students',
   templateUrl: './students.component.html',
@@ -29,17 +32,24 @@ export class StudentsComponent implements OnInit {
   }
 
   getStudents(skip?: number, take?: number): void {
-    this.studentService.getStudents(skip, take).subscribe((response: any) => {
-      this.pageDetails.totalItems = response.count;
-      this.students = response.studentsDto.map((studentData: any) => {
-        const student = new StudentDto();
-        Object.assign(student, studentData);
-        return student;
-      });
-    },
-      (error: ErrorResponse) => {
+    let query: ODataQueryDto = new ODataQueryDto();
+    query.top = take?.toString() || '0';
+    query.skip = skip?.toString() || '0';
+    query.orderBy.push(`${StudentProperties.LastName} ${OrderByChoice.Ascending}`);
+    this.studentService.getStudents(query).subscribe({
+      next: (response: any) => {
+        this.pageDetails.totalItems = response.count;
+        this.students = response.studentsDto.map((studentData: any) => {
+          const student = new StudentDto();
+          Object.assign(student, studentData);
+          return student;
+        });
+      },
+      error: (error: ErrorResponse) => {
         this.toastService.showError(error);
-      });
+      },
+      complete: () => console.info('complete')
+    });
   }
 
   async createStudent(student: StudentDto): Promise<BaseResponse> {

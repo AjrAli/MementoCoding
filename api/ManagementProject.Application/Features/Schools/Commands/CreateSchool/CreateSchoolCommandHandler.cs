@@ -1,17 +1,10 @@
 ﻿using AutoMapper;
 using DotNetCore.EntityFrameworkCore;
-using MediatR;
-using Microsoft.Extensions.Logging;
 using ManagementProject.Application.Contracts.Persistence;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Response;
-using ManagementProject.Application.Features.Service;
-using ManagementProject.Application.Features.Students.Commands.UpdateStudent;
 using ManagementProject.Domain.Entities;
-using System;
+using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
-using ManagementProject.Application.Features.Schools.Commands.DeleteSchool;
 
 namespace ManagementProject.Application.Features.Schools.Commands.CreateSchool
 {
@@ -20,34 +13,24 @@ namespace ManagementProject.Application.Features.Schools.Commands.CreateSchool
         private readonly IBaseRepository<School> _schoolRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IResponseFactory<CreateSchoolCommandResponse> _responseFactory;
-        public CreateSchoolCommandHandler(IMapper mapper,
-                                          IBaseRepository<School> schoolRepository,
-                                          IUnitOfWork unitOfWork,
-                                          IResponseFactory<CreateSchoolCommandResponse> responseFactory)
+
+        public CreateSchoolCommandHandler(IMapper mapper, IBaseRepository<School> schoolRepository, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _schoolRepository = schoolRepository;
             _unitOfWork = unitOfWork;
-            _responseFactory = responseFactory;
         }
 
         public async Task<CreateSchoolCommandResponse> Handle(CreateSchoolCommand request, CancellationToken cancellationToken)
         {
-            var createSchoolCommandResponse = _responseFactory.CreateResponse();
-            await CreateSchoolResponseHandling(request, createSchoolCommandResponse);
-            createSchoolCommandResponse.Message = $"School {request.School?.Name} successfully created";
-            return createSchoolCommandResponse;
-        }
-
-        private async Task CreateSchoolResponseHandling(CreateSchoolCommand request, CreateSchoolCommandResponse createSchoolCommandResponse)
-        {
-
             var school = _mapper.Map<School>(request.School);
             await _schoolRepository.AddAsync(school);
-            if (await _unitOfWork.SaveChangesAsync() <= 0)
-                throw new BadRequestException($"Failed to create school : {request.School?.Name}");
+            await _unitOfWork.SaveChangesAsync();
 
+            return new CreateSchoolCommandResponse
+            {
+                Message = $"School {request.School?.Name} successfully created"
+            };
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace ManagementProject.Application.Features.Schools.Queries.GetSchools
 {
@@ -17,43 +18,59 @@ namespace ManagementProject.Application.Features.Schools.Queries.GetSchools
         private readonly IBaseRepository<School> _schoolRepository;
         private readonly IBaseRepository<Student> _studentRepository;
         private readonly IMapper _mapper;
-        private readonly IResponseFactory<GetSchoolsQueryResponse> _responseFactory;
-        public GetSchoolsQueryHandler(IMapper mapper,
-                                      IBaseRepository<School> schoolRepository,
-                                      IBaseRepository<Student> studentRepository,
-                                      IResponseFactory<GetSchoolsQueryResponse> responseFactory)
+
+        public GetSchoolsQueryHandler(IMapper mapper, IBaseRepository<School> schoolRepository, IBaseRepository<Student> studentRepository)
         {
             _mapper = mapper;
             _schoolRepository = schoolRepository;
             _studentRepository = studentRepository;
-            _responseFactory = responseFactory;
         }
 
         public async Task<GetSchoolsQueryResponse> Handle(GetSchoolsQuery request, CancellationToken cancellationToken)
         {
-            var getSchoolsQueryResponse = _responseFactory.CreateResponse();
-            int index = 0;
             var query = _schoolRepository.GetDbSetQueryable();
+            var count = await _schoolRepository.CountAsync();
+            if (request.Options != null)
+            {
+                query = (IQueryable<School>)request.Options.ApplyTo(query);
 
-            if (request.Take != 0)
-                query = query.OrderBy(x => x.Name).Skip(request.Skip).Take(request.Take);
+                if (request.Options.Filter != null)
+                {
+                    var filterExpression = request.Options.Filter;
+                    var filteredQuery = (IQueryable<School>)filterExpression.ApplyTo(_schoolRepository.GetDbSetQueryable(), new ODataQuerySettings());
+                    count = await filteredQuery.CountAsync();
+                }
+            }
 
-            var listSchools = query != null ? await query.OrderBy(x => x.Name).ToListAsync() : null;
-
-            if (listSchools == null)
+            var schools = await (query != null ? query.ToListAsync() : Task.FromResult<List<School>>(null));
+            if (schools == null)
             {
                 throw new NotFoundException($"No schools found");
             }
-            getSchoolsQueryResponse.SchoolsDto = _mapper.Map<List<GetSchoolsDto>>(listSchools);
-            getSchoolsQueryResponse.Count = (await _schoolRepository.CountAsync());
-            foreach (var school in listSchools)
+            var schoolsWithStudents = schools
+                .Select(school => new
+                {
+                    School = school,
+                    Students = _studentRepository.Queryable
+                                .Any(student => student.SchoolId == school.Id)
+                })
+                .ToList();
+
+            var schoolsDto = schoolsWithStudents.Select(school => new GetSchoolsDto
             {
-                getSchoolsQueryResponse.SchoolsDto[index].Haschildren = (await _studentRepository.ListAsync()).Any(x => x.SchoolId == school.Id);
-                index++;
-            }
+                Id = school.School.Id,
+                Name = school.School.Name,
+                Adress = school.School.Adress,
+                Town = school.School.Town,
+                Description = school.School.Description,
+                Haschildren = school.Students
+            }).ToList();
 
-
-            return getSchoolsQueryResponse;
+            return new GetSchoolsQueryResponse
+            {
+                SchoolsDto = schoolsDto,
+                Count = count
+            };
         }
     }
 }

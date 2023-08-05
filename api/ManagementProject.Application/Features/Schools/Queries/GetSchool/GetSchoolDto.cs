@@ -8,6 +8,5 @@ namespace ManagementProject.Application.Features.Schools.Queries.GetSchool
     {
         public bool Haschildren { get; set; }
         public string? Parentname { get; set; }
-        public List<GetStudentsDto> Students { get; set; } = new List<GetStudentsDto>();
     }
 }
