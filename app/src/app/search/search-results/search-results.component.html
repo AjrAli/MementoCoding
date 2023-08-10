@@ -4,7 +4,7 @@
   </div>
   <div *ngIf="searchResults && searchResults.length > 0">
     <!-- Display search results here -->
-    <app-table [noAction]="false" [headers]="['id', 'title', 'subtitle', 'description', 'type']"
+    <app-table [doAction]="false" [headers]="['id', 'title', 'subtitle', 'description', 'type']"
       [headersTitle]="['Id', 'Title', 'Subtitle', 'Description', 'Type']" [data]="searchResults" [searchEngine]="true">
     </app-table>
   </div>

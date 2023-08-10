@@ -27,8 +27,9 @@
                         <th scope="row"> List of students</th>
                         <td>
                             <app-table
+                            (orderQuery)="handleOrderQuery($event)"
                             (nextPage)="handleNextPage($event)"
-                            [noAction]="false"
+                            [doAction]="false"
                             [headers]="['firstName', 'lastName', 'age', 'adress']"
                             [headersTitle]="['FirstName', 'LastName', 'Age', 'Adress']" 
                             [data]="students"

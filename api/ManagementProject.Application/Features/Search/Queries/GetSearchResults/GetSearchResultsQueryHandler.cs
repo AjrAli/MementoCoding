@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +31,8 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
 
         public async Task<GetSearchResultsQueryResponse> Handle(GetSearchResultsQuery request, CancellationToken cancellationToken)
         {
-            var keywords = request.Keyword.ToUpper().Trim().Split();
+            var stringWithoutExtraSpaces = Regex.Replace(request.Keyword, @"\s{2,}", " ");
+            var keywords = stringWithoutExtraSpaces.Trim().Split();
             var allSearchResults = new HashSet<GetSearchResultsDto>(new GetSearchResultsDtoComparer());
 
             foreach (var keyword in keywords)
@@ -109,10 +111,9 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
         {
             foreach (var keyword in keywords)
             {
-                if (result.Title?.ToUpper().Contains(keyword) == true) continue;
-                if (result.Subtitle?.ToUpper().Contains(keyword) == true) continue;
-                if (result.Description?.ToUpper().Contains(keyword) == true) continue;
-
+                if (result.Title?.ToUpper().Contains(keyword.ToUpper()) == true) continue;
+                if (result.Subtitle?.ToUpper().Contains(keyword.ToUpper()) == true) continue;
+                if (result.Description?.ToUpper().Contains(keyword.ToUpper()) == true) continue;
                 return false;
             }
 

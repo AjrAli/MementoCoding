@@ -10,8 +10,8 @@ import { ToastService } from '../services/message-popup/toast.service';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { ModalService } from '../services/modal/modal.service';
 import { ODataQueryDto } from '../dto/utilities/odata-query-dto';
-import { StudentProperties } from '../enum/student-properties';
 import { OrderByChoice } from '../enum/orderby-choice';
+import { StudentProperties } from '../enum/student-properties';
 @Component({
   selector: 'app-students',
   templateUrl: './students.component.html',
@@ -21,6 +21,7 @@ export class StudentsComponent implements OnInit {
   students: StudentDto[] = [];
   pageDetails: PageDetailsDto = new PageDetailsDto();
   newStudent: StudentDto = new StudentDto();
+  queryOptions: ODataQueryDto = new ODataQueryDto();
   constructor(private studentService: StudentService,
     private modalService: ModalService,
     private router: Router,
@@ -32,11 +33,9 @@ export class StudentsComponent implements OnInit {
   }
 
   getStudents(skip?: number, take?: number): void {
-    let query: ODataQueryDto = new ODataQueryDto();
-    query.top = take?.toString() || '0';
-    query.skip = skip?.toString() || '0';
-    query.orderBy.push(`${StudentProperties.LastName} ${OrderByChoice.Ascending}`);
-    this.studentService.getStudents(query).subscribe({
+    this.queryOptions.top = take?.toString() || '0';
+    this.queryOptions.skip = skip?.toString() || '0';
+    this.studentService.getStudents(this.queryOptions).subscribe({
       next: (response: any) => {
         this.pageDetails.totalItems = response.count;
         this.students = response.studentsDto.map((studentData: any) => {
@@ -107,7 +106,33 @@ export class StudentsComponent implements OnInit {
     this.getStudents(this.pageDetails.skip, this.pageDetails.take);
     this.changeDetectorRef.detectChanges();
   }
-
+  handleFilterQuery(event: string){
+    if(event){
+      const studentProps = new StudentProperties();
+      for (const prop of Object.keys(studentProps)) {
+        const key = prop;
+        const value = studentProps[prop];
+        this.queryOptions.filter.push({ key, value });
+      }
+      const stringWithoutExtraSpaces = event.replace(/\s{2,}/g, ' ');
+      this.queryOptions.keywords = stringWithoutExtraSpaces.trim().split(' ');
+      this.getStudents(this.pageDetails.skip, this.pageDetails.take);
+      this.changeDetectorRef.detectChanges();
+    }else{
+      this.queryOptions.filter = [];
+      this.queryOptions.keywords = [];
+      this.getStudents(this.pageDetails.skip, this.pageDetails.take);
+      this.changeDetectorRef.detectChanges();     
+    }
+  }
+  handleOrderQuery(event: {header: string, order: OrderByChoice}){
+    if(event.header && event.order){
+      this.queryOptions.orderBy = [];
+      this.queryOptions.orderBy.push(`${event.header} ${event.order}`);
+      this.getStudents(this.pageDetails.skip, this.pageDetails.take);
+      this.changeDetectorRef.detectChanges();
+    }
+  }
   handleActionCommands(event: { dto: any, command: Command }) {
     switch (event.command) {
       case Command.Read:

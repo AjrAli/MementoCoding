@@ -3,9 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { SchoolDto } from '../../dto/school/school-dto';
-import { ODataOptions } from 'src/app/enum/odata-options';
-import { SchoolProperties } from 'src/app/enum/school-properties';
-import { OrderByChoice } from 'src/app/enum/orderby-choice';
 import { ODataQueryDto } from 'src/app/dto/utilities/odata-query-dto';
 
 @Injectable({

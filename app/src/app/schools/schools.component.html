@@ -13,7 +13,11 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <app-table (actionCommands)="handleActionCommands($event)" (nextPage)="handleNextPage($event)"
+      <app-table 
+        (filterQuery)="handleFilterQuery($event)"
+        (orderQuery)="handleOrderQuery($event)"
+        (actionCommands)="handleActionCommands($event)" 
+        (nextPage)="handleNextPage($event)"
         [headers]="['id', 'name', 'adress', 'town', 'description']"
         [headersTitle]="['Id', 'Name', 'Adress', 'Town', 'Description']" [data]="schools"
         [totalItems]="pageDetails.totalItems">

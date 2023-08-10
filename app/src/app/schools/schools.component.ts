@@ -22,6 +22,7 @@ export class SchoolsComponent implements OnInit {
   schools: SchoolDto[] = [];
   newSchool: SchoolDto = new SchoolDto();
   pageDetails: PageDetailsDto = new PageDetailsDto();
+  queryOptions: ODataQueryDto = new ODataQueryDto();
   constructor(private schoolService: SchoolService,
     private modalService: ModalService,
     private router: Router,
@@ -33,11 +34,9 @@ export class SchoolsComponent implements OnInit {
   }
 
   getSchools(skip?: number, take?: number): void {
-    let query: ODataQueryDto = new ODataQueryDto();
-    query.top = take?.toString() || '0';
-    query.skip = skip?.toString() || '0';
-    query.orderBy.push(`${SchoolProperties.Name} ${OrderByChoice.Ascending}`);
-    this.schoolService.getSchools(query).subscribe({
+    this.queryOptions.top = take?.toString() || '0';
+    this.queryOptions.skip = skip?.toString() || '0';
+    this.schoolService.getSchools(this.queryOptions).subscribe({
       next: (response: any) => {
         this.pageDetails.totalItems = response.count;
         this.schools = response.schoolsDto.map((schoolData: any) => {
@@ -105,6 +104,33 @@ export class SchoolsComponent implements OnInit {
     this.pageDetails.take = result.take;
     this.getSchools(this.pageDetails.skip, this.pageDetails.take);
     this.changeDetectorRef.detectChanges();
+  }
+  handleFilterQuery(event: string){
+    if(event){
+      const schoolProps = new SchoolProperties();
+      for (const prop of Object.keys(schoolProps)) {
+        const key = prop;
+        const value = schoolProps[prop];
+        this.queryOptions.filter.push({ key, value });
+      }
+      const stringWithoutExtraSpaces = event.replace(/\s{2,}/g, ' ');
+      this.queryOptions.keywords = stringWithoutExtraSpaces.trim().split(' ');
+      this.getSchools(this.pageDetails.skip, this.pageDetails.take);
+      this.changeDetectorRef.detectChanges();
+    }else{
+      this.queryOptions.filter = [];
+      this.queryOptions.keywords = [];
+      this.getSchools(this.pageDetails.skip, this.pageDetails.take);
+      this.changeDetectorRef.detectChanges();     
+    }
+  }
+  handleOrderQuery(event: {header: string, order: OrderByChoice}){
+    if(event.header && event.order){
+      this.queryOptions.orderBy = [];
+      this.queryOptions.orderBy.push(`${event.header} ${event.order}`);
+      this.getSchools(this.pageDetails.skip, this.pageDetails.take);
+      this.changeDetectorRef.detectChanges();
+    }
   }
   handleActionCommands(event: { dto: any, command: Command }) {
     switch (event.command) {

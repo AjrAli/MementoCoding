@@ -1,30 +1,41 @@
+<div *ngIf="doAction" class="container mt-12 mb-3">
+  <div class="row justify-content-center align-items-center">
+    <div class="col-md-3">
+      <input type="text" class="form-control" [formControl]="searchField" placeholder="Search..." />
+    </div>
+  </div>
+</div>
 <div *ngIf="data.length > 0; else notfound" class="table-responsive">
   <table class="table table-striped table-hover table-bordered">
     <thead class="table-primary">
       <tr>
-        <th *ngFor="let header of headersTitle">{{ header }}</th>
-        <th *ngIf="noAction"> Action </th>
+        <th (click)="!this.searchEngine ? orderByField(header, !this.changeOrder) : null"
+          [class.custom-cursor]="!this.searchEngine" *ngFor="let header of headersTitle;">
+          {{ header }}
+          <fa-icon *ngIf="!this.searchEngine" [icon]="this.myIcons['faArrowsUpDown']"></fa-icon>
+        </th>
+        <th *ngIf="doAction"> Action </th>
       </tr>
 
     </thead>
     <tbody>
       <tr *ngFor="let item of data | slice:0:showItems;" [routerLink]="getResultLink(item)"
-        (click)="clearSearch(getResultLink(item))" [class.custom-cursor]="!noAction">
+        (click)="clearSearch(getResultLink(item))" [class.custom-cursor]="!doAction">
         <td *ngFor="let header of headers" class="text-wrap text-break"><span *ngIf="searchEngine; else normal"
             [innerHTML]="item[header] | boldText: (keyword$ | async)"></span>
           <ng-template #normal>
             {{item[header] }}
           </ng-template>
         </td>
-        <td *ngIf="noAction">
-          <button type="button" class="btn btn-success" (click)="actionCommandRead(item)">
-            <fa-icon [icon]="faEye"></fa-icon>
+        <td *ngIf="doAction">
+          <button type="button" class="btn btn-success" (click)="doAction ? actionCommandRead(item) : null">
+            <fa-icon [icon]="this.myIcons['faEye']"></fa-icon>
           </button>
-          <button type="button" class="btn btn-primary" (click)="actionCommandUpdate(item)">
-            <fa-icon [icon]="faPencil"></fa-icon>
+          <button type="button" class="btn btn-primary" (click)="doAction ? actionCommandUpdate(item) : null">
+            <fa-icon [icon]="this.myIcons['faPencil']"></fa-icon>
           </button>
-          <button type="button" class="btn btn-danger" (click)="actionCommandDelete(item)">
-            <fa-icon [icon]="faTimes"></fa-icon>
+          <button type="button" class="btn btn-danger" (click)="doAction ? actionCommandDelete(item) : null">
+            <fa-icon [icon]="this.myIcons['faTimes']"></fa-icon>
           </button>
 
         </td>
@@ -39,6 +50,6 @@
 <ng-template #notfound>
   <!-- Content -->
   <div class="container mt-4">
-      Loading data(s)...
+    Loading data(s)...
   </div>
 </ng-template>
