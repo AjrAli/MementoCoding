@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { faTimes, faPencil, faEye, faArrowsUpDown, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { Subject, of, Observable } from 'rxjs';
@@ -16,10 +16,10 @@ import { ToastService } from 'src/app/services/message-popup/toast.service';
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css'],
 })
-export class TableComponent implements OnInit, OnDestroy {
+export class TableComponent implements OnInit, OnDestroy, OnChanges {
   @Input() headers: string[] = [];
   @Input() headersTitle: string[] = [];
-  @Input() data: any[] = [];
+  @Input() data: any[] | undefined;
   @Input() doAction = true;
   @Input() searchEngine = false;
   @Input() totalItems: number = 0;
@@ -28,7 +28,7 @@ export class TableComponent implements OnInit, OnDestroy {
   @Output() orderQuery = new EventEmitter<{ header: string, order: OrderByChoice }>();
   @Output() filterQuery = new EventEmitter<string>();
   private destroy$: Subject<void> = new Subject<void>();
-  searchField: FormControl = new FormControl();
+  searchField!: FormControl;
   changeOrder = false;
   keyword$!: Observable<string> | null;
   myIcons: { [key: string]: IconDefinition } = {};
@@ -45,23 +45,28 @@ export class TableComponent implements OnInit, OnDestroy {
       "faArrowsUpDown": faArrowsUpDown,
       "faEye": faEye
     };
-    if (this.doAction) {
-      this.searchField.valueChanges
-        .pipe(
-          debounceTime(500),
-          distinctUntilChanged(),
-          takeUntil(this.destroy$) // Unsubscribe from the observable when the component is destroyed
-        )
-        .subscribe({
-          next: (response: any) => {
-            this.filterQuery.emit(response);
-            console.log(response);
-          },
-          error: (error: any) => {
-            this.toastService.showSimpleError(error?.toString());
-          },
-          complete: () => console.info('complete')
-        });
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if(!this.searchField){
+      if (this.doAction && this.data && this.data.length > 0) {
+        this.searchField = new FormControl();
+        this.searchField.valueChanges
+          .pipe(
+            debounceTime(500),
+            distinctUntilChanged(),
+            takeUntil(this.destroy$) // Unsubscribe from the observable when the component is destroyed
+          )
+          .subscribe({
+            next: (response: any) => {
+              this.filterQuery.emit(response);
+              console.log(response);
+            },
+            error: (error: any) => {
+              this.toastService.showSimpleError(error?.toString());
+            },
+            complete: () => console.info('complete')
+          });
+      }   
     }
   }
   ngOnDestroy(): void {

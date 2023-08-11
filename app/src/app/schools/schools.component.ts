@@ -19,7 +19,7 @@ import { OrderByChoice } from '../enum/orderby-choice';
   styleUrls: ['./schools.component.css']
 })
 export class SchoolsComponent implements OnInit {
-  schools: SchoolDto[] = [];
+  schools: SchoolDto[] | undefined = [];
   newSchool: SchoolDto = new SchoolDto();
   pageDetails: PageDetailsDto = new PageDetailsDto();
   queryOptions: ODataQueryDto = new ODataQueryDto();
@@ -38,6 +38,10 @@ export class SchoolsComponent implements OnInit {
     this.queryOptions.skip = skip?.toString() || '0';
     this.schoolService.getSchools(this.queryOptions).subscribe({
       next: (response: any) => {
+        if(!response || response.count === 0){
+          this.schools = undefined;
+          return;
+        }
         this.pageDetails.totalItems = response.count;
         this.schools = response.schoolsDto.map((schoolData: any) => {
           const school = new SchoolDto();
@@ -46,6 +50,7 @@ export class SchoolsComponent implements OnInit {
         });
       },
       error: (error: ErrorResponse) => {
+        this.schools = undefined;
         this.toastService.showError(error);
       },
       complete: () => console.info('complete')
@@ -105,8 +110,8 @@ export class SchoolsComponent implements OnInit {
     this.getSchools(this.pageDetails.skip, this.pageDetails.take);
     this.changeDetectorRef.detectChanges();
   }
-  handleFilterQuery(event: string){
-    if(event){
+  handleFilterQuery(event: string) {
+    if (event) {
       const schoolProps = new SchoolProperties();
       for (const prop of Object.keys(schoolProps)) {
         const key = prop;
@@ -117,15 +122,15 @@ export class SchoolsComponent implements OnInit {
       this.queryOptions.keywords = stringWithoutExtraSpaces.trim().split(' ');
       this.getSchools(this.pageDetails.skip, this.pageDetails.take);
       this.changeDetectorRef.detectChanges();
-    }else{
+    } else {
       this.queryOptions.filter = [];
       this.queryOptions.keywords = [];
       this.getSchools(this.pageDetails.skip, this.pageDetails.take);
-      this.changeDetectorRef.detectChanges();     
+      this.changeDetectorRef.detectChanges();
     }
   }
-  handleOrderQuery(event: {header: string, order: OrderByChoice}){
-    if(event.header && event.order){
+  handleOrderQuery(event: { header: string, order: OrderByChoice }) {
+    if (event.header && event.order) {
       this.queryOptions.orderBy = [];
       this.queryOptions.orderBy.push(`${event.header} ${event.order}`);
       this.getSchools(this.pageDetails.skip, this.pageDetails.take);

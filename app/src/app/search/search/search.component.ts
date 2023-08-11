@@ -14,7 +14,7 @@ import { ErrorResponse } from 'src/app/dto/response/error/error-response';
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnDestroy {
-  searchResults: SearchResultDto[] = [];
+  searchResults: SearchResultDto[] | undefined = [];
   keyword: string = '';
   private destroy$: Subject<void> = new Subject<void>();
   private searchKeyword$ = new Subject<string>();
@@ -79,7 +79,7 @@ export class SearchComponent implements OnDestroy {
   onSearch(keyword: string): void {
     this.searchService
       .getSearchResults(keyword)
-      .pipe(
+      ?.pipe(
         takeUntil(this.destroy$),
         catchError((error) => {
           this.toastService.showError(error as ErrorResponse);
@@ -88,7 +88,11 @@ export class SearchComponent implements OnDestroy {
       )
       .subscribe({
         next: (response: any) => {
-          this.searchResults = response.searchResultsDto.map(
+          if (!response || response?.searchResultsDto?.length === 0) {
+            this.searchResults = undefined;
+            return;
+          }
+          this.searchResults = response?.searchResultsDto?.map(
             (searchData: any) => {
               const searchResult = new SearchResultDto(
                 searchData.type?.toLowerCase()

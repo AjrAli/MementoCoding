@@ -18,7 +18,7 @@ import { StudentProperties } from '../enum/student-properties';
   styleUrls: ['./students.component.css']
 })
 export class StudentsComponent implements OnInit {
-  students: StudentDto[] = [];
+  students: StudentDto[] | undefined = [];
   pageDetails: PageDetailsDto = new PageDetailsDto();
   newStudent: StudentDto = new StudentDto();
   queryOptions: ODataQueryDto = new ODataQueryDto();
@@ -37,6 +37,10 @@ export class StudentsComponent implements OnInit {
     this.queryOptions.skip = skip?.toString() || '0';
     this.studentService.getStudents(this.queryOptions).subscribe({
       next: (response: any) => {
+        if(!response || response.count === 0){
+          this.students = undefined;
+          return;
+        }
         this.pageDetails.totalItems = response.count;
         this.students = response.studentsDto.map((studentData: any) => {
           const student = new StudentDto();
@@ -45,6 +49,7 @@ export class StudentsComponent implements OnInit {
         });
       },
       error: (error: ErrorResponse) => {
+        this.students = undefined;
         this.toastService.showError(error);
       },
       complete: () => console.info('complete')

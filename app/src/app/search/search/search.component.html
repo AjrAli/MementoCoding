@@ -1,11 +1,3 @@
-<ng-container *ngIf="searchResults && searchResults.length > 0; else notfound">
-    <app-search-results [searchResults]="searchResults"></app-search-results>
-</ng-container>
-
-<ng-template #notfound>
-
-    <!-- Content -->
-    <div class="container mt-4">
-        Loading data(s)...
-    </div>
-</ng-template>
+<app-table [doAction]="false" [headers]="['id', 'title', 'subtitle', 'description', 'type']"
+    [headersTitle]="['Id', 'Title', 'Subtitle', 'Description', 'Type']" [data]="searchResults" [searchEngine]="true">
+</app-table>

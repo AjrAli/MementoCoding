@@ -18,7 +18,7 @@ import { StudentService } from 'src/app/services/student/student.service';
 })
 export class SchoolDetailsComponent implements OnInit {
 
-  students: StudentDto[] = [];
+  students: StudentDto[] | undefined = [];
   pageDetails: PageDetailsDto = new PageDetailsDto();
   school: SchoolDto = new SchoolDto();
   schoolId: number = 0;
@@ -38,6 +38,10 @@ export class SchoolDetailsComponent implements OnInit {
     this.queryOptions.filter.push({key: 'SchoolId', value:this.school.id});
     this.studentService.getStudents(this.queryOptions).subscribe({
       next: (response: any) => {
+        if(!response || response.count === 0){
+          this.students = undefined;
+          return;
+        }
         this.pageDetails.totalItems = response.count;
         this.students = response.studentsDto.map((studentData: any) => {
           const student = new StudentDto();
@@ -46,6 +50,7 @@ export class SchoolDetailsComponent implements OnInit {
         });
       },
       error: (error: ErrorResponse) => {
+        this.students = undefined;
         this.toastService.showError(error);
       },
       complete: () => console.info('complete')
