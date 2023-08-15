@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using ManagementProject.Api.Controllers.Commands;
 using ManagementProject.Application.Contracts.Persistence;
 using ManagementProject.Application.Features.Response;
@@ -22,21 +21,24 @@ using System;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using DotNetCore.Results;
 using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Schools;
+using NSubstitute;
+using Humanizer;
+using ManagementProject.Application.Features.Schools.Commands.CreateSchool;
 
 namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
 {
     [TestClass]
     public partial class StudentCommandControllerTests
     {
-
         private readonly ILogger<StudentCommandController> _logger = new SerilogLoggerFactory(new LoggerConfiguration()
                                                                                           .WriteTo.Debug()
                                                                                           .CreateLogger())
                                                                   .CreateLogger<StudentCommandController>();
         private readonly IMapper _mapper = new MapperConfiguration(x => x.AddProfile<StudentMappingProfile>()).CreateMapper();
-        private Mock<IStudentRepository> _mockStudentRepo = new Mock<IStudentRepository>();
+        private IStudentRepository _mockStudentRepo = Substitute.For<IStudentRepository>();
+
         [TestMethod]
         public async Task Create_Student_ReturnSuccess()
         {
@@ -50,10 +52,9 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                 Adress = "MyAdress",
                 Age = 10,
                 SchoolId = 5
-
             };
-            Mock<IMediator> mediatorMock = MockMediatorCreateStudentCommand(studentDto);
-            var studentControllerTest = new StudentCommandController(mediatorMock.Object, _logger);
+            IMediator mediatorMock = await MockMediatorCreateStudentCommandAsync(studentDto);
+            var studentControllerTest = new StudentCommandController(mediatorMock, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.CreateStudent(studentDto);
@@ -75,10 +76,9 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                 Adress = "MyAdress",
                 Age = 10,
                 SchoolId = 5
-
             };
-            Mock<IMediator> mediatorMock = MockMediatorUpdateStudentCommand(studentDto);
-            var studentControllerTest = new StudentCommandController(mediatorMock.Object, _logger);
+            IMediator mediatorMock = await MockMediatorUpdateStudentCommand(studentDto);
+            var studentControllerTest = new StudentCommandController(mediatorMock, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.UpdateStudent(studentDto);
@@ -91,8 +91,8 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         public async Task Delete_Student_ReturnSuccess()
         {
             //Arrange
-            Mock<IMediator> mediatorMock = MockMediatorDeleteStudentCommand(1);
-            var studentControllerTest = new StudentCommandController(mediatorMock.Object, _logger);
+            IMediator mediatorMock = await MockMediatorDeleteStudentCommand(1);
+            var studentControllerTest = new StudentCommandController(mediatorMock, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.DeleteStudent(1);
@@ -107,10 +107,11 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
             //Arrange
 
             StudentDto studentDto = null;
-            Mock<IMediator> mediatorMock = MockMediatorCreateStudentCommand(null);
-            var studentControllerTest = new StudentCommandController(mediatorMock.Object, _logger);
+            IMediator mediatorMock = await MockMediatorCreateStudentCommandAsync(null);
+            var studentControllerTest = new StudentCommandController(mediatorMock, _logger);
 
             //Act && Assert
+
             await Assert.ThrowsExceptionAsync<BadRequestException>(async () =>
             {
                 await studentControllerTest.CreateStudent(studentDto);
@@ -122,10 +123,11 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
             //Arrange
 
             StudentDto studentDto = null;
-            Mock<IMediator> mediatorMock = MockMediatorUpdateStudentCommand(null);
-            var studentControllerTest = new StudentCommandController(mediatorMock.Object, _logger);
+            IMediator mediatorMock = await MockMediatorUpdateStudentCommand(null);
+            var studentControllerTest = new StudentCommandController(mediatorMock, _logger);
 
             //Act && Assert
+
             await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
                 await studentControllerTest.UpdateStudent(studentDto);
@@ -135,76 +137,83 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         public async Task Delete_Student_ReturnNotFoundException()
         {
             //Arrange
-            Mock<IMediator> mediatorMock = MockMediatorDeleteStudentCommand(0);
-            var studentControllerTest = new StudentCommandController(mediatorMock.Object, _logger);
+            IMediator mediatorMock = await MockMediatorDeleteStudentCommand(0);
+            var studentControllerTest = new StudentCommandController(mediatorMock, _logger);
 
             //Act && Assert
+
             await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
                 await studentControllerTest.DeleteStudent(0);
             });
         }
-        private Mock<IMediator> MockMediatorCreateStudentCommand(StudentDto dto)
+        private async Task<IMediator> MockMediatorCreateStudentCommandAsync(StudentDto dto)
         {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<CreateStudentCommand>(), default)).Returns(
-                async (CreateStudentCommand q, CancellationToken token) =>
-                await InitCreateStudentCommandHandler(dto).Handle(q, token));
+            var mediatorMock = Substitute.For<IMediator>();
+            mediatorMock.Send(Arg.Any<CreateStudentCommand>(), default).Returns(x =>
+            {
+                return InitCreateStudentCommandHandler(dto).Handle(x.Arg<CreateStudentCommand>(), x.Arg<CancellationToken>());
+            });
+               
             return mediatorMock;
         }
         private CreateStudentCommandHandler InitCreateStudentCommandHandler(StudentDto? createStudentDto)
         {
             int result = (createStudentDto == null) ? -1 : 1;
             if (result == -1)
-                _mockStudentRepo.Setup(x => x.AddAsync(It.IsAny<Student>())).ThrowsAsync(new BadRequestException("Failed to create student"));
+                _mockStudentRepo.AddAsync(Arg.Any<Student>()).Returns(x => { throw new BadRequestException("Failed to add student"); });
             else
-                _mockStudentRepo.Setup(x => x.AddAsync(It.IsAny<Student>())).Returns(Task.CompletedTask);
-            return new CreateStudentCommandHandler(_mapper, _mockStudentRepo.Object, InitUnitOfWork(result));
+                _mockStudentRepo.AddAsync(Arg.Any<Student>()).Returns(Task.CompletedTask);
+            return new CreateStudentCommandHandler(_mapper, _mockStudentRepo, InitUnitOfWork(result));
         }
-        private Mock<IMediator> MockMediatorUpdateStudentCommand(StudentDto dto)
+        private async Task<IMediator> MockMediatorUpdateStudentCommand(StudentDto dto)
         {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<UpdateStudentCommand>(), default)).Returns(
-                async (UpdateStudentCommand q, CancellationToken token) =>
-                await InitUpdateStudentCommandHandler(dto).Handle(q, token));
+            var mediatorMock = Substitute.For<IMediator>();
+            mediatorMock.Send(Arg.Any<UpdateStudentCommand>(), default).Returns(x =>
+            {
+                return InitUpdateStudentCommandHandler(dto).Handle(x.Arg<UpdateStudentCommand>(), x.Arg<CancellationToken>());
+            });
+             
             return mediatorMock;
         }
         private UpdateStudentCommandHandler InitUpdateStudentCommandHandler(StudentDto? updateStudentDto)
         {
             int result = (updateStudentDto == null) ? -1 : 1;
             if (result == -1)
-                _mockStudentRepo.Setup(x => x.UpdateAsync(It.IsAny<Student>())).ThrowsAsync(new BadRequestException("Failed to update student"));
+                _mockStudentRepo.UpdateAsync(Arg.Any<Student>()).Returns(x => { throw new BadRequestException("Failed to update student"); });
             else
-                _mockStudentRepo.Setup(x => x.UpdateAsync(It.IsAny<Student>())).Returns(Task.CompletedTask);
-            _mockStudentRepo.Setup(x => x.GetAsync(It.IsAny<long>())).ReturnsAsync(InitStudentEntity());
-            return new UpdateStudentCommandHandler(_mapper, _mockStudentRepo.Object, InitUnitOfWork(result));
+                _mockStudentRepo.UpdateAsync(Arg.Any<Student>()).Returns(Task.CompletedTask);
+            _mockStudentRepo.GetAsync(Arg.Any<long>()).Returns(InitStudentEntity());
+            return new UpdateStudentCommandHandler(_mapper, _mockStudentRepo, InitUnitOfWork(result));
         }
 
-        private Mock<IMediator> MockMediatorDeleteStudentCommand(long Id)
+        private async Task<IMediator> MockMediatorDeleteStudentCommand(long id)
         {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<DeleteStudentCommand>(), default)).Returns(
-                async (DeleteStudentCommand q, CancellationToken token) =>
-                await InitDeleteStudentCommandHandler(q.StudentId).Handle(q, token));
+            var mediatorMock = Substitute.For<IMediator>();
+            mediatorMock.Send(Arg.Any<DeleteStudentCommand>(), default).Returns(x =>
+            {
+                return InitDeleteStudentCommandHandler(id).Handle(x.Arg<DeleteStudentCommand>(), x.Arg<CancellationToken>());
+            });
+              
             return mediatorMock;
         }
         private DeleteStudentCommandHandler InitDeleteStudentCommandHandler(long id)
         {
             int result = (id == 0) ? -1 : 1;
             if (result == -1)
-                _mockStudentRepo.Setup(x => x.DeleteAsync(It.IsAny<Student>())).ThrowsAsync(new BadRequestException("Failed to delete student"));
+                _mockStudentRepo.DeleteAsync(Arg.Any<Student>()).Returns(x => { throw new BadRequestException("Failed to delete student"); });
             else
-                _mockStudentRepo.Setup(x => x.DeleteAsync(It.IsAny<Student>())).Returns(Task.CompletedTask);
-            _mockStudentRepo.Setup(x => x.GetAsync(It.IsAny<long>())).ReturnsAsync(InitStudentEntity(id));
-            _mockStudentRepo.Setup(x => x.Any(It.IsAny<Expression<Func<Student, bool>>>())).Returns(false);
-            return new DeleteStudentCommandHandler(_mockStudentRepo.Object, InitUnitOfWork(result));
+                _mockStudentRepo.DeleteAsync(Arg.Any<Student>()).Returns(Task.CompletedTask);
+            _mockStudentRepo.GetAsync(Arg.Any<long>()).Returns(InitStudentEntity(id));
+            _mockStudentRepo.Any(Arg.Any<Expression<Func<Student, bool>>>()).Returns(false);
+            return new DeleteStudentCommandHandler(_mockStudentRepo, InitUnitOfWork(result));
         }
         private UnitOfWork<ManagementProjectDbContext> InitUnitOfWork(int result)
         {
             DbContextOptions<ManagementProjectDbContext> options = new DbContextOptions<ManagementProjectDbContext>();
-            var mockDbContext = new Mock<ManagementProjectDbContext>(options);
-            mockDbContext.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(result);
-            var mockUnitOfWork = new UnitOfWork<ManagementProjectDbContext>(mockDbContext.Object);
+            var mockDbContext = Substitute.For<ManagementProjectDbContext>(options);
+            mockDbContext.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(result);
+            var mockUnitOfWork = new UnitOfWork<ManagementProjectDbContext>(mockDbContext);
             return mockUnitOfWork;
         }
         private static Student InitStudentEntity()
@@ -213,9 +222,9 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         }
         private static Student InitStudentEntity(long id)
         {
-            if (id == 1) 
+            if (id == 1)
                 return new Student(1, "Test", "Test", 10, "MyAdress", 5);
-            
+
             return null;
         }
     }
