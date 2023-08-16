@@ -17,11 +17,9 @@ namespace ManagementProject.Application.Features.Schools.Queries.GetSchools
     {
         private readonly IBaseRepository<School> _schoolRepository;
         private readonly IBaseRepository<Student> _studentRepository;
-        private readonly IMapper _mapper;
 
-        public GetSchoolsQueryHandler(IMapper mapper, IBaseRepository<School> schoolRepository, IBaseRepository<Student> studentRepository)
+        public GetSchoolsQueryHandler(IBaseRepository<School> schoolRepository, IBaseRepository<Student> studentRepository)
         {
-            _mapper = mapper;
             _schoolRepository = schoolRepository;
             _studentRepository = studentRepository;
         }
@@ -38,15 +36,11 @@ namespace ManagementProject.Application.Features.Schools.Queries.GetSchools
                 {
                     var filterExpression = request.Options.Filter;
                     var filteredQuery = (IQueryable<School>)filterExpression.ApplyTo(_schoolRepository.GetDbSetQueryable(), new ODataQuerySettings());
-                    count = await filteredQuery.CountAsync();
+                    count = await filteredQuery.CountAsync(CancellationToken.None);
                 }
             }
 
-            var schools = await (query != null ? query.ToListAsync() : Task.FromResult<List<School>>(null));
-            if (schools == null)
-            {
-                throw new NotFoundException($"No schools found");
-            }
+            var schools = await (query != null ? query.ToListAsync(CancellationToken.None) : Task.FromResult<List<School>>(null)) ?? throw new NotFoundException($"No schools found");
             var schoolsWithStudents = schools
                 .Select(school => new
                 {

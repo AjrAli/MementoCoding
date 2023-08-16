@@ -36,7 +36,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                 Username = "admin",
                 Password = "admin"
             };
-            var accountController = await InitAccountController();
+            var accountController = InitAccountController();
 
             // Act
             var resultAuthCall = await accountController.AuthenticateAsync(request);
@@ -51,8 +51,8 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         public async Task AuthenticateAsync_ReturnBadRequest()
         {
             // Arrange
-            AuthenticateQuery request = new AuthenticateQuery();
-            var accountController = await InitAccountController();
+            AuthenticateQuery request = new ();
+            var accountController = InitAccountController();
 
             // Act && Assert
             await Assert.ThrowsExceptionAsync<BadRequestException>(async () =>
@@ -61,13 +61,13 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             });
         }
 
-        private async Task<AccountQueryController> InitAccountController()
+        private AccountQueryController InitAccountController()
         {
-            IMediator mediatorMock = await MockMediatorAuthenticateQuery();
+            IMediator mediatorMock = MockMediatorAuthenticateQuery();
             return new AccountQueryController(mediatorMock, _logger);
         }
 
-        private async Task<IMediator> MockMediatorAuthenticateQuery()
+        private static IMediator MockMediatorAuthenticateQuery()
         {
             var mediatorMock = Substitute.For<IMediator> ();
             mediatorMock.Send(Arg.Any<AuthenticateQuery>(), default).Returns(x =>
@@ -77,7 +77,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             return mediatorMock;
         }
 
-        private AuthenticateQueryHandler InitAuthenticateQueryHandler()
+        private static AuthenticateQueryHandler InitAuthenticateQueryHandler()
         {
 
             var user = new ApplicationUser
@@ -129,9 +129,9 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             return userManager;
         }
 
-        public static RoleManager<TRole> MockRoleManager<TRole>(IRoleStore<TRole> store = null) where TRole : class
+        public static RoleManager<TRole> MockRoleManager<TRole>(IRoleStore<TRole>? store = null) where TRole : class
         {
-            store = store ?? Substitute.For<IRoleStore<TRole>>();
+            store ??= Substitute.For<IRoleStore<TRole>>();
             var roleManager = Substitute.For<RoleManager<TRole>>(store, new List<IRoleValidator<TRole>>(), Substitute.For<ILookupNormalizer>(), Substitute.For<IdentityErrorDescriber>(), null);
             return roleManager;
         }

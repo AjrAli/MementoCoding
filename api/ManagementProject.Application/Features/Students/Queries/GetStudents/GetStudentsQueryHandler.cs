@@ -35,7 +35,7 @@ namespace ManagementProject.Application.Features.Students.Queries.GetStudents
                 {
                     var filterExpression = request.Options.Filter;
                     var filteredQuery = (IQueryable<Student>)filterExpression.ApplyTo(_studentRepository.GetDbSetQueryable(), new ODataQuerySettings());
-                    count = await filteredQuery.CountAsync();
+                    count = await filteredQuery.CountAsync(CancellationToken.None);
                     return await GetStudentsResponse(query, count);
                 }
             }
@@ -45,12 +45,7 @@ namespace ManagementProject.Application.Features.Students.Queries.GetStudents
 
         private async Task<GetStudentsQueryResponse> GetStudentsResponse(IQueryable<Student> query, long count)
         {
-            var listStudents = await (query != null ? query.Include(x => x.School).ToListAsync() : Task.FromResult<List<Student>>(null));
-            if (listStudents == null)
-            {
-                throw new NotFoundException($"No students found");
-            }
-
+            var listStudents = await (query != null ? query.Include(x => x.School).ToListAsync() : Task.FromResult<List<Student>>(null)) ?? throw new NotFoundException($"No students found");
             return new GetStudentsQueryResponse
             {
                 Count = count,

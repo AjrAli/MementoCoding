@@ -32,9 +32,9 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         private List<GetSchoolDto>? _allSchoolDto;
         private IBaseResponse? _schoolResponse;
         private static TestContext? _testContext;
-        private IMediator _mediatorMock = Substitute.For<IMediator>();
-        private ISchoolRepository _mockSchoolRepo = Substitute.For<ISchoolRepository>();
-        private IStudentRepository _mockStudentRepo = Substitute.For<IStudentRepository>();
+        private readonly IMediator _mediatorMock = Substitute.For<IMediator>();
+        private readonly ISchoolRepository _mockSchoolRepo = Substitute.For<ISchoolRepository>();
+        private readonly IStudentRepository _mockStudentRepo = Substitute.For<IStudentRepository>();
 
         [ClassInitialize]
         public static void SetupTests(TestContext testContext)
@@ -164,7 +164,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 
             _mockSchoolRepo.GetDbSetQueryable().Returns(isListExpected ? InitListOfSchoolEntity().BuildMock() : null);
             _mockSchoolRepo.CountAsync().Returns(isListExpected ? InitListOfSchoolEntity().Count : 0);
-            return new GetSchoolsQueryHandler(_mapper, _mockSchoolRepo, _mockStudentRepo);
+            return new GetSchoolsQueryHandler(_mockSchoolRepo, _mockStudentRepo);
         }
         private GetSchoolsQueryResponse InitGetSchoolsQueryResponse()
         {
@@ -212,10 +212,6 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                      new School(3, "test", "adres", "town", "desc"),
                      new School(6, "test", "adres", "town", "desc")
                 };
-        }
-        private IQueryable<School> InitQueryOfSchoolEntity()
-        {
-            return _mockSchoolRepo.GetDbSetQueryable();
         }
         private static GetSchoolDto? InitSchoolDto(long? id)
         {

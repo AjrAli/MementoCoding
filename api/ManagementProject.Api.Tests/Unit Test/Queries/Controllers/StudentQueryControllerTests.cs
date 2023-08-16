@@ -32,8 +32,8 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         private List<GetStudentDto>? _allStudentDto;
         private IBaseResponse? _studentResponse;
         private static TestContext? _testContext;
-        private IMediator _mediatorMock = Substitute.For<IMediator>();
-        private IStudentRepository _mockStudentRepo = Substitute.For<IStudentRepository>();
+        private readonly IMediator _mediatorMock = Substitute.For<IMediator>();
+        private readonly IStudentRepository _mockStudentRepo = Substitute.For<IStudentRepository>();
 
         [ClassInitialize]
         public static void SetupTests(TestContext testContext)
@@ -213,10 +213,6 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                     new Student(3, "Test", "Test", 10, "MyAdress", 5),
                     new Student(6, "Test6", "Test6", 16, "MyAdress6", 10)
                 };
-        }
-        private IQueryable<Student> InitQueryOfStudentEntity()
-        {
-            return _mockStudentRepo.GetDbSetQueryable();
         }
         private static GetStudentDto? InitStudentDto(long? id)
         {

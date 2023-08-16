@@ -17,27 +17,23 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         private static readonly DbContextOptions<ManagementProjectDbContext> _inMemoryOptionsEmptyDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
                     .UseInMemoryDatabase(databaseName: "EmptyDb")
                     .Options;
-        private static TestContext? _testContext;
 
 
         [ClassInitialize]
         public static void Setup(TestContext testContext)
         {
-            _testContext = testContext;
             var sqlServerOptions = new DbContextOptionsBuilder<ManagementProjectDbContext>()
                            .UseSqlServer("Server=localhost;Database=ManagementProjectDb;Trusted_Connection=True;MultipleActiveResultSets=True;")
                            .Options;
-            using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
-            using (var sqlServerContext = new ManagementProjectDbContext(sqlServerOptions))
+            using var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions);
+            using var sqlServerContext = new ManagementProjectDbContext(sqlServerOptions);
+            var schools = sqlServerContext?.Schools?.ToList();
+            var students = sqlServerContext?.Students?.ToList();
+            if (schools != null && students != null)
             {
-                var schools = sqlServerContext?.Schools?.ToList();
-                var students = sqlServerContext?.Students?.ToList();
-                if (schools != null && students != null)
-                {
-                    inMemoryContext?.Schools?.AddRange(schools);
-                    inMemoryContext?.Students?.AddRange(students);
-                    inMemoryContext?.SaveChanges();
-                }
+                inMemoryContext?.Schools?.AddRange(schools);
+                inMemoryContext?.Students?.AddRange(students);
+                inMemoryContext?.SaveChanges();
             }
         }
 
@@ -45,7 +41,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         public async Task GetSchoolsAsync_WhenDatabaseHasSchools_ReturnsListOfSchools()
         {
             //Arrange
-            List<School> listSchools = null;
+            List<School>? listSchools = null;
             // Act
             using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
             {
@@ -58,7 +54,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         public async Task GetStudentsAsync_WhenDatabaseHasStudents_ReturnsListOfStudents()
         {
             //Arrange
-            List<Student> listStudents = null;
+            List<Student>? listStudents = null;
             // Act
             using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
             {
@@ -71,7 +67,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         public async Task GetSchoolAsync_WhenDatabaseHasSchools_ReturnsSchool()
         {
             //Arrange
-            School school = null;
+            School? school = null;
             // Act
             using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
             {
@@ -84,7 +80,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         public async Task GetStudentAsync_WhenDatabaseHasStudents_ReturnsStudent()
         {
             //Arrange
-            Student student = null;
+            Student? student = null;
             // Act
             using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
             {
@@ -105,7 +101,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
                 Town = "TestDummy"
             };
             int result = default;
-            School addedSchool = null;
+            School? addedSchool = null;
             // Act
             using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
             {
@@ -130,7 +126,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
                 Age = 18
             };
             int result = default;
-            Student addedStudent = null;
+            Student? addedStudent = null;
             // Act
             using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
             {
@@ -150,7 +146,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
             //Arrange
             int result = default;
             bool schoolExist = false;
-            School schoolToRemove = null;
+            School? schoolToRemove = null;
             // Act
             using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
             {
@@ -170,7 +166,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
             //Arrange
             int result = default;
             bool studentExist = false;
-            Student studentToRemove = null;
+            Student? studentToRemove = null;
             // Act
             using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
             {
@@ -189,7 +185,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         {
             //Arrange
             int result = default;
-            School schoolToUpdate = null;
+            School? schoolToUpdate = null;
             string newSchoolName = "NewNameTestDummy";
             bool schoolExist = false;
             // Act
@@ -211,7 +207,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         {
             //Arrange
             int result = default;
-            Student studentToUpdate = null;
+            Student? studentToUpdate = null;
             string newStudentFirstName = "NewFirstNameTestDummy";
             bool studentExist = false;
             // Act
@@ -284,7 +280,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         public async Task AddSchoolAsync_WhenRequiredFieldsAreNull_ThrowsDbUpdateException()
         {
             // Arrange
-            School school = new School
+            School school = new()
             {
                 Adress = "TestDummy",
                 Description = "TestDummy",
@@ -293,14 +289,12 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
             };
 
             // Act & Assert
-            using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
+            using var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions);
+            await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
             {
-                await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
-                {
-                    await inMemoryContext.Schools.AddAsync(school);
-                    await inMemoryContext.SaveChangesAsync();
-                });
-            }
+                await inMemoryContext.Schools.AddAsync(school);
+                await inMemoryContext.SaveChangesAsync();
+            });
         }
         [TestMethod]
         public async Task AddStudentAsync_WhenRequiredFieldsAreNull_ThrowsDbUpdateException()
@@ -314,14 +308,12 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
                 // La propriété FirstName (champ requis) est laissée à null intentionnellement
             };
             // Act && Assert
-            using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
+            using var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions);
+            await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
             {
-                await Assert.ThrowsExceptionAsync<DbUpdateException>(async () =>
-                {
-                    await inMemoryContext.Students.AddAsync(student);
-                    await inMemoryContext.SaveChangesAsync();
-                });
-            }
+                await inMemoryContext.Students.AddAsync(student);
+                await inMemoryContext.SaveChangesAsync();
+            });
         }
         [TestMethod]
         public async Task RemoveSchool_WhenSchoolDoesNotExistInDatabase_ThrowsDbUpdateConcurrencyException()
@@ -337,14 +329,12 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
                 Town = "TestDummy"
             };
             // Act & Assert
-            using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
+            using var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions);
+            await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
             {
-                await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
-                {
-                    inMemoryContext.Schools.Remove(schoolToRemove);
-                    await inMemoryContext.SaveChangesAsync();
-                });
-            }
+                inMemoryContext.Schools.Remove(schoolToRemove);
+                await inMemoryContext.SaveChangesAsync();
+            });
         }
         [TestMethod]
         public async Task RemoveStudent_WhenStudentDoesNotExistInDatabase_ThrowsDbUpdateConcurrencyException()
@@ -360,48 +350,42 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
                 Age = 18
             };
             // Act & Assert
-            using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
+            using var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions);
+            await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
             {
-                await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
-                {
-                    inMemoryContext.Students.Remove(studentToRemove);
-                    await inMemoryContext.SaveChangesAsync();
-                });
-            }
+                inMemoryContext.Students.Remove(studentToRemove);
+                await inMemoryContext.SaveChangesAsync();
+            });
         }
         [TestMethod]
         public async Task UpdateSchool_WhenSchoolDoesNotExistInDatabase_ThrowsDbUpdateConcurrencyException()
         {
             // Arrange
             int nonExistentSchoolId = 9999;
-            School schoolToUpdate = new School(nonExistentSchoolId, "NewNameTestDummy", "NewAddressTestDummy", "NewDescriptionTestDummy", "NewTownTestDummy");
+            School schoolToUpdate = new (nonExistentSchoolId, "NewNameTestDummy", "NewAddressTestDummy", "NewDescriptionTestDummy", "NewTownTestDummy");
 
             // Act & Assert
-            using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
+            using var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions);
+            await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
             {
-                await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
-                {
-                    inMemoryContext.Schools.Update(schoolToUpdate);
-                    await inMemoryContext.SaveChangesAsync();
-                });
-            }
+                inMemoryContext.Schools.Update(schoolToUpdate);
+                await inMemoryContext.SaveChangesAsync();
+            });
         }
         [TestMethod]
         public async Task UpdateStudent_WhenStudentDoesNotExistInDatabase_ThrowsDbUpdateConcurrencyException()
         {
             // Arrange
             int nonExistentStudentId = 9999;
-            Student studentToUpdate = new Student(nonExistentStudentId, "NewNameTestDummy", "NewAddressTestDummy", 10, "NewTownTestDummy");
+            Student studentToUpdate = new (nonExistentStudentId, "NewNameTestDummy", "NewAddressTestDummy", 10, "NewTownTestDummy");
 
             // Act & Assert
-            using (var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions))
+            using var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions);
+            await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
             {
-                await Assert.ThrowsExceptionAsync<DbUpdateConcurrencyException>(async () =>
-                {
-                    inMemoryContext.Students.Update(studentToUpdate);
-                    await inMemoryContext.SaveChangesAsync();
-                });
-            }
+                inMemoryContext.Students.Update(studentToUpdate);
+                await inMemoryContext.SaveChangesAsync();
+            });
         }
     }
 }

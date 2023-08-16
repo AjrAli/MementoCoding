@@ -18,13 +18,10 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
     {
         private readonly IStudentRepository _studentRepository;
         private readonly ISchoolRepository _schoolRepository;
-        private readonly IMapper _mapper;
 
-        public GetSearchResultsQueryHandler(IMapper mapper,
-                                            IStudentRepository studentRepository,
+        public GetSearchResultsQueryHandler(IStudentRepository studentRepository,
                                             ISchoolRepository schoolRepository)
         {
-            _mapper = mapper;
             _studentRepository = studentRepository;
             _schoolRepository = schoolRepository;
         }
@@ -107,7 +104,7 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
             return results;
         }
 
-        private bool FullKeywordMatch(GetSearchResultsDto result, string[] keywords)
+        private static bool FullKeywordMatch(GetSearchResultsDto result, string[] keywords)
         {
             foreach (var keyword in keywords)
             {
@@ -120,7 +117,7 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
             return true;
         }
 
-        private int NumberOfMatches(GetSearchResultsDto result, IEnumerable<string> keywords)
+        private static int NumberOfMatches(GetSearchResultsDto result, IEnumerable<string> keywords)
         {
             var counter = 0;
 
@@ -146,7 +143,7 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
     // Custom comparer to handle duplicates in the list
     public class GetSearchResultsDtoComparer : IEqualityComparer<GetSearchResultsDto>
     {
-        public bool Equals(GetSearchResultsDto x, GetSearchResultsDto y)
+        public bool Equals(GetSearchResultsDto? x, GetSearchResultsDto? y)
         {
             if (x == null && y == null)
                 return true;
@@ -161,10 +158,11 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
             unchecked
             {
                 int hash = 17;
-                hash = hash * 23 + (obj.Id != null ? obj.Id.GetHashCode() : 0);
+                hash = hash * 23 + obj.Id.GetHashCode();
                 hash = hash * 23 + (obj.Type != null ? obj.Type.GetHashCode() : 0);
                 return hash;
             }
         }
     }
+
 }
