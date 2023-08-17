@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
@@ -33,6 +32,8 @@ import { BaseFormComponent } from './forms/base-form.component';
 import { AccountFormComponent } from './forms/account/account-form.component';
 import { FormValidationErrorComponent } from './shared/validation/form-validation-error/form-validation-error.component';
 import { ModalService } from './services/modal/modal.service';
+import { UrlHistoryService } from './services/shared/url-history.service';
+import { LinkHandlerDirective } from './handlers/link/link-handler.directive';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,7 +54,8 @@ import { ModalService } from './services/modal/modal.service';
     BaseFormComponent,
     BoldTextPipe,
     AccountFormComponent,
-    FormValidationErrorComponent
+    FormValidationErrorComponent,
+    LinkHandlerDirective
   ],
   imports: [
     BrowserModule,
@@ -67,7 +69,7 @@ import { ModalService } from './services/modal/modal.service';
     FontAwesomeModule,
     ToastrModule.forRoot()
   ],
-  providers: [SchoolService, StudentService, AuthenticationService, ToastService, ModalService,
+  providers: [SchoolService, StudentService, AuthenticationService, ToastService, ModalService, UrlHistoryService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
