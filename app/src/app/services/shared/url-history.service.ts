@@ -6,8 +6,7 @@ import { filter } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class UrlHistoryService {
-  private urlHistory: string[] = [];
-  private titleUrlHistory: string[] = [];
+  private urlHistory: { url: string; title: string }[] = [];
   private bufferSize: number = 5;
 
   constructor(private router: Router) {
@@ -25,30 +24,64 @@ export class UrlHistoryService {
   }
 
   private addToHistory(url: string) {
-    if(!this.urlHistory.find(x => x == url)){
-      if (this.urlHistory.length >= this.bufferSize && this.titleUrlHistory.length >= this.bufferSize) {
-        this.urlHistory.shift(); // Remove the oldest URL when buffer is full
-        this.titleUrlHistory.shift();
+    if (!this.getTitleOfVisitedUrls()?.find(x => x == this.getTitleFromUrlRequest(url))) {
+      const title = this.getTitleFromUrlRequest(url);
+      const duplicateIndex = this.findDuplicateUrlIndex(url);
+
+      if (duplicateIndex !== -1) {
+        this.urlHistory.splice(duplicateIndex, 1);
+      } else if (this.urlHistory.length >= this.bufferSize) {
+        this.urlHistory.shift();
       }
-      this.urlHistory.push(url);
-      this.titleUrlHistory.push(this.getTitleFromUrlRequest(url));
+
+      this.urlHistory.push({ url, title });
     }
   }
+
   getTitleFromUrlRequest(url: string): string {
-    const [urlWithoutParams, queryParams] = url.split('?');
-    const urlWithoutParamsWord = (urlWithoutParams.length > 1) ? urlWithoutParams.charAt(1).toUpperCase() + urlWithoutParams.slice(2) : 'Home';
-    if (queryParams) {
-      const paramsArray = queryParams.split('&');
-      let paramsTitles = paramsArray.join(' and ');
-      return `Page: ${urlWithoutParamsWord}, ${paramsTitles}`;
-    }
-    return `Page: ${urlWithoutParamsWord}`;
+    const [urlWithoutParams] = url.split('?');
+    const urlWithoutParamsWord = urlWithoutParams.length > 1 ? urlWithoutParams.charAt(1).toUpperCase() + urlWithoutParams.slice(2) : 'Home';
+    const queryParams = url.includes('?') ? url.split('?')[1] : '';
+
+    return queryParams ? `Page: ${urlWithoutParamsWord}, ${queryParams.replace(/&/g, ' and ')}` : `Page: ${urlWithoutParamsWord}`;
   }
+
+  findDuplicateUrlIndex(url: string): number {
+    const [, queryParams] = url.split('?');
+
+    if (queryParams && this.urlHistory.length > 0) {
+      const paramsArray = queryParams.split('&');
+
+      for (const [index, entry] of this.urlHistory.entries()) {
+        const [, queryParamsFromRecordUrls] = entry.url.split('?');
+
+        if (queryParamsFromRecordUrls) {
+          const paramsArrayFromRecordUrls = queryParamsFromRecordUrls.split('&');
+
+          const allParamKeysIncluded = paramsArrayFromRecordUrls.every(paramRecord => {
+            const [keyRecord] = paramRecord.split('=');
+            return paramsArray.some(param => {
+              const [key] = param.split('=');
+              return key === keyRecord;
+            });
+          });
+
+          if (allParamKeysIncluded) {
+            return index;
+          }
+        }
+      }
+    }
+
+    return -1;
+  }
+
+
   getVisitedUrls(): string[] {
-    return this.urlHistory;
+    return this.urlHistory.map(entry => entry.url);
   }
 
   getTitleOfVisitedUrls(): string[] {
-    return this.titleUrlHistory;
+    return this.urlHistory.map(entry => entry.title);
   }
 }

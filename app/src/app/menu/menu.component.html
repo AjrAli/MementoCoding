@@ -15,8 +15,8 @@
                     <a class="nav-link" tabindex="0" ngbDropdownToggle id="navbarDropdown1" role="button"> Visited Pages
                     </a>
                     <div ngbDropdownMenu aria-labelledby="navbarDropdown1" class="dropdown-menu">
-                        <a ngbDropdownItem *ngFor="let url of visitedUrls; let i = index" class="dropdown-item"
-                            [linkHandler]="url">{{titleVisitedUrls[i]}}</a>
+                        <a ngbDropdownItem *ngFor="let url of this.getVisitedUrls(); let i = index" class="dropdown-item"
+                            [linkHandler]="url">{{this.getTitleOfVisitedUrls()[i]}}</a>
                     </div>
                 </li>
 

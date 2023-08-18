@@ -17,22 +17,23 @@ export class MenuComponent implements OnInit {
   searchForm!: FormGroup;
   searchField: string = '';
   faSearch = faSearch;
-  visitedUrls: string[];
-  titleVisitedUrls: string[];
   constructor(private router: Router,
     private authService: AuthenticationService,
     private searchStateService: SearchStateService,
     private searchService: SearchService,
     private urlHistoryService: UrlHistoryService) {
-    this.visitedUrls = urlHistoryService.getVisitedUrls();
-    this.titleVisitedUrls = urlHistoryService.getTitleOfVisitedUrls();
   }
   ngOnInit(): void {
     this.searchForm = new FormGroup({
       searchField: new FormControl(this.searchField)
     });
   }
-
+  getVisitedUrls() {
+    return this.urlHistoryService.getVisitedUrls();
+  }
+  getTitleOfVisitedUrls() {
+    return this.urlHistoryService.getTitleOfVisitedUrls();
+  }
   submitSearch(value?: string) {
 
     if (value) {
