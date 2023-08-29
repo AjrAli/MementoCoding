@@ -58,7 +58,6 @@ export class SchoolsComponent implements OnInit {
       complete: () => console.info('complete')
     });
   }
-
   async createSchool(school: SchoolDto): Promise<BaseResponse> {
     try {
       const response: BaseResponse = await firstValueFrom(this.schoolService.createSchool(school));
@@ -74,7 +73,8 @@ export class SchoolsComponent implements OnInit {
   async updateSchool(school: SchoolDto): Promise<BaseResponse> {
     try {
       const response: BaseResponse = await firstValueFrom(this.schoolService.updateSchool(school));
-      if((this.pageDetails.totalItems - 1) % this.pageDetails.take === 0 && this.queryOptions.keywords.length > 0){
+      const shouldAdjustPage = (this.pageDetails.totalItems - 1) % this.pageDetails.take === 0 && this.queryOptions.keywords.length > 0;
+      if (shouldAdjustPage) {
         this.paginationService.setCurrentPage(this.pageDetails.skip / this.pageDetails.take);
         this.pageDetails.skip -= this.pageDetails.take;
       }
@@ -90,7 +90,8 @@ export class SchoolsComponent implements OnInit {
   async deleteSchool(schoolId: number): Promise<BaseResponse> {
     try {
       const response: BaseResponse = await firstValueFrom(this.schoolService.deleteSchool(schoolId));
-      if((this.pageDetails.totalItems - 1) % this.pageDetails.take === 0){
+      const shouldAdjustPage = (this.pageDetails.totalItems - 1) % this.pageDetails.take === 0;
+      if (shouldAdjustPage) {
         this.paginationService.setCurrentPage(this.pageDetails.skip / this.pageDetails.take);
         this.pageDetails.skip -= this.pageDetails.take;
       }
