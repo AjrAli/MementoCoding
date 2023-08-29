@@ -12,6 +12,7 @@ import { ModalService } from '../services/modal/modal.service';
 import { ODataQueryDto } from '../dto/utilities/odata-query-dto';
 import { OrderByChoice } from '../enum/orderby-choice';
 import { StudentProperties } from '../enum/student-properties';
+import { PaginationService } from '../services/shared/pagination/pagination.service';
 @Component({
   selector: 'app-students',
   templateUrl: './students.component.html',
@@ -26,7 +27,8 @@ export class StudentsComponent implements OnInit {
     private modalService: ModalService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
-    private toastService: ToastService) { }
+    private toastService: ToastService,
+    private paginationService: PaginationService) { }
 
   ngOnInit(): void {
     this.getStudents(this.pageDetails.skip, this.pageDetails.take);
@@ -71,6 +73,10 @@ export class StudentsComponent implements OnInit {
   async updateStudent(student: StudentDto): Promise<BaseResponse> {
     try {
       const response: BaseResponse = await firstValueFrom(this.studentService.updateStudent(student));
+      if((this.pageDetails.totalItems - 1) % this.pageDetails.take === 0){
+        this.paginationService.setCurrentPage(this.pageDetails.skip / this.pageDetails.take);
+        this.pageDetails.skip -= this.pageDetails.take;
+      }
       this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       return response;
     } catch (e) {
@@ -83,6 +89,10 @@ export class StudentsComponent implements OnInit {
   async deleteStudent(studentId: number): Promise<BaseResponse> {
     try {
       const response: BaseResponse = await firstValueFrom(this.studentService.deleteStudent(studentId));
+      if((this.pageDetails.totalItems - 1) % this.pageDetails.take === 0){
+        this.paginationService.setCurrentPage(this.pageDetails.skip / this.pageDetails.take);
+        this.pageDetails.skip -= this.pageDetails.take;
+      }
       this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       return response;
     } catch (e) {
@@ -113,6 +123,8 @@ export class StudentsComponent implements OnInit {
   }
   handleFilterQuery(event: string){
     if(event){
+      this.paginationService.setCurrentPage(1);
+      this.pageDetails = new PageDetailsDto();
       const studentProps = new StudentProperties();
       for (const prop of Object.keys(studentProps)) {
         const key = prop;

@@ -34,6 +34,7 @@ import { FormValidationErrorComponent } from './shared/validation/form-validatio
 import { ModalService } from './services/modal/modal.service';
 import { UrlHistoryService } from './services/shared/url-history.service';
 import { LinkHandlerDirective } from './handlers/link/link-handler.directive';
+import { PaginationService } from './services/shared/pagination/pagination.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -69,7 +70,7 @@ import { LinkHandlerDirective } from './handlers/link/link-handler.directive';
     FontAwesomeModule,
     ToastrModule.forRoot()
   ],
-  providers: [SchoolService, StudentService, AuthenticationService, ToastService, ModalService, UrlHistoryService,
+  providers: [SchoolService, StudentService, AuthenticationService, ToastService, ModalService, UrlHistoryService, PaginationService, 
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })

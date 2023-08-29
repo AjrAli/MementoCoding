@@ -11,6 +11,7 @@ import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { ErrorResponse } from 'src/app/dto/response/error/error-response';
 import { ToastService } from 'src/app/services/message-popup/toast.service';
+import { PaginationService } from 'src/app/services/shared/pagination/pagination.service';
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
@@ -38,13 +39,21 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
   constructor(private router: Router,
     private searchStateService: SearchStateService,
     private toastService: ToastService,
-    private activatedRoute: ActivatedRoute) {
+    private activatedRoute: ActivatedRoute,
+    private paginationService: PaginationService) {
     this.myIcons = {
       "faTimes": faTimes,
       "faPencil": faPencil,
       "faArrowsUpDown": faArrowsUpDown,
       "faEye": faEye
     };
+    this.paginationService.currentPage$.subscribe({
+      next: (page: number) => {
+        this.page = page;
+      },
+      error: (error: any) => this.toastService.showSimpleError(error?.toString()),
+      complete: () => console.info('complete')
+    })
   }
   ngOnChanges(changes: SimpleChanges): void {
     if(!this.searchField){
@@ -58,6 +67,7 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
           )
           .subscribe({
             next: (response: any) => {
+              this.page = 1;
               this.filterQuery.emit(response);
               console.log(response);
             },

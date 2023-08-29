@@ -12,6 +12,7 @@ import { ModalService } from '../services/modal/modal.service';
 import { ODataQueryDto } from '../dto/utilities/odata-query-dto';
 import { SchoolProperties } from '../enum/school-properties';
 import { OrderByChoice } from '../enum/orderby-choice';
+import { PaginationService } from '../services/shared/pagination/pagination.service';
 
 @Component({
   selector: 'app-schools',
@@ -27,7 +28,8 @@ export class SchoolsComponent implements OnInit {
     private modalService: ModalService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
-    private toastService: ToastService) { }
+    private toastService: ToastService,
+    private paginationService: PaginationService) { }
 
   ngOnInit(): void {
     this.getSchools(this.pageDetails.skip, this.pageDetails.take);
@@ -72,6 +74,10 @@ export class SchoolsComponent implements OnInit {
   async updateSchool(school: SchoolDto): Promise<BaseResponse> {
     try {
       const response: BaseResponse = await firstValueFrom(this.schoolService.updateSchool(school));
+      if((this.pageDetails.totalItems - 1) % this.pageDetails.take === 0){
+        this.paginationService.setCurrentPage(this.pageDetails.skip / this.pageDetails.take);
+        this.pageDetails.skip -= this.pageDetails.take;
+      }
       this.getSchools(this.pageDetails.skip, this.pageDetails.take);
       return response;
     } catch (e) {
@@ -84,6 +90,10 @@ export class SchoolsComponent implements OnInit {
   async deleteSchool(schoolId: number): Promise<BaseResponse> {
     try {
       const response: BaseResponse = await firstValueFrom(this.schoolService.deleteSchool(schoolId));
+      if((this.pageDetails.totalItems - 1) % this.pageDetails.take === 0){
+        this.paginationService.setCurrentPage(this.pageDetails.skip / this.pageDetails.take);
+        this.pageDetails.skip -= this.pageDetails.take;
+      }
       this.getSchools(this.pageDetails.skip, this.pageDetails.take);
       return response;
     } catch (e) {
@@ -112,6 +122,8 @@ export class SchoolsComponent implements OnInit {
   }
   handleFilterQuery(event: string) {
     if (event) {
+      this.paginationService.setCurrentPage(1);
+      this.pageDetails = new PageDetailsDto();
       const schoolProps = new SchoolProperties();
       for (const prop of Object.keys(schoolProps)) {
         const key = prop;
