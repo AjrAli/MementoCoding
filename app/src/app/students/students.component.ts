@@ -73,7 +73,7 @@ export class StudentsComponent implements OnInit {
   async updateStudent(student: StudentDto): Promise<BaseResponse> {
     try {
       const response: BaseResponse = await firstValueFrom(this.studentService.updateStudent(student));
-      if((this.pageDetails.totalItems - 1) % this.pageDetails.take === 0){
+      if((this.pageDetails.totalItems - 1) % this.pageDetails.take === 0 && this.queryOptions.keywords.length > 0){
         this.paginationService.setCurrentPage(this.pageDetails.skip / this.pageDetails.take);
         this.pageDetails.skip -= this.pageDetails.take;
       }
