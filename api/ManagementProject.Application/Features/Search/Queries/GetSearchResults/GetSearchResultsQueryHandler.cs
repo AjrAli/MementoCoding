@@ -1,9 +1,4 @@
-﻿using AutoMapper;
-using ManagementProject.Application.Contracts.Persistence;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Response;
-using ManagementProject.Application.Features.Students.Queries.GetStudents;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,19 +6,17 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Persistence.Context;
 
 namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
 {
     public class GetSearchResultsQueryHandler : IRequestHandler<GetSearchResultsQuery, GetSearchResultsQueryResponse>
     {
-        private readonly IStudentRepository _studentRepository;
-        private readonly ISchoolRepository _schoolRepository;
+        private readonly ManagementProjectDbContext _dbContext;
 
-        public GetSearchResultsQueryHandler(IStudentRepository studentRepository,
-                                            ISchoolRepository schoolRepository)
+        public GetSearchResultsQueryHandler(ManagementProjectDbContext dbContext)
         {
-            _studentRepository = studentRepository;
-            _schoolRepository = schoolRepository;
+            _dbContext = dbContext;
         }
 
         public async Task<GetSearchResultsQueryResponse> Handle(GetSearchResultsQuery request, CancellationToken cancellationToken)
@@ -35,11 +28,11 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
             foreach (var keyword in keywords)
             {
                 // Search for schools
-                var schoolResults = await SearchSchools(keyword);
+                var schoolResults = await SearchSchools(keyword, cancellationToken);
                 allSearchResults.UnionWith(schoolResults);
 
                 // Search for students
-                var studentResults = await SearchStudents(keyword);
+                var studentResults = await SearchStudents(keyword, cancellationToken);
                 allSearchResults.UnionWith(studentResults);
             }
 
@@ -62,9 +55,9 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
             };
         }
 
-        private async Task<IEnumerable<GetSearchResultsDto>> SearchSchools(string keyword)
+        private async Task<IEnumerable<GetSearchResultsDto>> SearchSchools(string keyword, CancellationToken cancellationToken)
         {
-            var results = await _schoolRepository.Queryable
+            var results = await _dbContext.Schools
                 .Where(x => x.Id.ToString().Contains(keyword) ||
                             x.Name.Contains(keyword) ||
                             x.Adress.Contains(keyword) ||
@@ -78,14 +71,14 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
                     Subtitle = $"{x.Adress} - {x.Town}",
                     Description = x.Description
                 })
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return results;
         }
 
-        private async Task<IEnumerable<GetSearchResultsDto>> SearchStudents(string keyword)
+        private async Task<IEnumerable<GetSearchResultsDto>> SearchStudents(string keyword, CancellationToken cancellationToken)
         {
-            var results = await _studentRepository.Queryable
+            var results = await _dbContext.Students
                 .Where(x => x.Id.ToString().Contains(keyword) ||
                             x.FirstName.Contains(keyword) ||
                             x.LastName.Contains(keyword) ||
@@ -99,7 +92,7 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
                     Subtitle = x.LastName,
                     Description = $"{x.Age} - {x.Adress}"
                 })
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return results;
         }

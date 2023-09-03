@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using ManagementProject.Api.Controllers.Queries;
-using ManagementProject.Application.Contracts.Persistence;
 using ManagementProject.Application.Exceptions;
 using ManagementProject.Application.Features.Response;
 using ManagementProject.Application.Features.Students.Queries.GetStudent;
@@ -11,15 +10,14 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MockQueryable.NSubstitute;
 using NSubstitute;
 using ObjectsComparer;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 {
@@ -29,16 +27,30 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         private readonly ILogger<StudentQueryController> _logger = Substitute.For<ILogger<StudentQueryController>>();
         private readonly IMapper _mapper = new MapperConfiguration(x => x.AddProfile<StudentMappingProfile>()).CreateMapper();
         private GetStudentDto? _studentDto;
-        private List<GetStudentDto>? _allStudentDto;
+        private List<GetStudentsDto>? _allStudentDto;
         private IBaseResponse? _studentResponse;
         private static TestContext? _testContext;
         private readonly IMediator _mediatorMock = Substitute.For<IMediator>();
-        private readonly IStudentRepository _mockStudentRepo = Substitute.For<IStudentRepository>();
+        private static ManagementProjectDbContext _dbContextFilled;
+        private static ManagementProjectDbContext _dbContextEmpty;
 
         [ClassInitialize]
         public static void SetupTests(TestContext testContext)
         {
             _testContext = testContext;
+            var inMemoryOptionsDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
+                .UseInMemoryDatabase(databaseName: "FakeDB")
+                .Options;
+            var inMemoryOptionsEmptyDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
+                .UseInMemoryDatabase(databaseName: "EmptyDB")
+                .Options;
+            _dbContextFilled = new ManagementProjectDbContext(inMemoryOptionsDb);
+            _dbContextEmpty  = new ManagementProjectDbContext(inMemoryOptionsEmptyDb);
+            if (_dbContextFilled.Students.Count() == 0)
+            {
+                _dbContextFilled.Students?.AddRange(InitListOfStudentEntity());
+                _dbContextFilled.SaveChanges();   
+            }
         }
 
         [TestMethod]
@@ -154,53 +166,52 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 
         private GetStudentQueryHandler InitGetStudentQueryHandler(long? id)
         {
-            _mockStudentRepo.GetByIdWithIncludeAsync(Arg.Any<Expression<Func<Student, bool>>>(), Arg.Any<Expression<Func<Student, object>>>()).Returns(InitStudentEntity(id));
-            return new GetStudentQueryHandler(_mapper, _mockStudentRepo);
+            return new GetStudentQueryHandler(_mapper, (id == 0 ) ?  _dbContextEmpty : _dbContextFilled);
         }
 
         private GetStudentsQueryHandler InitGetStudentsQueryHandler(bool isListExpected)
         {
 
-            _mockStudentRepo.GetDbSetQueryable().Returns(isListExpected ? InitListOfStudentEntity().BuildMock() : null);
-            _mockStudentRepo.CountAsync().Returns(isListExpected ? InitListOfStudentEntity().Count : 0);
-            return new GetStudentsQueryHandler(_mapper, _mockStudentRepo);
+            return new GetStudentsQueryHandler(_mapper, (isListExpected) ? _dbContextFilled : _dbContextEmpty);
         }
         private GetStudentsQueryResponse InitGetStudentsQueryResponse()
         {
             return new GetStudentsQueryResponse()
             {
-                StudentsDto = _mapper.Map<List<GetStudentsDto>>(_allStudentDto)
+                StudentsDto = _allStudentDto
             };
         }
         private GetStudentQueryResponse InitGetStudentQueryResponse()
         {
             return new GetStudentQueryResponse()
             {
-                StudentDto = _mapper.Map<GetStudentDto>(_studentDto)
+                StudentDto = _studentDto
             };
         }
-        private static List<GetStudentDto>? InitListOfStudentDto(bool isExpected)
+        private static List<GetStudentsDto>? InitListOfStudentDto(bool isExpected)
         {
             if (isExpected)
-                return new List<GetStudentDto>()
+                return new List<GetStudentsDto>()
                 {
-                    new GetStudentDto()
+                    new GetStudentsDto()
                     {
                         Id = 3,
                         FirstName = "Test",
                         LastName = "Test",
                         Adress = "MyAdress",
                         Age = 10,
-                        SchoolId = 5
+                        SchoolId = 5,
+                        Parentname = "test"
                     },
-                    new GetStudentDto()
+                    new GetStudentsDto()
                     {
                         Id = 6,
                         FirstName = "Test6",
                         LastName = "Test6",
                         Adress = "MyAdress6",
                         Age = 16,
-                        SchoolId = 10
+                        SchoolId = 10, 
+                        Parentname = "test"
                     },
                 };
             return null;
@@ -210,8 +221,26 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         {
             return new List<Student>()
                 {
-                    new Student(3, "Test", "Test", 10, "MyAdress", 5),
-                    new Student(6, "Test6", "Test6", 16, "MyAdress6", 10)
+                    new Student()
+                    {
+                        Id = 3,
+                        FirstName = "Test",
+                        LastName = "Test",
+                        Adress = "MyAdress",
+                        Age = 10,
+                        SchoolId = 5,
+                        School = new School() { Id = 5, Name = "test", Town = "town", Adress = "adres", Description = "desc"}
+                    },
+                    new Student()
+                    {
+                        Id = 6,
+                        FirstName = "Test6",
+                        LastName = "Test6",
+                        Adress = "MyAdress6",
+                        Age = 16,
+                        SchoolId = 10, 
+                        School = new School() { Id = 10, Name = "test", Town = "town", Adress = "adres", Description = "desc"}
+                    }
                 };
         }
         private static GetStudentDto? InitStudentDto(long? id)
@@ -224,14 +253,9 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                     LastName = "Test",
                     Adress = "MyAdress",
                     Age = 10,
-                    SchoolId = 5
+                    SchoolId = 5,
+                    Parentname = "test"
                 };
-            return null;
-        }
-        private static Student? InitStudentEntity(long? id)
-        {
-            if (id == 3)
-                return new Student(3, "Test", "Test", 10, "MyAdress", 5);
             return null;
         }
     }

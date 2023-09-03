@@ -1,33 +1,29 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using ManagementProject.Application.Contracts.Persistence;
 using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Response;
 using ManagementProject.Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Persistence.Context;
 using Microsoft.AspNetCore.OData.Query;
 
 namespace ManagementProject.Application.Features.Schools.Queries.GetSchools
 {
     public class GetSchoolsQueryHandler : IRequestHandler<GetSchoolsQuery, GetSchoolsQueryResponse>
     {
-        private readonly IBaseRepository<School> _schoolRepository;
-        private readonly IBaseRepository<Student> _studentRepository;
+        private readonly ManagementProjectDbContext _dbContext;
 
-        public GetSchoolsQueryHandler(IBaseRepository<School> schoolRepository, IBaseRepository<Student> studentRepository)
+        public GetSchoolsQueryHandler(ManagementProjectDbContext dbContext)
         {
-            _schoolRepository = schoolRepository;
-            _studentRepository = studentRepository;
+            _dbContext = dbContext;
         }
 
         public async Task<GetSchoolsQueryResponse> Handle(GetSchoolsQuery request, CancellationToken cancellationToken)
         {
-            var query = _schoolRepository.GetDbSetQueryable();
-            var count = await _schoolRepository.CountAsync();
+            var query = _dbContext.Schools.AsQueryable();
+            var count = await _dbContext.Schools.CountAsync(cancellationToken);
             if (request.Options != null)
             {
                 query = (IQueryable<School>)request.Options.ApplyTo(query);
@@ -35,18 +31,17 @@ namespace ManagementProject.Application.Features.Schools.Queries.GetSchools
                 if (request.Options.Filter != null)
                 {
                     var filterExpression = request.Options.Filter;
-                    var filteredQuery = (IQueryable<School>)filterExpression.ApplyTo(_schoolRepository.GetDbSetQueryable(), new ODataQuerySettings());
-                    count = await filteredQuery.CountAsync(CancellationToken.None);
+                    var filteredQuery = (IQueryable<School>)filterExpression.ApplyTo(_dbContext.Schools.AsQueryable(), new ODataQuerySettings());
+                    count = await filteredQuery.CountAsync(cancellationToken);
                 }
             }
 
-            var schools = await (query != null ? query.ToListAsync(CancellationToken.None) : Task.FromResult<List<School>>(null)) ?? throw new NotFoundException($"No schools found");
+            var schools = await (await query.CountAsync() != 0 ? query.ToListAsync(cancellationToken) : Task.FromResult<List<School>>(null)) ?? throw new NotFoundException($"No schools found");
             var schoolsWithStudents = schools
                 .Select(school => new
                 {
                     School = school,
-                    Students = _studentRepository.Queryable
-                                .Any(student => student.SchoolId == school.Id)
+                    Students = _dbContext.Students.Any(student => student.SchoolId == school.Id)
                 })
                 .ToList();
 

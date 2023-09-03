@@ -362,7 +362,15 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         {
             // Arrange
             int nonExistentSchoolId = 9999;
-            School schoolToUpdate = new (nonExistentSchoolId, "NewNameTestDummy", "NewAddressTestDummy", "NewDescriptionTestDummy", "NewTownTestDummy");
+            School schoolToUpdate =
+                new School()
+                {
+                    Id = nonExistentSchoolId,
+                    Name = "NewNameTestDummy",
+                    Town = "NewAddressTestDummy",
+                    Adress = "NewDescriptionTestDummy",
+                    Description = "NewTownTestDummy"
+                };
 
             // Act & Assert
             using var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions);
@@ -377,7 +385,17 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         {
             // Arrange
             int nonExistentStudentId = 9999;
-            Student studentToUpdate = new (nonExistentStudentId, "NewNameTestDummy", "NewAddressTestDummy", 10, "NewTownTestDummy");
+            Student studentToUpdate = 
+                new Student()
+                {
+                    Id = nonExistentStudentId,
+                    FirstName = "NewNameTestDummy",
+                    LastName = "NewNameTestDummy",
+                    Adress = "NewAddressTestDummy",
+                    Age = 10,
+                    SchoolId = 10,
+                    School = new School() { Id = 10, Name = "test", Town = "town", Adress = "adres", Description = "desc"}
+                };
 
             // Act & Assert
             using var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions);

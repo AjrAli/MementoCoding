@@ -9,7 +9,7 @@ using ManagementProject.Api.Middleware;
 using ManagementProject.Api.Services;
 using ManagementProject.Api.Utility;
 using ManagementProject.Application;
-using ManagementProject.Application.Contracts;
+using ManagementProject.Persistence.Contracts;
 using ManagementProject.Application.Contracts.Identity;
 using ManagementProject.Identity;
 using ManagementProject.Identity.Services;

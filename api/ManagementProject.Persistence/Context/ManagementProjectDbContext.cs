@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using ManagementProject.Application.Contracts;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using ManagementProject.Domain.Common;
 using ManagementProject.Domain.Entities;
 using ManagementProject.Persistence.Configurations;
-using System.Threading;
-using System.Threading.Tasks;
+using ManagementProject.Persistence.Contracts;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ManagementProject.Persistence.Context
 {
@@ -13,13 +13,15 @@ namespace ManagementProject.Persistence.Context
     {
         private readonly ILoggedInUserService? _loggedInUserService;
         private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
         public ManagementProjectDbContext(DbContextOptions<ManagementProjectDbContext> options)
             : base(options)
         {
         }
 
-        public ManagementProjectDbContext(DbContextOptions<ManagementProjectDbContext> options, ILoggedInUserService loggedInUserService)
-    : base(options)
+        public ManagementProjectDbContext(DbContextOptions<ManagementProjectDbContext> options,
+            ILoggedInUserService loggedInUserService)
+            : base(options)
         {
             _loggedInUserService = loggedInUserService;
         }
@@ -30,18 +32,29 @@ namespace ManagementProject.Persistence.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
             // use loggerFactory
             optionsBuilder.UseLoggerFactory(_loggerFactory);
-
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new SchoolConfiguration());
             modelBuilder.ApplyConfiguration(new StudentConfiguration());
         }
 
+        public override int SaveChanges()
+        {
+            UpdateAuditFieldsForEntities();
+            return base.SaveChanges();
+        }
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            UpdateAuditFieldsForEntities();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateAuditFieldsForEntities()
         {
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
             {
@@ -56,7 +69,15 @@ namespace ManagementProject.Persistence.Context
                         break;
                 }
             }
-            return base.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    public static class ManagementProjectDbContextExtension
+    {
+        public static async Task<Student> GetStudentByIdIncludeSchoolAsync(this ManagementProjectDbContext context,
+            long studentId)
+        {
+            return await context.Students.Include(x => x.School).FirstOrDefaultAsync(x => x.Id == studentId);
         }
     }
 }

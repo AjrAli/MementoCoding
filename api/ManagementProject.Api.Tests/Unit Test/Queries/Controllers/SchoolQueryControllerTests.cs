@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using ManagementProject.Api.Controllers.Queries;
-using ManagementProject.Application.Contracts.Persistence;
 using ManagementProject.Application.Exceptions;
 using ManagementProject.Application.Features.Response;
 using ManagementProject.Application.Features.Schools.Queries.GetSchool;
@@ -18,8 +16,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MockQueryable;
-using MockQueryable.NSubstitute;
+using ManagementProject.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 {
@@ -27,19 +25,35 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
     public class SchoolQueryControllerTests
     {
         private readonly ILogger<SchoolQueryController> _logger = Substitute.For<ILogger<SchoolQueryController>>();
-        private readonly IMapper _mapper = new MapperConfiguration(x => x.AddProfile<SchoolMappingProfile>()).CreateMapper();
+
+        private readonly IMapper _mapper =
+            new MapperConfiguration(x => x.AddProfile<SchoolMappingProfile>()).CreateMapper();
+
         private GetSchoolDto? _schoolDto;
-        private List<GetSchoolDto>? _allSchoolDto;
+        private List<GetSchoolsDto>? _allSchoolDto;
         private IBaseResponse? _schoolResponse;
         private static TestContext? _testContext;
         private readonly IMediator _mediatorMock = Substitute.For<IMediator>();
-        private readonly ISchoolRepository _mockSchoolRepo = Substitute.For<ISchoolRepository>();
-        private readonly IStudentRepository _mockStudentRepo = Substitute.For<IStudentRepository>();
+        private static ManagementProjectDbContext _dbContextFilled;
+        private static ManagementProjectDbContext _dbContextEmpty;
 
         [ClassInitialize]
         public static void SetupTests(TestContext testContext)
         {
             _testContext = testContext;
+            var inMemoryOptionsDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
+                .UseInMemoryDatabase(databaseName: "FakeDB")
+                .Options;
+            var inMemoryOptionsEmptyDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
+                .UseInMemoryDatabase(databaseName: "EmptyDB")
+                .Options;
+            _dbContextFilled = new ManagementProjectDbContext(inMemoryOptionsDb);
+            _dbContextEmpty  = new ManagementProjectDbContext(inMemoryOptionsEmptyDb);
+            if (_dbContextFilled.Schools.Count() == 0)
+            {
+                _dbContextFilled.Schools?.AddRange(InitListOfSchoolEntity());
+                _dbContextFilled.SaveChanges();   
+            }
         }
 
         [TestMethod]
@@ -112,7 +126,8 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             _schoolResponse = InitGetSchoolsQueryResponse();
             _mediatorMock.Send(Arg.Any<GetSchoolsQuery>(), default).Returns(x =>
             {
-                return InitGetSchoolsQueryHandler(isListExpected).Handle(x.Arg<GetSchoolsQuery>(), x.Arg<CancellationToken>());
+                return InitGetSchoolsQueryHandler(isListExpected)
+                    .Handle(x.Arg<GetSchoolsQuery>(), x.Arg<CancellationToken>());
             });
         }
 
@@ -124,7 +139,6 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             {
                 return InitGetSchoolQueryHandler(id).Handle(x.Arg<GetSchoolQuery>(), x.Arg<CancellationToken>());
             });
-               
         }
 
         private bool CompareSchoolDtoReceivedByTheExpected(GetSchoolDto modelDto)
@@ -149,30 +163,29 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         {
             foreach (var difference in differences)
             {
-                _testContext?.WriteLine($"Value 1 : {difference.Value1} and  Value 2 : {difference.Value2} aren't equal!");
+                _testContext?.WriteLine(
+                    $"Value 1 : {difference.Value1} and  Value 2 : {difference.Value2} aren't equal!");
             }
         }
 
         private GetSchoolQueryHandler InitGetSchoolQueryHandler(long? id)
         {
-            _mockSchoolRepo.GetAsync(Arg.Any<long>()).Returns(InitSchoolEntity(id));
-            return new GetSchoolQueryHandler(_mapper, _mockSchoolRepo);
+            return new GetSchoolQueryHandler(_mapper, (id == 0 ) ?  _dbContextEmpty : _dbContextFilled);
         }
 
         private GetSchoolsQueryHandler InitGetSchoolsQueryHandler(bool isListExpected)
         {
-
-            _mockSchoolRepo.GetDbSetQueryable().Returns(isListExpected ? InitListOfSchoolEntity().BuildMock() : null);
-            _mockSchoolRepo.CountAsync().Returns(isListExpected ? InitListOfSchoolEntity().Count : 0);
-            return new GetSchoolsQueryHandler(_mockSchoolRepo, _mockStudentRepo);
+            return new GetSchoolsQueryHandler((isListExpected) ? _dbContextFilled : _dbContextEmpty);
         }
+
         private GetSchoolsQueryResponse InitGetSchoolsQueryResponse()
         {
             return new GetSchoolsQueryResponse()
             {
-                SchoolsDto = _mapper.Map<List<GetSchoolsDto>>(_allSchoolDto)
+                SchoolsDto = _allSchoolDto
             };
         }
+
         private GetSchoolQueryResponse InitGetSchoolQueryResponse()
         {
             return new GetSchoolQueryResponse()
@@ -180,12 +193,13 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                 SchoolDto = _mapper.Map<GetSchoolDto>(_schoolDto)
             };
         }
-        private static List<GetSchoolDto>? InitListOfSchoolDto(bool isExpected)
+
+        private static List<GetSchoolsDto>? InitListOfSchoolDto(bool isExpected)
         {
             if (isExpected)
-                return new List<GetSchoolDto>()
+                return new List<GetSchoolsDto>()
                 {
-                    new GetSchoolDto()
+                    new GetSchoolsDto()
                     {
                         Id = 3,
                         Name = "test",
@@ -193,7 +207,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                         Adress = "adres",
                         Description = "desc"
                     },
-                    new GetSchoolDto()
+                    new GetSchoolsDto()
                     {
                         Id = 6,
                         Name = "test",
@@ -208,11 +222,26 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         private static List<School> InitListOfSchoolEntity()
         {
             return new List<School>()
+            {
+                new School()
                 {
-                     new School(3, "test", "adres", "town", "desc"),
-                     new School(6, "test", "adres", "town", "desc")
-                };
+                    Id = 3,
+                    Name = "test",
+                    Town = "town",
+                    Adress = "adres",
+                    Description = "desc"
+                },
+                new School()
+                {
+                    Id = 6,
+                    Name = "test",
+                    Town = "town",
+                    Adress = "adres",
+                    Description = "desc"
+                }
+            };
         }
+
         private static GetSchoolDto? InitSchoolDto(long? id)
         {
             if (id == 3)
@@ -223,15 +252,9 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                     Town = "town",
                     Adress = "adres",
                     Description = "desc"
-
                 };
             return null;
         }
-        private static School? InitSchoolEntity(long? id)
-        {
-            if (id == 3)
-                return new School(3, "test", "adres", "town", "desc");
-            return null;
-        }
+        
     }
 }

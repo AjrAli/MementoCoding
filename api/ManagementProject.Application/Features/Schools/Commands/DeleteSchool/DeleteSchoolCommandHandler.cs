@@ -1,38 +1,32 @@
 ﻿using MediatR;
-using ManagementProject.Application.Contracts.Persistence;
 using ManagementProject.Application.Exceptions;
 using ManagementProject.Application.Features.Response;
 using ManagementProject.Domain.Entities;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNetCore.EntityFrameworkCore;
+using ManagementProject.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace ManagementProject.Application.Features.Schools.Commands.DeleteSchool
 {
     public class DeleteSchoolCommandHandler : IRequestHandler<DeleteSchoolCommand, DeleteSchoolCommandResponse>
     {
-        private readonly IBaseRepository<School> _schoolRepository;
-        private readonly IBaseRepository<Student> _studentRepository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ManagementProjectDbContext _dbContext;
 
-        public DeleteSchoolCommandHandler(IBaseRepository<School> schoolRepository,
-                                          IBaseRepository<Student> studentRepository,
-                                          IUnitOfWork unitOfWork)
+        public DeleteSchoolCommandHandler(ManagementProjectDbContext dbContext)
         {
-            _schoolRepository = schoolRepository;
-            _studentRepository = studentRepository;
-            _unitOfWork = unitOfWork;
+            _dbContext = dbContext;
         }
 
         public async Task<DeleteSchoolCommandResponse> Handle(DeleteSchoolCommand request, CancellationToken cancellationToken)
         {
-            var schoolToDelete = await _schoolRepository.GetAsync(request.SchoolId);
+            var schoolToDelete = await _dbContext.Schools.FirstOrDefaultAsync(x => x.Id == request.SchoolId, cancellationToken);
             if (schoolToDelete == null)
             {
                 throw new NotFoundException(nameof(School), request.SchoolId);
             }
 
-            var hasStudents = await _studentRepository.AnyAsync(student => student.SchoolId == schoolToDelete.Id);
+            var hasStudents = await _dbContext.Students.AnyAsync(student => student.SchoolId == schoolToDelete.Id, cancellationToken);
             if (hasStudents)
             {
                 return new DeleteSchoolCommandResponse
@@ -42,8 +36,8 @@ namespace ManagementProject.Application.Features.Schools.Commands.DeleteSchool
                 };
             }
 
-            await _schoolRepository.DeleteAsync(schoolToDelete.Id);
-            await _unitOfWork.SaveChangesAsync();
+            _dbContext.Schools.Remove(schoolToDelete);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return new DeleteSchoolCommandResponse
             {
