@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
+using ManagementProject.Application.Contracts.MediatR.Query;
 using ManagementProject.Application.Exceptions;
 using ManagementProject.Domain.Entities;
-using System.Threading;
-using System.Threading.Tasks;
 using ManagementProject.Persistence.Context;
 
 namespace ManagementProject.Application.Features.Students.Queries.GetStudent
 {
-    public class GetStudentQueryHandler : IRequestHandler<GetStudentQuery, GetStudentQueryResponse>
+    public class GetStudentQueryHandler : IQueryHandler<GetStudentQuery, GetStudentQueryResponse>
     {
         private readonly ManagementProjectDbContext _dbContext;
         private readonly IMapper _mapper;

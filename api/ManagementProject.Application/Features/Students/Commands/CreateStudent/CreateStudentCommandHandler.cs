@@ -1,13 +1,13 @@
-﻿using AutoMapper;
-using MediatR;
-using ManagementProject.Domain.Entities;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using ManagementProject.Application.Contracts.MediatR.Command;
+using ManagementProject.Domain.Entities;
 using ManagementProject.Persistence.Context;
 
 namespace ManagementProject.Application.Features.Students.Commands.CreateStudent
 {
-    public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand, CreateStudentCommandResponse>
+    public class CreateStudentCommandHandler : ICommandHandler<CreateStudentCommand, CreateStudentCommandResponse>
     {
         private readonly IMapper _mapper;
         private readonly ManagementProjectDbContext _dbContext;
@@ -22,7 +22,6 @@ namespace ManagementProject.Application.Features.Students.Commands.CreateStudent
         {
             var student = _mapper.Map<Student>(request.Student);
             await _dbContext.Students.AddAsync(student, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return new CreateStudentCommandResponse
             {

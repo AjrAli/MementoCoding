@@ -44,7 +44,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         {
             _testContext = testContext;
             var inMemoryOptionsDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
-                .UseInMemoryDatabase(databaseName: "FakeDBStudentTest")
+                .UseInMemoryDatabase(databaseName: "FakeDB")
                 .Options;
             var inMemoryOptionsEmptyDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
                 .UseInMemoryDatabase(databaseName: "EmptyDB")
@@ -53,6 +53,13 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
             _dbContextEmpty = new ManagementProjectDbContext(inMemoryOptionsEmptyDb);
             if (_dbContextFilled.Students.Count() == 0)
             {
+                _dbContextFilled.Students?.AddRange(InitStudentEntity());
+                _dbContextFilled.SaveChanges();
+            }
+            else
+            {
+                _dbContextFilled.Schools?.RemoveRange(_dbContextFilled.Schools);
+                _dbContextFilled.Students?.RemoveRange(_dbContextFilled.Students);
                 _dbContextFilled.Students?.AddRange(InitStudentEntity());
                 _dbContextFilled.SaveChanges();
             }
@@ -124,7 +131,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         }
 
         [TestMethod]
-        public async Task Create_Student_ReturnArgumentNullExceptio()
+        public async Task Create_Student_ReturnArgumentNullException()
         {
             //Arrange
 
@@ -253,24 +260,6 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                         { Id = 10, Name = "test", Town = "town", Adress = "adres", Description = "desc" }
                 }
             };
-        }
-
-        private static Student? InitStudentEntity(long id)
-        {
-            if (id == 1)
-                return new Student()
-                {
-                    Id = 1,
-                    FirstName = "Test",
-                    LastName = "Test",
-                    Adress = "MyAdress",
-                    Age = 10,
-                    SchoolId = 5,
-                    School = new School()
-                        { Id = 5, Name = "test", Town = "town", Adress = "adres", Description = "desc" }
-                };
-
-            return null;
         }
     }
 }

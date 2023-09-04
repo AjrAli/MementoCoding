@@ -1,14 +1,13 @@
-﻿using AutoMapper;
-using ManagementProject.Persistence;
-using ManagementProject.Domain.Entities;
-using MediatR;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using ManagementProject.Application.Contracts.MediatR.Command;
+using ManagementProject.Domain.Entities;
 using ManagementProject.Persistence.Context;
 
 namespace ManagementProject.Application.Features.Schools.Commands.CreateSchool
 {
-    public class CreateSchoolCommandHandler : IRequestHandler<CreateSchoolCommand, CreateSchoolCommandResponse>
+    public class CreateSchoolCommandHandler : ICommandHandler<CreateSchoolCommand, CreateSchoolCommandResponse>
     {
         private readonly ManagementProjectDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -23,7 +22,6 @@ namespace ManagementProject.Application.Features.Schools.Commands.CreateSchool
         {
             var school = _mapper.Map<School>(request.School);
             await _dbContext.Schools.AddAsync(school, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return new CreateSchoolCommandResponse
             {

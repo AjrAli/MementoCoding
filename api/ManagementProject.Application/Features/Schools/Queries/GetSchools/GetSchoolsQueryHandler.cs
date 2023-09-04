@@ -1,17 +1,17 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Domain.Entities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Contracts.MediatR.Query;
+using ManagementProject.Application.Exceptions;
+using ManagementProject.Domain.Entities;
 using ManagementProject.Persistence.Context;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.EntityFrameworkCore;
 
 namespace ManagementProject.Application.Features.Schools.Queries.GetSchools
 {
-    public class GetSchoolsQueryHandler : IRequestHandler<GetSchoolsQuery, GetSchoolsQueryResponse>
+    public class GetSchoolsQueryHandler : IQueryHandler<GetSchoolsQuery, GetSchoolsQueryResponse>
     {
         private readonly ManagementProjectDbContext _dbContext;
 

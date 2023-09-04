@@ -21,8 +21,6 @@
     <ProjectReference Include="..\ManagementProject.Persistence\ManagementProject.Persistence.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Contracts\Persistence\" />
-  </ItemGroup>
+
 
 </Project>

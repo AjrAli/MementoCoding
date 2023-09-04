@@ -1,16 +1,16 @@
-﻿using AutoMapper;
-using MediatR;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Domain.Entities;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
+using AutoMapper;
+using ManagementProject.Application.Contracts.MediatR.Query;
+using ManagementProject.Application.Exceptions;
+using ManagementProject.Domain.Entities;
 using ManagementProject.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManagementProject.Application.Features.Schools.Queries.GetSchool
 {
-    public class GetSchoolQueryHandler : IRequestHandler<GetSchoolQuery, GetSchoolQueryResponse>
+    public class GetSchoolQueryHandler : IQueryHandler<GetSchoolQuery, GetSchoolQueryResponse>
     {
         private readonly ManagementProjectDbContext _dbContext;
         private readonly IMapper _mapper;

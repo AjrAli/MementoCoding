@@ -1,18 +1,18 @@
-﻿using AutoMapper;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Domain.Entities;
-using MediatR;
-using Microsoft.AspNetCore.OData.Query;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using ManagementProject.Application.Contracts.MediatR.Query;
+using ManagementProject.Application.Exceptions;
+using ManagementProject.Domain.Entities;
 using ManagementProject.Persistence.Context;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.EntityFrameworkCore;
 
 namespace ManagementProject.Application.Features.Students.Queries.GetStudents
 {
-    public class GetStudentsQueryHandler : IRequestHandler<GetStudentsQuery, GetStudentsQueryResponse>
+    public class GetStudentsQueryHandler : IQueryHandler<GetStudentsQuery, GetStudentsQueryResponse>
     {
         private readonly ManagementProjectDbContext _dbContext;
         private readonly IMapper _mapper;

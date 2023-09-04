@@ -1,7 +1,8 @@
-﻿using MediatR;
+﻿using ManagementProject.Application.Contracts.MediatR.Command;
+
 namespace ManagementProject.Application.Features.Schools.Commands.CreateSchool
 {
-    public class CreateSchoolCommand : IRequest<CreateSchoolCommandResponse>
+    public class CreateSchoolCommand : ICommand<CreateSchoolCommandResponse>
     {
         public SchoolDto? School { get; set; }
     }

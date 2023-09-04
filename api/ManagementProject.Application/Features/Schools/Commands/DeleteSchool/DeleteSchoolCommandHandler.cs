@@ -1,15 +1,14 @@
-﻿using MediatR;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Response;
-using ManagementProject.Domain.Entities;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Contracts.MediatR.Command;
+using ManagementProject.Application.Exceptions;
+using ManagementProject.Domain.Entities;
 using ManagementProject.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManagementProject.Application.Features.Schools.Commands.DeleteSchool
 {
-    public class DeleteSchoolCommandHandler : IRequestHandler<DeleteSchoolCommand, DeleteSchoolCommandResponse>
+    public class DeleteSchoolCommandHandler : ICommandHandler<DeleteSchoolCommand, DeleteSchoolCommandResponse>
     {
         private readonly ManagementProjectDbContext _dbContext;
 
@@ -37,7 +36,6 @@ namespace ManagementProject.Application.Features.Schools.Commands.DeleteSchool
             }
 
             _dbContext.Schools.Remove(schoolToDelete);
-            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return new DeleteSchoolCommandResponse
             {

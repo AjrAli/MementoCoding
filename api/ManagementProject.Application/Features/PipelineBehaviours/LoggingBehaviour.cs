@@ -29,8 +29,11 @@ namespace ManagementProject.Application.Features.PipelineBehaviours
                 {
                     foreach (PropertyInfo prop in propsOfMyRequest)
                     {
-                        object? propValue = prop?.GetValue(request, null);
-                        _logger?.LogInformation("{Property} : {@Value}", prop?.Name, propValue);
+                        if (request != null)
+                        {
+                            object? propValue = prop?.GetValue(request, null);
+                            _logger?.LogInformation("{Property} : {@Value}", prop?.Name, propValue);
+                        }
                     }
                     //Response
                     _logger?.LogInformation($"Handled {typeof(TResponse).Name}");

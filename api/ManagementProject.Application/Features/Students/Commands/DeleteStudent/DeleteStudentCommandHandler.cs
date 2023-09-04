@@ -1,14 +1,14 @@
-﻿using MediatR;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using ManagementProject.Application.Contracts.MediatR.Command;
 using ManagementProject.Application.Exceptions;
 using ManagementProject.Domain.Entities;
-using System.Threading;
-using System.Threading.Tasks;
 using ManagementProject.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManagementProject.Application.Features.Students.Commands.DeleteStudent
 {
-    public class DeleteStudentCommandHandler : IRequestHandler<DeleteStudentCommand, DeleteStudentCommandResponse>
+    public class DeleteStudentCommandHandler : ICommandHandler<DeleteStudentCommand, DeleteStudentCommandResponse>
     {
         private readonly ManagementProjectDbContext _dbContext;
 
@@ -27,7 +27,6 @@ namespace ManagementProject.Application.Features.Students.Commands.DeleteStudent
             }
 
             _dbContext.Students.Remove(studentToDelete);
-            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return new DeleteStudentCommandResponse
             {

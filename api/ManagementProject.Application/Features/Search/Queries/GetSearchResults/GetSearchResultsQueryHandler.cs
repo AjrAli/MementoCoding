@@ -1,16 +1,16 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Contracts.MediatR.Query;
 using ManagementProject.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
 {
-    public class GetSearchResultsQueryHandler : IRequestHandler<GetSearchResultsQuery, GetSearchResultsQueryResponse>
+    public class GetSearchResultsQueryHandler : IQueryHandler<GetSearchResultsQuery, GetSearchResultsQueryResponse>
     {
         private readonly ManagementProjectDbContext _dbContext;
 

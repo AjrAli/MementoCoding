@@ -42,7 +42,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         {
             _testContext = testContext;
             var inMemoryOptionsDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
-                .UseInMemoryDatabase(databaseName: "FakeDBSchoolTest")
+                .UseInMemoryDatabase(databaseName: "FakeDB")
                 .Options;
             var inMemoryOptionsEmptyDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
                 .UseInMemoryDatabase(databaseName: "EmptyDB")
@@ -53,6 +53,13 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
             {
                 _dbContextFilled.Schools?.AddRange(InitSchoolEntity());
                 _dbContextFilled.SaveChanges();   
+            }
+            else
+            {
+                _dbContextFilled.Schools?.RemoveRange(_dbContextFilled.Schools);
+                _dbContextFilled.Students?.RemoveRange(_dbContextFilled.Students);
+                _dbContextFilled.Schools?.AddRange(InitSchoolEntity());
+                _dbContextFilled.SaveChanges();
             }
         }
         [TestMethod]
@@ -228,20 +235,6 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                     Description = "desc"
                 }
             };
-        }
-        private static School InitSchoolEntity(long id)
-        {
-            if (id == 1)
-                return new School()
-                {
-                    Id = 1,
-                    Name = "test",
-                    Town = "town",
-                    Adress = "adres",
-                    Description = "desc"
-                };
-
-            return null;
         }
     }
 }

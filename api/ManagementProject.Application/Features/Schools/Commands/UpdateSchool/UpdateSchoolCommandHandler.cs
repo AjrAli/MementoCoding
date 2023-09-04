@@ -1,15 +1,15 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
+using ManagementProject.Application.Contracts.MediatR.Command;
 using ManagementProject.Application.Exceptions;
 using ManagementProject.Domain.Entities;
-using System.Threading;
-using System.Threading.Tasks;
 using ManagementProject.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManagementProject.Application.Features.Schools.Commands.UpdateSchool
 {
-    public class UpdateSchoolCommandHandler : IRequestHandler<UpdateSchoolCommand, UpdateSchoolCommandResponse>
+    public class UpdateSchoolCommandHandler : ICommandHandler<UpdateSchoolCommand, UpdateSchoolCommandResponse>
     {
         private readonly ManagementProjectDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -30,7 +30,6 @@ namespace ManagementProject.Application.Features.Schools.Commands.UpdateSchool
 
             _mapper.Map(request?.School, schoolToUpdate);
             _dbContext.Schools.Update(schoolToUpdate);
-            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return new UpdateSchoolCommandResponse
             {

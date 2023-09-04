@@ -1,10 +1,16 @@
-﻿using ManagementProject.Api.Controllers.Queries;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using ManagementProject.Api.Controllers.Queries;
 using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Schools.Queries.GetSchool;
 using ManagementProject.Application.Models.Account;
 using ManagementProject.Application.Models.Account.Query.Authenticate;
 using ManagementProject.Identity.Entity;
 using ManagementProject.Identity.JwtModel;
+using ManagementProject.Identity.Services;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,13 +18,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using AuthenticationService = ManagementProject.Identity.Services.AuthenticationService;
 
 namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 {
@@ -47,11 +46,12 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             // Assert
             Assert.IsTrue(val?.Token != null);
         }
+
         [TestMethod]
         public async Task AuthenticateAsync_ReturnBadRequest()
         {
             // Arrange
-            AuthenticateQuery request = new ();
+            AuthenticateQuery request = new();
             var accountController = InitAccountController();
 
             // Act && Assert
@@ -69,17 +69,17 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 
         private static IMediator MockMediatorAuthenticateQuery()
         {
-            var mediatorMock = Substitute.For<IMediator> ();
+            var mediatorMock = Substitute.For<IMediator>();
             mediatorMock.Send(Arg.Any<AuthenticateQuery>(), default).Returns(x =>
             {
-                return InitAuthenticateQueryHandler().Handle(x.Arg<AuthenticateQuery>(), x.Arg<CancellationToken>());
+                return InitAuthenticateQueryHandler()
+                    .Handle(x.Arg<AuthenticateQuery>(), x.Arg<CancellationToken>());
             });
             return mediatorMock;
         }
 
         private static AuthenticateQueryHandler InitAuthenticateQueryHandler()
         {
-
             var user = new ApplicationUser
             {
                 Id = "3c112624-eff3-41bf-9359-2d4ca50ce130",
@@ -132,7 +132,8 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         public static RoleManager<TRole> MockRoleManager<TRole>(IRoleStore<TRole>? store = null) where TRole : class
         {
             store ??= Substitute.For<IRoleStore<TRole>>();
-            var roleManager = Substitute.For<RoleManager<TRole>>(store, new List<IRoleValidator<TRole>>(), Substitute.For<ILookupNormalizer>(), Substitute.For<IdentityErrorDescriber>(), null);
+            var roleManager = Substitute.For<RoleManager<TRole>>(store, new List<IRoleValidator<TRole>>(),
+                Substitute.For<ILookupNormalizer>(), Substitute.For<IdentityErrorDescriber>(), null);
             return roleManager;
         }
     }
