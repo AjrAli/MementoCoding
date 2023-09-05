@@ -23,25 +23,22 @@ namespace ManagementProject.Application.Features.PipelineBehaviours
         }
         public async Task<TResponse> Handle(TCommand request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            if (_validators.Any())
+            if (!_validators.Any()) return await next();
+            var context = new ValidationContext<TCommand>(request);
+            var validationResults = await Task.WhenAll(_validators.Select(v => v.ValidateAsync(context, cancellationToken)));
+            var failures = validationResults?.SelectMany(r => r.Errors)?.Where(f => f != null)?.ToList();
+            if (failures is not { Count: > 0 }) return await next();
+            var realResponseType = typeof(TResponse);
+            if (Activator.CreateInstance(realResponseType) is not IBaseResponse errorResponse)
+                return await next();
+            errorResponse.Success = false;
+            errorResponse.ValidationErrors = new List<string>();
+            foreach (var error in failures)
             {
-                var context = new ValidationContext<TCommand>(request);
-                var validationResults = await Task.WhenAll(_validators.Select(v => v.ValidateAsync(context, cancellationToken)));
-                var failures = validationResults?.SelectMany(r => r.Errors)?.Where(f => f != null)?.ToList();
-                if (failures is not { Count: > 0 }) return await next();
-                var realResponseType = typeof(TResponse);
-                if (Activator.CreateInstance(realResponseType) is not IBaseResponse errorResponse)
-                    return await next();
-                errorResponse.Success = false;
-                errorResponse.ValidationErrors = new List<string>();
-                foreach (var error in failures)
-                {
-                    _logger?.LogError(error.ErrorMessage);
-                    errorResponse.ValidationErrors.Add(error.ErrorMessage);
-                }
-                return (TResponse)errorResponse;
+                _logger?.LogError(error.ErrorMessage);
+                errorResponse.ValidationErrors.Add(error.ErrorMessage);
             }
-            return await next();
+            return (TResponse)errorResponse;
         }
     }
 }
