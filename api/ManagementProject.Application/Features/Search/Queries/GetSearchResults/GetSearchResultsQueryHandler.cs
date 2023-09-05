@@ -1,46 +1,38 @@
-﻿using AutoMapper;
-using ManagementProject.Application.Contracts.Persistence;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Response;
-using ManagementProject.Application.Features.Students.Queries.GetStudents;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Contracts.MediatR.Query;
+using ManagementProject.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
 {
-    public class GetSearchResultsQueryHandler : IRequestHandler<GetSearchResultsQuery, GetSearchResultsQueryResponse>
+    public class GetSearchResultsQueryHandler : IQueryHandler<GetSearchResultsQuery, GetSearchResultsQueryResponse>
     {
-        private readonly IStudentRepository _studentRepository;
-        private readonly ISchoolRepository _schoolRepository;
-        private readonly IMapper _mapper;
+        private readonly ManagementProjectDbContext _dbContext;
 
-        public GetSearchResultsQueryHandler(IMapper mapper,
-                                            IStudentRepository studentRepository,
-                                            ISchoolRepository schoolRepository)
+        public GetSearchResultsQueryHandler(ManagementProjectDbContext dbContext)
         {
-            _mapper = mapper;
-            _studentRepository = studentRepository;
-            _schoolRepository = schoolRepository;
+            _dbContext = dbContext;
         }
 
         public async Task<GetSearchResultsQueryResponse> Handle(GetSearchResultsQuery request, CancellationToken cancellationToken)
         {
-            var keywords = request.Keyword.ToUpper().Trim().Split();
+            var stringWithoutExtraSpaces = Regex.Replace(request.Keyword, @"\s{2,}", " ");
+            var keywords = stringWithoutExtraSpaces.Trim().Split();
             var allSearchResults = new HashSet<GetSearchResultsDto>(new GetSearchResultsDtoComparer());
 
             foreach (var keyword in keywords)
             {
                 // Search for schools
-                var schoolResults = await SearchSchools(keyword);
+                var schoolResults = await SearchSchools(keyword, cancellationToken);
                 allSearchResults.UnionWith(schoolResults);
 
                 // Search for students
-                var studentResults = await SearchStudents(keyword);
+                var studentResults = await SearchStudents(keyword, cancellationToken);
                 allSearchResults.UnionWith(studentResults);
             }
 
@@ -63,9 +55,9 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
             };
         }
 
-        private async Task<IEnumerable<GetSearchResultsDto>> SearchSchools(string keyword)
+        private async Task<IEnumerable<GetSearchResultsDto>> SearchSchools(string keyword, CancellationToken cancellationToken)
         {
-            var results = await _schoolRepository.Queryable
+            var results = await _dbContext.Schools
                 .Where(x => x.Id.ToString().Contains(keyword) ||
                             x.Name.Contains(keyword) ||
                             x.Adress.Contains(keyword) ||
@@ -79,14 +71,14 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
                     Subtitle = $"{x.Adress} - {x.Town}",
                     Description = x.Description
                 })
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return results;
         }
 
-        private async Task<IEnumerable<GetSearchResultsDto>> SearchStudents(string keyword)
+        private async Task<IEnumerable<GetSearchResultsDto>> SearchStudents(string keyword, CancellationToken cancellationToken)
         {
-            var results = await _studentRepository.Queryable
+            var results = await _dbContext.Students
                 .Where(x => x.Id.ToString().Contains(keyword) ||
                             x.FirstName.Contains(keyword) ||
                             x.LastName.Contains(keyword) ||
@@ -100,26 +92,25 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
                     Subtitle = x.LastName,
                     Description = $"{x.Age} - {x.Adress}"
                 })
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return results;
         }
 
-        private bool FullKeywordMatch(GetSearchResultsDto result, string[] keywords)
+        private static bool FullKeywordMatch(GetSearchResultsDto result, string[] keywords)
         {
             foreach (var keyword in keywords)
             {
-                if (result.Title?.ToUpper().Contains(keyword) == true) continue;
-                if (result.Subtitle?.ToUpper().Contains(keyword) == true) continue;
-                if (result.Description?.ToUpper().Contains(keyword) == true) continue;
-
+                if (result.Title?.ToUpper().Contains(keyword.ToUpper()) == true) continue;
+                if (result.Subtitle?.ToUpper().Contains(keyword.ToUpper()) == true) continue;
+                if (result.Description?.ToUpper().Contains(keyword.ToUpper()) == true) continue;
                 return false;
             }
 
             return true;
         }
 
-        private int NumberOfMatches(GetSearchResultsDto result, IEnumerable<string> keywords)
+        private static int NumberOfMatches(GetSearchResultsDto result, IEnumerable<string> keywords)
         {
             var counter = 0;
 
@@ -145,7 +136,7 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
     // Custom comparer to handle duplicates in the list
     public class GetSearchResultsDtoComparer : IEqualityComparer<GetSearchResultsDto>
     {
-        public bool Equals(GetSearchResultsDto x, GetSearchResultsDto y)
+        public bool Equals(GetSearchResultsDto? x, GetSearchResultsDto? y)
         {
             if (x == null && y == null)
                 return true;
@@ -160,10 +151,11 @@ namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
             unchecked
             {
                 int hash = 17;
-                hash = hash * 23 + (obj.Id != null ? obj.Id.GetHashCode() : 0);
+                hash = hash * 23 + obj.Id.GetHashCode();
                 hash = hash * 23 + (obj.Type != null ? obj.Type.GetHashCode() : 0);
                 return hash;
             }
         }
     }
+
 }

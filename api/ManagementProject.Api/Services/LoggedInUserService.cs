@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using ManagementProject.Application.Contracts;
+using ManagementProject.Persistence.Contracts;
 using System.Security.Claims;
 
 namespace ManagementProject.Api.Services
@@ -11,6 +11,6 @@ namespace ManagementProject.Api.Services
             UserId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        public string? UserId { get; }
+        public string? UserId { get; set; }
     }
 }

@@ -1,18 +1,11 @@
-﻿using ManagementProject.Application.Contracts.Identity;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Response;
-using ManagementProject.Application.Models.Account.Query.Authenticate;
-using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Contracts.Identity;
+using ManagementProject.Application.Contracts.MediatR.Command;
 
 namespace ManagementProject.Application.Models.Account.Command
 {
-    public class CreateSimpleUserCommandHandler : IRequestHandler<CreateSimpleUserCommand, AccountResponse>
+    public class CreateSimpleUserCommandHandler : ICommandHandler<CreateSimpleUserCommand, AccountResponse>
     {
         private readonly IAuthenticationService _authenticationService;
 

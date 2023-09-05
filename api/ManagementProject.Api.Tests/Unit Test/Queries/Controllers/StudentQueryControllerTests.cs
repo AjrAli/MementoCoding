@@ -1,26 +1,22 @@
 ﻿using AutoMapper;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MockQueryable.Moq;
-using Moq;
-using ObjectsComparer;
 using ManagementProject.Api.Controllers.Queries;
-using ManagementProject.Application.Contracts.Persistence;
+using ManagementProject.Application.Exceptions;
 using ManagementProject.Application.Features.Response;
 using ManagementProject.Application.Features.Students.Queries.GetStudent;
 using ManagementProject.Application.Features.Students.Queries.GetStudents;
 using ManagementProject.Application.Profiles.Students;
 using ManagementProject.Domain.Entities;
-using Serilog;
-using Serilog.Extensions.Logging;
-using System;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
+using ObjectsComparer;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using ManagementProject.Application.Exceptions;
+using ManagementProject.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
@@ -28,32 +24,42 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
     [TestClass]
     public class StudentQueryControllerTests
     {
-
-        private readonly ILogger<StudentQueryController> _logger = new SerilogLoggerFactory(new LoggerConfiguration()
-                                                                                          .WriteTo.Debug()
-                                                                                          .CreateLogger())
-                                                                  .CreateLogger<StudentQueryController>();
+        private readonly ILogger<StudentQueryController> _logger = Substitute.For<ILogger<StudentQueryController>>();
         private readonly IMapper _mapper = new MapperConfiguration(x => x.AddProfile<StudentMappingProfile>()).CreateMapper();
         private GetStudentDto? _studentDto;
-        private List<GetStudentDto>? _allStudentDto;
+        private List<GetStudentsDto>? _allStudentDto;
         private IBaseResponse? _studentResponse;
         private static TestContext? _testContext;
-        private Mock<IStudentRepository> _mockStudentRepo = new Mock<IStudentRepository>();
+        private readonly IMediator _mediatorMock = Substitute.For<IMediator>();
+        private static ManagementProjectDbContext _dbContextFilled;
+        private static ManagementProjectDbContext _dbContextEmpty;
 
         [ClassInitialize]
         public static void SetupTests(TestContext testContext)
         {
             _testContext = testContext;
+            var inMemoryOptionsDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
+                .UseInMemoryDatabase(databaseName: "FakeDB")
+                .Options;
+            var inMemoryOptionsEmptyDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
+                .UseInMemoryDatabase(databaseName: "EmptyDB")
+                .Options;
+            _dbContextFilled = new ManagementProjectDbContext(inMemoryOptionsDb);
+            _dbContextEmpty  = new ManagementProjectDbContext(inMemoryOptionsEmptyDb);
+            if (_dbContextFilled.Students.Count() == 0)
+            {
+                _dbContextFilled.Students?.AddRange(InitListOfStudentEntity());
+                _dbContextFilled.SaveChanges();   
+            }
         }
+
         [TestMethod]
         public async Task GetStudent_ReturnNotFoundException()
         {
             //Arrange
             long studentIdRequested = 0;
-            _studentDto = InitStudentDto(studentIdRequested);
-            _studentResponse = InitGetStudentQueryResponse();
-            Mock<IMediator> mediatorMock = MockMediatorGetStudentQuery();
-            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
+            SetupGetStudentQueryResponse(studentIdRequested);
+            var studentControllerTest = new StudentQueryController(_mediatorMock, _logger);
 
             // Act && Assert
             await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
@@ -61,14 +67,13 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                 await studentControllerTest.GetStudent(studentIdRequested);
             });
         }
+
         [TestMethod]
         public async Task GetStudents_ReturnNotFoundException()
         {
             //Arrange
-            _allStudentDto = InitListOfStudentDto(false);
-            _studentResponse = InitGetStudentsQueryResponse();
-            Mock<IMediator> mediatorMock = MockMediatorGetStudentsQuery(false);
-            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
+            SetupGetStudentsQueryResponse(false);
+            var studentControllerTest = new StudentQueryController(_mediatorMock, _logger);
 
             // Act && Assert
             await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
@@ -76,15 +81,14 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                 await studentControllerTest.GetStudents();
             });
         }
+
         [TestMethod]
         public async Task GetStudent_ReturnCorrectStudentDto()
         {
             //Arrange
             long studentIdRequested = 3;
-            _studentDto = InitStudentDto(studentIdRequested);
-            _studentResponse = InitGetStudentQueryResponse();
-            Mock<IMediator> mediatorMock = MockMediatorGetStudentQuery();
-            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
+            SetupGetStudentQueryResponse(studentIdRequested);
+            var studentControllerTest = new StudentQueryController(_mediatorMock, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudent(studentIdRequested);
@@ -96,15 +100,12 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             Assert.IsTrue(resultCompare);
         }
 
-
         [TestMethod]
         public async Task GetStudents_ReturnCorrectListOfStudentDto()
         {
             //Arrange
-            _allStudentDto = InitListOfStudentDto(true);
-            _studentResponse = InitGetStudentsQueryResponse();
-            Mock<IMediator> mediatorMock = MockMediatorGetStudentsQuery(true);
-            var studentControllerTest = new StudentQueryController(mediatorMock.Object, _logger);
+            SetupGetStudentsQueryResponse(true);
+            var studentControllerTest = new StudentQueryController(_mediatorMock, _logger);
 
             //Act
             var resultStudentCall = await studentControllerTest.GetStudents();
@@ -114,25 +115,27 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             Assert.IsNotNull(modelAllDto);
             bool resultCompare = CompareListOfStudentDtoReceivedByListExpected(modelAllDto);
             Assert.IsTrue(resultCompare);
-
         }
 
-        private Mock<IMediator> MockMediatorGetStudentsQuery(bool isListExpected)
+        private void SetupGetStudentsQueryResponse(bool isListExpected)
         {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<GetStudentsQuery>(), default)).Returns(
-                async (GetStudentsQuery q, CancellationToken token) =>
-                await InitGetStudentsQueryHandler(isListExpected).Handle(q, token));
-            return mediatorMock;
+            _allStudentDto = InitListOfStudentDto(isListExpected);
+            _studentResponse = InitGetStudentsQueryResponse();
+            _mediatorMock.Send(Arg.Any<GetStudentsQuery>(), default).Returns(x =>
+            {
+                return InitGetStudentsQueryHandler(isListExpected).Handle(x.Arg<GetStudentsQuery>(), x.Arg<CancellationToken>());
+            });
         }
 
-        private Mock<IMediator> MockMediatorGetStudentQuery()
+        private void SetupGetStudentQueryResponse(long? id)
         {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<GetStudentQuery>(), default)).Returns(
-                async (GetStudentQuery q, CancellationToken token) =>
-                await InitGetStudentQueryHandler(q.StudentId).Handle(q, token));
-            return mediatorMock;
+            _studentDto = InitStudentDto(id);
+            _studentResponse = InitGetStudentQueryResponse();
+            _mediatorMock.Send(Arg.Any<GetStudentQuery>(), default).Returns(x =>
+            {
+                return InitGetStudentQueryHandler(id).Handle(x.Arg<GetStudentQuery>(), x.Arg<CancellationToken>());
+            });
+
         }
 
         private bool CompareStudentDtoReceivedByTheExpected(GetStudentDto modelDto)
@@ -143,6 +146,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             WriteOnConsoleDifferencesIfNotEqual(differences);
             return resultCompare;
         }
+
         private bool CompareListOfStudentDtoReceivedByListExpected(List<GetStudentsDto> modelAllDto)
         {
             var comparerDto = new ObjectsComparer.Comparer<List<GetStudentsDto>>();
@@ -162,52 +166,52 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
 
         private GetStudentQueryHandler InitGetStudentQueryHandler(long? id)
         {
-            _mockStudentRepo.Setup(x => x.GetByIdWithIncludeAsync(It.IsAny<Expression<Func<Student, bool>>>(),
-                It.IsAny<Expression<Func<Student, object>>>())).ReturnsAsync(InitStudentEntity(id));
-            return new GetStudentQueryHandler(_mapper, _mockStudentRepo.Object);
+            return new GetStudentQueryHandler(_mapper, (id == 0 ) ?  _dbContextEmpty : _dbContextFilled);
         }
 
         private GetStudentsQueryHandler InitGetStudentsQueryHandler(bool isListExpected)
         {
-            _mockStudentRepo.Setup(x => x.GetDbSetQueryable()).Returns(isListExpected ? InitListOfStudentEntity().AsQueryable().BuildMock() : null);
-            return new GetStudentsQueryHandler(_mapper, _mockStudentRepo.Object);
+
+            return new GetStudentsQueryHandler(_mapper, (isListExpected) ? _dbContextFilled : _dbContextEmpty);
         }
         private GetStudentsQueryResponse InitGetStudentsQueryResponse()
         {
             return new GetStudentsQueryResponse()
             {
-                StudentsDto = _mapper.Map<List<GetStudentsDto>>(_allStudentDto)
+                StudentsDto = _allStudentDto
             };
         }
         private GetStudentQueryResponse InitGetStudentQueryResponse()
         {
             return new GetStudentQueryResponse()
             {
-                StudentDto = _mapper.Map<GetStudentDto>(_studentDto)
+                StudentDto = _studentDto
             };
         }
-        private static List<GetStudentDto>? InitListOfStudentDto(bool isExpected)
+        private static List<GetStudentsDto>? InitListOfStudentDto(bool isExpected)
         {
             if (isExpected)
-                return new List<GetStudentDto>()
+                return new List<GetStudentsDto>()
                 {
-                    new GetStudentDto()
+                    new GetStudentsDto()
                     {
                         Id = 3,
                         FirstName = "Test",
                         LastName = "Test",
                         Adress = "MyAdress",
                         Age = 10,
-                        SchoolId = 5
+                        SchoolId = 5,
+                        Parentname = "test"
                     },
-                    new GetStudentDto()
+                    new GetStudentsDto()
                     {
                         Id = 6,
                         FirstName = "Test6",
                         LastName = "Test6",
                         Adress = "MyAdress6",
                         Age = 16,
-                        SchoolId = 10
+                        SchoolId = 10, 
+                        Parentname = "test"
                     },
                 };
             return null;
@@ -217,8 +221,26 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
         {
             return new List<Student>()
                 {
-                    new Student(3, "Test", "Test", 10, "MyAdress", 5),
-                    new Student(6, "Test6", "Test6", 16, "MyAdress6", 10)
+                    new Student()
+                    {
+                        Id = 3,
+                        FirstName = "Test",
+                        LastName = "Test",
+                        Adress = "MyAdress",
+                        Age = 10,
+                        SchoolId = 5,
+                        School = new School() { Id = 5, Name = "test", Town = "town", Adress = "adres", Description = "desc"}
+                    },
+                    new Student()
+                    {
+                        Id = 6,
+                        FirstName = "Test6",
+                        LastName = "Test6",
+                        Adress = "MyAdress6",
+                        Age = 16,
+                        SchoolId = 10, 
+                        School = new School() { Id = 10, Name = "test", Town = "town", Adress = "adres", Description = "desc"}
+                    }
                 };
         }
         private static GetStudentDto? InitStudentDto(long? id)
@@ -231,14 +253,9 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                     LastName = "Test",
                     Adress = "MyAdress",
                     Age = 10,
-                    SchoolId = 5
+                    SchoolId = 5,
+                    Parentname = "test"
                 };
-            return null;
-        }
-        private static Student? InitStudentEntity(long? id)
-        {
-            if (id == 3)
-                return new Student(3, "Test", "Test", 10, "MyAdress", 5);
             return null;
         }
     }

@@ -1,8 +1,9 @@
-export enum StudentProperties {
-    Id = 'Id',
-    FirstName = 'FirstName',
-    LastName = 'LastName',
-    Age = 'Age',
-    Adress = 'Adress',
-    SchoolId = 'SchoolId'
+export class StudentProperties {
+    [key: string]: any;
+    Id: number = 0;
+    FirstName: string = '';
+    LastName: string = '';
+    Age: number = 0;
+    Adress: string = '';
+    SchoolId: number = 0;
 }

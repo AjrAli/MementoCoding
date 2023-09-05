@@ -8,6 +8,7 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ToastrModule } from 'ngx-toastr';
 import { ToastService } from '../services/message-popup/toast.service';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('SchoolsComponent', () => {
   let component: SchoolsComponent;
@@ -18,6 +19,7 @@ describe('SchoolsComponent', () => {
       imports: [
         HttpClientTestingModule,
         NgbPaginationModule,
+        ReactiveFormsModule,
         RouterTestingModule.withRoutes([]),
         ToastrModule.forRoot(), // Only import ToastrModule once
       ],

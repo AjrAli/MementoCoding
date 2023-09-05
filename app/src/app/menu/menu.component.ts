@@ -6,6 +6,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { SearchStateService } from '../services/search/search-state.service';
 import { SearchResultDto } from '../dto/search/searchresult-dto';
 import { SearchService } from '../services/search/search.service';
+import { UrlHistoryService } from '../services/shared/url-history.service';
 
 @Component({
   selector: 'app-menu',
@@ -13,31 +14,38 @@ import { SearchService } from '../services/search/search.service';
   styleUrls: ['./menu.component.css']
 })
 export class MenuComponent implements OnInit {
-  constructor(private router: Router,
-    private authService: AuthenticationService,
-    private searchStateService: SearchStateService,
-    private searchService: SearchService) { }
   searchForm!: FormGroup;
   searchField: string = '';
   faSearch = faSearch;
+  constructor(private router: Router,
+    private authService: AuthenticationService,
+    private searchStateService: SearchStateService,
+    private searchService: SearchService,
+    private urlHistoryService: UrlHistoryService) {
+  }
   ngOnInit(): void {
     this.searchForm = new FormGroup({
       searchField: new FormControl(this.searchField)
     });
   }
-
+  getVisitedUrls() {
+    return this.urlHistoryService.getVisitedUrls();
+  }
+  getTitleOfVisitedUrls() {
+    return this.urlHistoryService.getTitleOfVisitedUrls();
+  }
   submitSearch(value?: string) {
 
-    if(value){
+    if (value) {
       this.searchField = value
       this.router.navigate(['/search'], { queryParams: { keyword: this.searchField } });
       this.searchStateService.setSearchKeyword(this.searchField);
-    }else{
+    } else {
       this.router.navigate(['/search'], { queryParams: { keyword: this.searchForm.value.searchField } });
       this.searchStateService.setSearchKeyword(this.searchForm.value.searchField);
     }
   }
-  isAdminConnected(): boolean{
+  isAdminConnected(): boolean {
     return this.authService.isAdmin();
   }
   isConnected() {

@@ -1,36 +1,32 @@
-﻿using MediatR;
-using ManagementProject.Application.Contracts.Persistence;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Response;
-using ManagementProject.Domain.Entities;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using DotNetCore.EntityFrameworkCore;
+using ManagementProject.Application.Contracts.MediatR.Command;
+using ManagementProject.Application.Exceptions;
+using ManagementProject.Domain.Entities;
+using ManagementProject.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace ManagementProject.Application.Features.Students.Commands.DeleteStudent
 {
-    public class DeleteStudentCommandHandler : IRequestHandler<DeleteStudentCommand, DeleteStudentCommandResponse>
+    public class DeleteStudentCommandHandler : ICommandHandler<DeleteStudentCommand, DeleteStudentCommandResponse>
     {
-        private readonly IBaseRepository<Student> _studentRepository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ManagementProjectDbContext _dbContext;
 
-        public DeleteStudentCommandHandler(IBaseRepository<Student> studentRepository, IUnitOfWork unitOfWork)
+        public DeleteStudentCommandHandler(ManagementProjectDbContext dbContext)
         {
-            _studentRepository = studentRepository;
-            _unitOfWork = unitOfWork;
+            _dbContext = dbContext;
         }
 
         public async Task<DeleteStudentCommandResponse> Handle(DeleteStudentCommand request, CancellationToken cancellationToken)
         {
-            var studentToDelete = await _studentRepository.GetAsync(request.StudentId);
+            var studentToDelete = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == request.StudentId, cancellationToken);
 
             if (studentToDelete == null)
             {
                 throw new NotFoundException(nameof(Student), request.StudentId);
             }
 
-            await _studentRepository.DeleteAsync(request.StudentId);
-            await _unitOfWork.SaveChangesAsync();
+            _dbContext.Students.Remove(studentToDelete);
 
             return new DeleteStudentCommandResponse
             {

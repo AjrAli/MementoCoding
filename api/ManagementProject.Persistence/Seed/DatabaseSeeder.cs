@@ -21,8 +21,22 @@ namespace ManagementProject.Persistence.Seed
             {
                 var schools = new List<School>
                 {
-                    new School(1, "test", "adres", "town", "desc"),
-                    new School(2, "test2", "adres2", "town2", "desc2")
+                    new School()
+                    {
+                        Id = 1,
+                        Name = "test",
+                        Town = "town",
+                        Adress = "adres",
+                        Description = "desc"
+                    },
+                    new School()
+                    {
+                        Id = 2,
+                        Name = "test",
+                        Town = "town",
+                        Adress = "adres",
+                        Description = "desc"
+                    }
                 };
 
                 await context.Schools.AddRangeAsync(schools);
@@ -35,8 +49,24 @@ namespace ManagementProject.Persistence.Seed
             {
                 var students = new List<Student>
                 {
-                    new Student(1, "Test", "Test", 10, "MyAdress", 1),
-                    new Student(2, "Test2", "Test2", 15, "MyAdress2", 2)
+                    new Student()
+                    {
+                        Id = 1,
+                        FirstName = "Test",
+                        LastName = "Test",
+                        Adress = "MyAdress",
+                        Age = 10,
+                        SchoolId = 1
+                    },
+                    new Student()
+                    {
+                        Id = 2,
+                        FirstName = "Test",
+                        LastName = "Test",
+                        Adress = "MyAdress",
+                        Age = 11,
+                        SchoolId = 2
+                    }
                 };
 
                 await context.Students.AddRangeAsync(students);

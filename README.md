@@ -14,7 +14,7 @@
 	
     -MediatR pattern
 	
-    -CQRS Repository & UnitofWork pattern
+    -CQRS pattern
 	
     -Unit test...
 

@@ -1,31 +1,27 @@
-﻿using AutoMapper;
-using DotNetCore.EntityFrameworkCore;
-using ManagementProject.Application.Contracts.Persistence;
-using ManagementProject.Domain.Entities;
-using MediatR;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using ManagementProject.Application.Contracts.MediatR.Command;
+using ManagementProject.Domain.Entities;
+using ManagementProject.Persistence.Context;
 
 namespace ManagementProject.Application.Features.Schools.Commands.CreateSchool
 {
-    public class CreateSchoolCommandHandler : IRequestHandler<CreateSchoolCommand, CreateSchoolCommandResponse>
+    public class CreateSchoolCommandHandler : ICommandHandler<CreateSchoolCommand, CreateSchoolCommandResponse>
     {
-        private readonly IBaseRepository<School> _schoolRepository;
+        private readonly ManagementProjectDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public CreateSchoolCommandHandler(IMapper mapper, IBaseRepository<School> schoolRepository, IUnitOfWork unitOfWork)
+        public CreateSchoolCommandHandler(IMapper mapper, ManagementProjectDbContext dbContext)
         {
             _mapper = mapper;
-            _schoolRepository = schoolRepository;
-            _unitOfWork = unitOfWork;
+            _dbContext = dbContext;
         }
 
         public async Task<CreateSchoolCommandResponse> Handle(CreateSchoolCommand request, CancellationToken cancellationToken)
         {
             var school = _mapper.Map<School>(request.School);
-            await _schoolRepository.AddAsync(school);
-            await _unitOfWork.SaveChangesAsync();
+            await _dbContext.Schools.AddAsync(school, cancellationToken);
 
             return new CreateSchoolCommandResponse
             {

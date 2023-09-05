@@ -1,14 +1,6 @@
 ﻿using AutoMapper;
-using DotNetCore.EntityFrameworkCore;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using ManagementProject.Api.Controllers.Commands;
-using ManagementProject.Application.Contracts.Persistence;
-using ManagementProject.Application.Features.Response;
+using ManagementProject.Application.Exceptions;
 using ManagementProject.Application.Features.Schools;
 using ManagementProject.Application.Features.Schools.Commands.CreateSchool;
 using ManagementProject.Application.Features.Schools.Commands.DeleteSchool;
@@ -16,14 +8,19 @@ using ManagementProject.Application.Features.Schools.Commands.UpdateSchool;
 using ManagementProject.Application.Profiles.Schools;
 using ManagementProject.Domain.Entities;
 using ManagementProject.Persistence.Context;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
 using Serilog;
 using Serilog.Extensions.Logging;
 using System;
-using System.Linq.Expressions;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNetCore.Results;
-using ManagementProject.Application.Exceptions;
+using System.Linq;
 
 namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
 {
@@ -35,9 +32,36 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                                                                                           .CreateLogger())
                                                                   .CreateLogger<SchoolCommandController>();
         private readonly IMapper _mapper = new MapperConfiguration(x => x.AddProfile<SchoolMappingProfile>()).CreateMapper();
-        private Mock<ISchoolRepository> _mockSchoolRepo = new Mock<ISchoolRepository>();
-        private Mock<IStudentRepository> _mockStudentRepo = new Mock<IStudentRepository>();
-
+        private static ManagementProjectDbContext _dbContextFilled;
+        private static ManagementProjectDbContext _dbContextEmpty;
+        private static TestContext? _testContext;
+        
+        
+        [ClassInitialize]
+        public static void SetupTests(TestContext testContext)
+        {
+            _testContext = testContext;
+            var inMemoryOptionsDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
+                .UseInMemoryDatabase(databaseName: "FakeDB")
+                .Options;
+            var inMemoryOptionsEmptyDb = new DbContextOptionsBuilder<ManagementProjectDbContext>()
+                .UseInMemoryDatabase(databaseName: "EmptyDB")
+                .Options;
+            _dbContextFilled = new ManagementProjectDbContext(inMemoryOptionsDb);
+            _dbContextEmpty  = new ManagementProjectDbContext(inMemoryOptionsEmptyDb);
+            if (_dbContextFilled.Schools.Count() == 0)
+            {
+                _dbContextFilled.Schools?.AddRange(InitSchoolEntity());
+                _dbContextFilled.SaveChanges();   
+            }
+            else
+            {
+                _dbContextFilled.Schools?.RemoveRange(_dbContextFilled.Schools);
+                _dbContextFilled.Students?.RemoveRange(_dbContextFilled.Students);
+                _dbContextFilled.Schools?.AddRange(InitSchoolEntity());
+                _dbContextFilled.SaveChanges();
+            }
+        }
         [TestMethod]
         public async Task Create_School_ReturnSuccess()
         {
@@ -45,15 +69,15 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
 
             var schoolDto = new SchoolDto()
             {
-                Id = 3,
+                Id = 5,
                 Name = "test",
                 Town = "town",
                 Adress = "adres",
                 Description = "desc"
 
             };
-            Mock<IMediator> mediatorMock = MockMediatorCreateSchoolCommand(schoolDto);
-            var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
+            IMediator mediatorMock = MockMediatorCreateSchoolCommandAsync(schoolDto);
+            var schoolControllerTest = new SchoolCommandController(mediatorMock, _logger);
 
             //Act
             var resultSchoolCall = await schoolControllerTest.CreateSchool(schoolDto);
@@ -76,8 +100,8 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                 Description = "desc"
 
             };
-            Mock<IMediator> mediatorMock = MockMediatorUpdateSchoolCommand(schoolDto);
-            var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
+            IMediator mediatorMock = MockMediatorUpdateSchoolCommand(schoolDto);
+            var schoolControllerTest = new SchoolCommandController(mediatorMock, _logger);
 
             //Act
             var resultSchoolCall = await schoolControllerTest.UpdateSchool(schoolDto);
@@ -90,8 +114,8 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         public async Task Delete_School_ReturnSuccess()
         {
             //Arrange
-            Mock<IMediator> mediatorMock = MockMediatorDeleteSchoolCommand(1);
-            var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
+            IMediator mediatorMock = MockMediatorDeleteSchoolCommand(1);
+            var schoolControllerTest = new SchoolCommandController(mediatorMock, _logger);
 
             //Act
             var resultSchoolCall = await schoolControllerTest.DeleteSchool(1);
@@ -101,17 +125,17 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
             Assert.IsTrue(success);
         }
         [TestMethod]
-        public async Task Create_School_ReturnBadRequest()
+        public async Task Create_School_ReturnArgumentNullException()
         {
             //Arrange
 
-            SchoolDto schoolDto = null;
-            Mock<IMediator> mediatorMock = MockMediatorCreateSchoolCommand(null);
-            var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
+            SchoolDto? schoolDto = null;
+            IMediator mediatorMock = MockMediatorCreateSchoolCommandAsync(null);
+            var schoolControllerTest = new SchoolCommandController(mediatorMock, _logger);
 
             //Act && Assert
 
-            await Assert.ThrowsExceptionAsync<BadRequestException>(async () =>
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
             {
                 await schoolControllerTest.CreateSchool(schoolDto);
             });
@@ -121,9 +145,9 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         {
             //Arrange
 
-            SchoolDto schoolDto = null;
-            Mock<IMediator> mediatorMock = MockMediatorUpdateSchoolCommand(null);
-            var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
+            SchoolDto? schoolDto = new SchoolDto();
+            IMediator mediatorMock = MockMediatorUpdateSchoolCommand(null);
+            var schoolControllerTest = new SchoolCommandController(mediatorMock, _logger);
 
             //Act && Assert
 
@@ -136,8 +160,8 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         public async Task Delete_School_ReturnNotFoundException()
         {
             //Arrange
-            Mock<IMediator> mediatorMock = MockMediatorDeleteSchoolCommand(0);
-            var schoolControllerTest = new SchoolCommandController(mediatorMock.Object, _logger);
+            IMediator mediatorMock = MockMediatorDeleteSchoolCommand(0);
+            var schoolControllerTest = new SchoolCommandController(mediatorMock, _logger);
 
             //Act && Assert
 
@@ -146,79 +170,71 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                 await schoolControllerTest.DeleteSchool(0);
             });
         }
-        private Mock<IMediator> MockMediatorCreateSchoolCommand(SchoolDto dto)
+        private IMediator MockMediatorCreateSchoolCommandAsync(SchoolDto dto)
         {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<CreateSchoolCommand>(), default)).Returns(
-                async (CreateSchoolCommand q, CancellationToken token) =>
-                await InitCreateSchoolCommandHandler(dto).Handle(q, token));
+            var mediatorMock = Substitute.For<IMediator>();
+            mediatorMock.Send(Arg.Any<CreateSchoolCommand>(), default).Returns(x =>
+            {
+                return InitCreateSchoolCommandHandler(dto).Handle(x.Arg<CreateSchoolCommand>(), x.Arg<CancellationToken>());
+            });                   
             return mediatorMock;
         }
         private CreateSchoolCommandHandler InitCreateSchoolCommandHandler(SchoolDto? createSchoolDto)
         {
             int result = (createSchoolDto == null) ? -1 : 1;
-            if(result == -1)
-                _mockSchoolRepo.Setup(x => x.AddAsync(It.IsAny<School>())).ThrowsAsync(new BadRequestException("Failed to add school"));
-            else
-                _mockSchoolRepo.Setup(x => x.AddAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
-            return new CreateSchoolCommandHandler(_mapper, _mockSchoolRepo.Object, InitUnitOfWork(result));
+            return new CreateSchoolCommandHandler(_mapper, (result == -1) ? _dbContextEmpty : _dbContextFilled);
         }
-        private Mock<IMediator> MockMediatorUpdateSchoolCommand(SchoolDto dto)
+        private IMediator MockMediatorUpdateSchoolCommand(SchoolDto dto)
         {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<UpdateSchoolCommand>(), default)).Returns(
-                async (UpdateSchoolCommand q, CancellationToken token) =>
-                await InitUpdateSchoolCommandHandler(dto).Handle(q, token));
+            var mediatorMock = Substitute.For<IMediator>();
+            mediatorMock.Send(Arg.Any<UpdateSchoolCommand>(), default).Returns(x =>
+            {
+                return InitUpdateSchoolCommandHandler(dto).Handle(x.Arg<UpdateSchoolCommand>(), x.Arg<CancellationToken>());
+            });
+              
             return mediatorMock;
         }
         private UpdateSchoolCommandHandler InitUpdateSchoolCommandHandler(SchoolDto? updateSchoolDto)
         {
             int result = (updateSchoolDto == null) ? -1 : 1;
-            if (result == -1)
-                _mockSchoolRepo.Setup(x => x.UpdateAsync(It.IsAny<School>())).ThrowsAsync(new BadRequestException("Failed to update school"));
-            else
-                _mockSchoolRepo.Setup(x => x.UpdateAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
-            _mockSchoolRepo.Setup(x => x.GetAsync(It.IsAny<long>())).ReturnsAsync(InitSchoolEntity());
-            return new UpdateSchoolCommandHandler(_mapper, _mockSchoolRepo.Object, InitUnitOfWork(result));
+            return new UpdateSchoolCommandHandler(_mapper, (result == -1) ? _dbContextEmpty : _dbContextFilled);
         }
 
-        private Mock<IMediator> MockMediatorDeleteSchoolCommand(long id)
+        private IMediator MockMediatorDeleteSchoolCommand(long id)
         {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.Send(It.IsAny<DeleteSchoolCommand>(), default)).Returns(
-                async (DeleteSchoolCommand q, CancellationToken token) =>
-                await InitDeleteSchoolCommandHandler(id).Handle(q, token));
+            var mediatorMock = Substitute.For<IMediator>();
+            mediatorMock.Send(Arg.Any<DeleteSchoolCommand>(), default).Returns(x =>
+            {
+                return InitDeleteSchoolCommandHandler(id).Handle(x.Arg<DeleteSchoolCommand>(), x.Arg<CancellationToken>());
+            });          
             return mediatorMock;
         }
         private DeleteSchoolCommandHandler InitDeleteSchoolCommandHandler(long id)
         {
             int result = (id == 0) ? -1 : 1;
-            if (result == -1)
-                _mockSchoolRepo.Setup(x => x.DeleteAsync(It.IsAny<School>())).ThrowsAsync(new BadRequestException("Failed to delete school"));
-            else
-                _mockSchoolRepo.Setup(x => x.DeleteAsync(It.IsAny<School>())).Returns(Task.CompletedTask);
-            _mockSchoolRepo.Setup(x => x.GetAsync(It.IsAny<long>())).ReturnsAsync(InitSchoolEntity(id));
-            _mockStudentRepo.Setup(x => x.Any(It.IsAny<Expression<Func<Student, bool>>>())).Returns(false);
-            return new DeleteSchoolCommandHandler(_mockSchoolRepo.Object, _mockStudentRepo.Object, InitUnitOfWork(result));
+            return new DeleteSchoolCommandHandler((result == -1) ? _dbContextEmpty : _dbContextFilled);
         }
-        private UnitOfWork<ManagementProjectDbContext> InitUnitOfWork(int result)
+        private static List<School> InitSchoolEntity()
         {
-            DbContextOptions<ManagementProjectDbContext> options = new DbContextOptions<ManagementProjectDbContext>();
-            var mockDbContext = new Mock<ManagementProjectDbContext>(options);
-            mockDbContext.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(result);
-            var mockUnitOfWork = new UnitOfWork<ManagementProjectDbContext>(mockDbContext.Object);
-            return mockUnitOfWork;
-        }
-        private static School InitSchoolEntity()
-        {
-            return new School(3, "test", "adres", "town", "desc");
-        }
-        private static School InitSchoolEntity(long id)
-        {
-            if (id == 1)
-                return new School(1, "test", "adres", "town", "desc");
-
-            return null;
+            return new List<School>()
+            {
+                new School()
+                {
+                    Id = 1,
+                    Name = "test",
+                    Town = "town",
+                    Adress = "adres",
+                    Description = "desc"
+                },
+                new School()
+                {
+                    Id = 3,
+                    Name = "test",
+                    Town = "town",
+                    Adress = "adres",
+                    Description = "desc"
+                }
+            };
         }
     }
 }

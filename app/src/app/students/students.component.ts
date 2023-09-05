@@ -10,34 +10,39 @@ import { ToastService } from '../services/message-popup/toast.service';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { ModalService } from '../services/modal/modal.service';
 import { ODataQueryDto } from '../dto/utilities/odata-query-dto';
-import { StudentProperties } from '../enum/student-properties';
 import { OrderByChoice } from '../enum/orderby-choice';
+import { StudentProperties } from '../enum/student-properties';
+import { PaginationService } from '../services/shared/pagination/pagination.service';
 @Component({
   selector: 'app-students',
   templateUrl: './students.component.html',
   styleUrls: ['./students.component.css']
 })
 export class StudentsComponent implements OnInit {
-  students: StudentDto[] = [];
+  students: StudentDto[] | undefined = [];
   pageDetails: PageDetailsDto = new PageDetailsDto();
   newStudent: StudentDto = new StudentDto();
+  queryOptions: ODataQueryDto = new ODataQueryDto();
   constructor(private studentService: StudentService,
     private modalService: ModalService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
-    private toastService: ToastService) { }
+    private toastService: ToastService,
+    private paginationService: PaginationService) { }
 
   ngOnInit(): void {
     this.getStudents(this.pageDetails.skip, this.pageDetails.take);
   }
 
   getStudents(skip?: number, take?: number): void {
-    let query: ODataQueryDto = new ODataQueryDto();
-    query.top = take?.toString() || '0';
-    query.skip = skip?.toString() || '0';
-    query.orderBy.push(`${StudentProperties.LastName} ${OrderByChoice.Ascending}`);
-    this.studentService.getStudents(query).subscribe({
+    this.queryOptions.top = take?.toString() || '0';
+    this.queryOptions.skip = skip?.toString() || '0';
+    this.studentService.getStudents(this.queryOptions).subscribe({
       next: (response: any) => {
+        if(!response || response.count === 0){
+          this.students = undefined;
+          return;
+        }
         this.pageDetails.totalItems = response.count;
         this.students = response.studentsDto.map((studentData: any) => {
           const student = new StudentDto();
@@ -46,6 +51,7 @@ export class StudentsComponent implements OnInit {
         });
       },
       error: (error: ErrorResponse) => {
+        this.students = undefined;
         this.toastService.showError(error);
       },
       complete: () => console.info('complete')
@@ -67,6 +73,11 @@ export class StudentsComponent implements OnInit {
   async updateStudent(student: StudentDto): Promise<BaseResponse> {
     try {
       const response: BaseResponse = await firstValueFrom(this.studentService.updateStudent(student));
+      const shouldAdjustPage = (this.pageDetails.totalItems - 1) % this.pageDetails.take === 0 && this.queryOptions.keywords.length > 0;
+      if (shouldAdjustPage) {
+        this.paginationService.setCurrentPage(this.pageDetails.skip / this.pageDetails.take);
+        this.pageDetails.skip -= this.pageDetails.take;
+      }
       this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       return response;
     } catch (e) {
@@ -79,6 +90,11 @@ export class StudentsComponent implements OnInit {
   async deleteStudent(studentId: number): Promise<BaseResponse> {
     try {
       const response: BaseResponse = await firstValueFrom(this.studentService.deleteStudent(studentId));
+      const shouldAdjustPage = (this.pageDetails.totalItems - 1) % this.pageDetails.take === 0;
+      if (shouldAdjustPage) {
+        this.paginationService.setCurrentPage(this.pageDetails.skip / this.pageDetails.take);
+        this.pageDetails.skip -= this.pageDetails.take;
+      }
       this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       return response;
     } catch (e) {
@@ -107,7 +123,35 @@ export class StudentsComponent implements OnInit {
     this.getStudents(this.pageDetails.skip, this.pageDetails.take);
     this.changeDetectorRef.detectChanges();
   }
-
+  handleFilterQuery(event: string){
+    if(event){
+      this.paginationService.setCurrentPage(1);
+      this.pageDetails = new PageDetailsDto();
+      const studentProps = new StudentProperties();
+      for (const prop of Object.keys(studentProps)) {
+        const key = prop;
+        const value = studentProps[prop];
+        this.queryOptions.filter.push({ key, value });
+      }
+      const stringWithoutExtraSpaces = event.replace(/\s{2,}/g, ' ');
+      this.queryOptions.keywords = stringWithoutExtraSpaces.trim().split(' ');
+      this.getStudents(this.pageDetails.skip, this.pageDetails.take);
+      this.changeDetectorRef.detectChanges();
+    }else{
+      this.queryOptions.filter = [];
+      this.queryOptions.keywords = [];
+      this.getStudents(this.pageDetails.skip, this.pageDetails.take);
+      this.changeDetectorRef.detectChanges();     
+    }
+  }
+  handleOrderQuery(event: {header: string, order: OrderByChoice}){
+    if(event.header && event.order){
+      this.queryOptions.orderBy = [];
+      this.queryOptions.orderBy.push(`${event.header} ${event.order}`);
+      this.getStudents(this.pageDetails.skip, this.pageDetails.take);
+      this.changeDetectorRef.detectChanges();
+    }
+  }
   handleActionCommands(event: { dto: any, command: Command }) {
     switch (event.command) {
       case Command.Read:

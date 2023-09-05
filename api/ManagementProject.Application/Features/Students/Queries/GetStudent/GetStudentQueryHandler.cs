@@ -1,30 +1,29 @@
-﻿using AutoMapper;
-using MediatR;
-using ManagementProject.Application.Contracts.Persistence;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Response;
-using ManagementProject.Domain.Entities;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using ManagementProject.Application.Contracts.MediatR.Query;
+using ManagementProject.Application.Exceptions;
+using ManagementProject.Domain.Entities;
+using ManagementProject.Persistence.Context;
 
 namespace ManagementProject.Application.Features.Students.Queries.GetStudent
 {
-    public class GetStudentQueryHandler : IRequestHandler<GetStudentQuery, GetStudentQueryResponse>
+    public class GetStudentQueryHandler : IQueryHandler<GetStudentQuery, GetStudentQueryResponse>
     {
-        private readonly IStudentRepository _studentRepository;
+        private readonly ManagementProjectDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetStudentQueryHandler(IMapper mapper, IStudentRepository studentRepository)
+        public GetStudentQueryHandler(IMapper mapper, ManagementProjectDbContext dbContext)
         {
             _mapper = mapper;
-            _studentRepository = studentRepository;
+            _dbContext = dbContext;
         }
 
         public async Task<GetStudentQueryResponse> Handle(GetStudentQuery request, CancellationToken cancellationToken)
         {
             long studentId = request?.StudentId ?? 0;
 
-            var student = await _studentRepository.GetByIdWithIncludeAsync(x => x.Id == studentId, navigationPropertyPath: x => x.School);
+            var student = await _dbContext.GetStudentByIdIncludeSchoolAsync(studentId);
 
             if (student == null)
             {

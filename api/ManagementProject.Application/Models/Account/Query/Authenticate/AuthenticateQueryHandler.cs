@@ -1,13 +1,12 @@
-﻿using ManagementProject.Application.Contracts.Identity;
-using ManagementProject.Application.Exceptions;
-using ManagementProject.Application.Features.Response;
-using MediatR;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using ManagementProject.Application.Contracts.Identity;
+using ManagementProject.Application.Contracts.MediatR.Query;
+using ManagementProject.Application.Exceptions;
 
 namespace ManagementProject.Application.Models.Account.Query.Authenticate
 {
-    public class AuthenticateQueryHandler : IRequestHandler<AuthenticateQuery, AccountResponse>
+    public class AuthenticateQueryHandler : IQueryHandler<AuthenticateQuery, AccountResponse>
     {
         private readonly IAuthenticationService _authenticationService;
 

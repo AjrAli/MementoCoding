@@ -10,6 +10,16 @@
                 <li class="nav-item active">
                     <a class="nav-link" routerLink="/home">Home</a>
                 </li>
+
+                <li class="nav-item" ngbDropdown>
+                    <a class="nav-link" tabindex="0" ngbDropdownToggle id="navbarDropdown1" role="button"> Visited Pages
+                    </a>
+                    <div ngbDropdownMenu aria-labelledby="navbarDropdown1" class="dropdown-menu">
+                        <a ngbDropdownItem *ngFor="let url of this.getVisitedUrls(); let i = index" class="dropdown-item"
+                            [linkHandler]="url">{{this.getTitleOfVisitedUrls()[i]}}</a>
+                    </div>
+                </li>
+
                 <li *ngIf="isAdminConnected()" class="nav-item">
                     <a class="nav-link" routerLink="/schools">Schools</a>
                 </li>
@@ -22,7 +32,8 @@
                             <form *ngIf="this.isConnected()" [formGroup]="searchForm" (ngSubmit)="submitSearch()">
                                 <div class="form-group row">
                                     <div class="col-md-7">
-                                        <input type="text" class="form-control" formControlName="searchField"  (ngModelChange)="submitSearch($event)" />
+                                        <input type="text" class="form-control" formControlName="searchField"
+                                            (ngModelChange)="submitSearch($event)" />
                                     </div>
                                     <div class="col-md-5">
                                         <button class="btn btn-outline-light" type="submit">

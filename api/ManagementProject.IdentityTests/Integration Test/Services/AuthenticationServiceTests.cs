@@ -20,8 +20,8 @@ namespace ManagementProject.Identity.Integration_Test.Services.Tests
     [TestClass]
     public class AuthenticationServiceTests : IDisposable
     {
-        private IHost _host;
-        private HttpClient _httpClient;
+        private IHost? _host;
+        private HttpClient? _httpClient;
 
         [TestInitialize]
         public async Task Setup()
@@ -79,14 +79,12 @@ namespace ManagementProject.Identity.Integration_Test.Services.Tests
         public void Dispose()
         {
             DisposeAsync().GetAwaiter().GetResult();
+            GC.SuppressFinalize(this);
         }
 
         public async Task DisposeAsync()
         {
-            if (_httpClient != null)
-            {
-                _httpClient.Dispose();
-            }
+            _httpClient?.Dispose();
 
             if (_host != null)
             {
