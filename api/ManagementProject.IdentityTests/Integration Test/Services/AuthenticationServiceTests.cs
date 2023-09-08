@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Events;
-using System.Configuration;
 
 namespace ManagementProject.Identity.Integration_Test.Services.Tests
 {
@@ -30,21 +29,22 @@ namespace ManagementProject.Identity.Integration_Test.Services.Tests
             ConfigureLogger(configuration);
 
             var hostBuilder = Host.CreateDefaultBuilder()
-                                  .ConfigureWebHost(webHost =>
-                                  {
-                                      webHost.UseStartup<Startup>();
-                                      webHost.ConfigureServices(services =>
-                                      {
-                                          services.AddOptions<JwtSettings>().Bind(configuration.GetSection("JwtSettings"));
-                                          services.AddDbContext<ManagementProjectIdentityDbContext>(options =>
-                                          {
-                                              options.UseSqlServer("Server=localhost;Database=ManagementProjectIdentityDb;Trusted_Connection=True;MultipleActiveResultSets=True;");
-                                          });
-                                      });
-                                      // Add TestServer
-                                      webHost.UseTestServer();
-                                  })
-                                  .UseSerilog();
+                .ConfigureWebHost(webHost =>
+                {
+                    webHost.UseStartup<Startup>();
+                    webHost.ConfigureServices(services =>
+                    {
+                        services.AddOptions<JwtSettings>().Bind(configuration.GetSection("JwtSettings"));
+                        services.AddDbContext<ManagementProjectIdentityDbContext>(options =>
+                        {
+                            options.UseSqlServer(
+                                "Server=localhost;Database=ManagementProjectIdentityDb;Trusted_Connection=True;MultipleActiveResultSets=True;");
+                        });
+                    });
+                    // Add TestServer
+                    webHost.UseTestServer();
+                })
+                .UseSerilog();
             _host = await hostBuilder.StartAsync();
             _httpClient = _host.GetTestClient();
 

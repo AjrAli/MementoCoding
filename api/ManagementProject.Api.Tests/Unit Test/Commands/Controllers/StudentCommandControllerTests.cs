@@ -51,20 +51,14 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                 .Options;
             _dbContextFilled = new ManagementProjectDbContext(inMemoryOptionsDb);
             _dbContextEmpty = new ManagementProjectDbContext(inMemoryOptionsEmptyDb);
-            if (_dbContextFilled.Students.Count() == 0)
-            {
-                _dbContextFilled.Students?.AddRange(InitStudentEntity());
-                _dbContextFilled.SaveChanges();
-            }
-            else
-            {
-                _dbContextFilled.Schools?.RemoveRange(_dbContextFilled.Schools);
-                _dbContextFilled.Students?.RemoveRange(_dbContextFilled.Students);
-                _dbContextFilled.Students?.AddRange(InitStudentEntity());
-                _dbContextFilled.SaveChanges();
-            }
         }
-
+        [TestInitialize]
+        public void  AddDataInDb()
+        {
+            if (_dbContextFilled.Students?.Count() != 0) return;
+            _dbContextFilled.Students.AddRange(InitStudentEntity()); 
+            _dbContextFilled.SaveChanges();
+        }
         [TestMethod]
         public async Task Create_Student_ReturnSuccess()
         {
@@ -72,12 +66,11 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
 
             var studentDto = new StudentDto()
             {
-                Id = 5,
                 FirstName = "Test",
                 LastName = "Test",
                 Adress = "MyAdress",
                 Age = 10,
-                SchoolId = 5
+                SchoolId = 20
             };
             IMediator mediatorMock = MockMediatorCreateStudentCommandAsync(studentDto);
             var studentControllerTest = new StudentCommandController(mediatorMock, _logger);
@@ -94,15 +87,15 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         public async Task Update_Student_ReturnSuccess()
         {
             //Arrange
-
+            var id = _dbContextFilled.Students.FirstOrDefault()?.Id ?? 0;
             var studentDto = new StudentDto()
             {
-                Id = 3,
+                Id = id,
                 FirstName = "Test",
                 LastName = "Test",
                 Adress = "MyAdress",
                 Age = 10,
-                SchoolId = 5
+                SchoolId = 20
             };
             IMediator mediatorMock = MockMediatorUpdateStudentCommand(studentDto);
             var studentControllerTest = new StudentCommandController(mediatorMock, _logger);
@@ -119,11 +112,12 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         public async Task Delete_Student_ReturnSuccess()
         {
             //Arrange
-            IMediator mediatorMock = MockMediatorDeleteStudentCommand(1);
+            var id = _dbContextFilled.Students.FirstOrDefault()?.Id ?? 0;
+            IMediator mediatorMock = MockMediatorDeleteStudentCommand(id);
             var studentControllerTest = new StudentCommandController(mediatorMock, _logger);
 
             //Act
-            var resultStudentCall = await studentControllerTest.DeleteStudent(1);
+            var resultStudentCall = await studentControllerTest.DeleteStudent(id);
 
             //Assert
             var success = (((resultStudentCall as OkObjectResult)?.Value) as DeleteStudentCommandResponse)?.Success;
@@ -178,7 +172,20 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                 await studentControllerTest.DeleteStudent(0);
             });
         }
-
+        [TestCleanup]
+        public void  ResetDb()
+        {
+            if (_dbContextFilled?.Students?.Count() > 0)
+            {
+                _dbContextFilled.Students.RemoveRange(_dbContextFilled.Students); 
+                _dbContextFilled.SaveChanges();
+            }
+            if (_dbContextFilled?.Schools?.Count() > 0)
+            {
+                _dbContextFilled.Schools.RemoveRange(_dbContextFilled.Schools); 
+                _dbContextFilled.SaveChanges();
+            }
+        }
         private IMediator MockMediatorCreateStudentCommandAsync(StudentDto dto)
         {
             var mediatorMock = Substitute.For<IMediator>();
@@ -239,25 +246,23 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
             {
                 new Student()
                 {
-                    Id = 1,
                     FirstName = "Test",
                     LastName = "Test",
                     Adress = "MyAdress",
                     Age = 10,
                     SchoolId = 5,
                     School = new School()
-                        { Id = 5, Name = "test", Town = "town", Adress = "adres", Description = "desc" }
+                        { Id = 20, Name = "test", Town = "town", Adress = "adres", Description = "desc" }
                 },
                 new Student()
                 {
-                    Id = 3,
                     FirstName = "Test",
                     LastName = "Test",
                     Adress = "MyAdress",
                     Age = 10,
                     SchoolId = 10,
                     School = new School()
-                        { Id = 10, Name = "test", Town = "town", Adress = "adres", Description = "desc" }
+                        { Id = 30, Name = "test", Town = "town", Adress = "adres", Description = "desc" }
                 }
             };
         }

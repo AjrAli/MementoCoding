@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ManagementProject.Application.Features.Search.Queries.GetSearchResults
 {
-    public class GetSearchResultsDto : IBaseDto
+    public record GetSearchResultsDto : IBaseDto
     {
         public long Id { get; set; }
         public string Title { get; set; }

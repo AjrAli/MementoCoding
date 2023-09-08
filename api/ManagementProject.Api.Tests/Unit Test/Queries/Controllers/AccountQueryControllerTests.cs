@@ -128,13 +128,5 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
             userManager.PasswordValidators.Add(new PasswordValidator<TUser>());
             return userManager;
         }
-
-        public static RoleManager<TRole> MockRoleManager<TRole>(IRoleStore<TRole>? store = null) where TRole : class
-        {
-            store ??= Substitute.For<IRoleStore<TRole>>();
-            var roleManager = Substitute.For<RoleManager<TRole>>(store, new List<IRoleValidator<TRole>>(),
-                Substitute.For<ILookupNormalizer>(), Substitute.For<IdentityErrorDescriber>(), null);
-            return roleManager;
-        }
     }
 }
