@@ -20,8 +20,5 @@
     <ProjectReference Include="..\ManagementProject.Api\ManagementProject.Api.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Integration Test\MediatR\Commands\" />
-  </ItemGroup>
 
 </Project>

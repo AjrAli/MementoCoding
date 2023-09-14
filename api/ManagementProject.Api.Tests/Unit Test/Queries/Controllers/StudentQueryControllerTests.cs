@@ -169,7 +169,7 @@ namespace ManagementProject.Api.Tests.Unit_Test.Queries.Controllers
                             Age = 16,
                             SchoolId = 10,
                             Parentname = "test"
-                        },
+                        }
                     }
                     : null
             };
