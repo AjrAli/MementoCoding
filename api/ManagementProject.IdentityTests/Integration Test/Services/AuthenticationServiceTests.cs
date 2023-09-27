@@ -1,4 +1,5 @@
 ﻿using ManagementProject.Api;
+using ManagementProject.Identity;
 using ManagementProject.Identity.Entity;
 using ManagementProject.Identity.JwtModel;
 using ManagementProject.Identity.Services;
@@ -14,7 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Events;
 
-namespace ManagementProject.Identity.Integration_Test.Services.Tests
+namespace ManagementProject.IdentityTests.Integration_Test.Services
 {
     [TestClass]
     public class AuthenticationServiceTests : IDisposable
