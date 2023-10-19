@@ -1,3 +1,8 @@
+For a quick demo : http://futuratech-001-site1.ctempurl.com 
+
+For Admin Role use these credentials (login: admin & password: admin)
+
+
 ---------MementoCoding---------
 
 - .Net Architecture Test using
