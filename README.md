@@ -1,5 +1,7 @@
-For a quick demo of this project : http://futuratech-001-site1.ctempurl.com
-(demo hosted of the angular app that call .net 6 WebApi)
+For a quick demo : http://futuratech-001-site1.ctempurl.com 
+
+For Admin Role use these credentials (login: admin & password: admin)
+
 
 ---------MementoCoding---------
 
