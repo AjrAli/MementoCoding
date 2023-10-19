@@ -1,3 +1,6 @@
+For a quick demo of this project : http://futuratech-001-site1.ctempurl.com
+(demo hosted of the angular app that call .net 6 WebApi)
+
 ---------MementoCoding---------
 
 - .Net Architecture Test using
