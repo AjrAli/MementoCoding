@@ -1,4 +1,4 @@
-For a quick demo : https://mementocoding.be
+For a quick demo : https://mementocoding.be/home
 
 (
 DEMO credentials : for Admin Role use these credentials 
