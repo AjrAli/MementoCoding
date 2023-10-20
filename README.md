@@ -43,7 +43,6 @@ b. Migrations:
 
 c. Run the Backend:
 
-    Run the database migrations to create the required tables.
 	dotnet restore
 	dotnet build
 	dotnet test
