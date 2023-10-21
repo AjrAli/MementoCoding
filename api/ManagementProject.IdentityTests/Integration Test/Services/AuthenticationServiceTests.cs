@@ -1,8 +1,8 @@
 ﻿using ManagementProject.Api;
-using ManagementProject.Identity;
-using ManagementProject.Identity.Entity;
 using ManagementProject.Identity.JwtModel;
 using ManagementProject.Identity.Services;
+using ManagementProject.Persistence.Context;
+using ManagementProject.Persistence.Entity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.TestHost;
@@ -36,10 +36,10 @@ namespace ManagementProject.IdentityTests.Integration_Test.Services
                     webHost.ConfigureServices(services =>
                     {
                         services.AddOptions<JwtSettings>().Bind(configuration.GetSection("JwtSettings"));
-                        services.AddDbContext<ManagementProjectIdentityDbContext>(options =>
+                        services.AddDbContext<ManagementProjectDbContext>(options =>
                         {
                             options.UseSqlServer(
-                                "Server=localhost;Database=ManagementProjectIdentityDb;Trusted_Connection=True;MultipleActiveResultSets=True;");
+                                "Server=localhost;Database=MementoCodingDB;Trusted_Connection=True;MultipleActiveResultSets=True;");
                         });
                     });
                     // Add TestServer
@@ -51,7 +51,7 @@ namespace ManagementProject.IdentityTests.Integration_Test.Services
 
             // Set up the database context
             using var scope = _host.Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ManagementProjectIdentityDbContext>();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ManagementProjectDbContext>();
             await dbContext.Database.OpenConnectionAsync(); // Open the database connection
             await dbContext.Database.EnsureCreatedAsync(); // Create the  database schema
         }
@@ -90,7 +90,7 @@ namespace ManagementProject.IdentityTests.Integration_Test.Services
             if (_host != null)
             {
                 using var scope = _host.Services.CreateScope();
-                var dbContext = scope.ServiceProvider.GetRequiredService<ManagementProjectIdentityDbContext>();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ManagementProjectDbContext>();
                 await dbContext.Database.CloseConnectionAsync(); // Close the in-memory database connection
                 _host.Dispose();
             }
@@ -98,9 +98,11 @@ namespace ManagementProject.IdentityTests.Integration_Test.Services
 
         private static IConfiguration BuildConfiguration()
         {
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
             return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true) // Use appsettings.{environment}.json
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true) // Use the default appsettings.json
                 .Build();
         }
 

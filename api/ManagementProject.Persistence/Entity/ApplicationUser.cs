@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
 
-namespace ManagementProject.Identity.Entity
+namespace ManagementProject.Persistence.Entity
 {
     public class ApplicationUser : IdentityUser
     {

@@ -2,7 +2,6 @@
 using ManagementProject.Application.Exceptions;
 using ManagementProject.Application.Models.Account;
 using ManagementProject.Application.Models.Account.Command;
-using ManagementProject.Identity.Entity;
 using ManagementProject.Identity.JwtModel;
 using ManagementProject.Identity.Roles;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +14,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using ManagementProject.Persistence.Entity;
 
 namespace ManagementProject.Identity.Services
 {

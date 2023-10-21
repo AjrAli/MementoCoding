@@ -4,7 +4,13 @@
     <TargetFramework>net6.0</TargetFramework>
 	  <Nullable>enable</Nullable>
   </PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
+	  <EnvironmentName>Development</EnvironmentName>
+	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(Configuration)' != '' AND '$(Configuration)' != 'Debug' ">
+	  <EnvironmentName>Production</EnvironmentName>
+	</PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" Version="12.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.0" />
@@ -26,6 +32,7 @@
   <ItemGroup>
     <Folder Include="Logs\" />
     <Folder Include="logs\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,4 +41,11 @@
     <ProjectReference Include="..\ManagementProject.Identity\ManagementProject.Identity.csproj" />
   </ItemGroup>
 
+  <Target Name="BuildAngular" BeforeTargets="Build">
+    <Exec Command="del /q /s wwwroot\*" />
+    <Exec Command="npm ci" WorkingDirectory="../../app" />
+	<Exec Condition="'$(EnvironmentName)' == 'Development'" Command="ng build --configuration=development" WorkingDirectory="../../app" />
+    <Exec Condition="'$(EnvironmentName)' == 'Production'" Command="ng build --configuration=production" WorkingDirectory="../../app" />
+  </Target>
+  
 </Project>

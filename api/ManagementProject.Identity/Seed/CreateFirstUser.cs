@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using ManagementProject.Identity.Entity;
 using System.Threading.Tasks;
 using ManagementProject.Identity.Roles;
+using ManagementProject.Persistence.Entity;
 
 namespace ManagementProject.Identity.Seed
 {

@@ -23,7 +23,6 @@ namespace ManagementProject.Persistence.Seed
                 {
                     new School()
                     {
-                        Id = 1,
                         Name = "test",
                         Town = "town",
                         Adress = "adres",
@@ -31,7 +30,6 @@ namespace ManagementProject.Persistence.Seed
                     },
                     new School()
                     {
-                        Id = 2,
                         Name = "test",
                         Town = "town",
                         Adress = "adres",
@@ -51,21 +49,19 @@ namespace ManagementProject.Persistence.Seed
                 {
                     new Student()
                     {
-                        Id = 1,
                         FirstName = "Test",
                         LastName = "Test",
                         Adress = "MyAdress",
                         Age = 10,
-                        SchoolId = 1
+                        SchoolId = context.Schools.FirstOrDefault().Id
                     },
                     new Student()
                     {
-                        Id = 2,
                         FirstName = "Test",
                         LastName = "Test",
                         Adress = "MyAdress",
                         Age = 11,
-                        SchoolId = 2
+                        SchoolId = context.Schools.OrderBy(x=> x.Id).LastOrDefault().Id
                     }
                 };
 
