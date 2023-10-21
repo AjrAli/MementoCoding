@@ -4,6 +4,7 @@ using ManagementProject.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManagementProject.Persistence.Migrations
 {
     [DbContext(typeof(ManagementProjectDbContext))]
-    partial class ManagementProjectDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231019093240_DBCreation")]
+    partial class DBCreation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

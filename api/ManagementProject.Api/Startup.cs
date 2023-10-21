@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ManagementProject.Api.Middleware;
 using ManagementProject.Api.Services;
 using ManagementProject.Api.Utility;
@@ -16,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Collections.Generic;
 
 namespace ManagementProject.Api
 {
@@ -41,7 +41,12 @@ namespace ManagementProject.Api
 
             services.AddCors(options =>
             {
-                options.AddPolicy("Open", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+                options.AddPolicy("AllowAnyOrigin", builder =>
+                {
+                    builder.AllowAnyOrigin()  // Allow requests from any origin (website)
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
             });
         }
 
@@ -89,27 +94,29 @@ namespace ManagementProject.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,  IHostApplicationLifetime appLifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime appLifetime)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Management Project API"); });
             }
-
+            app.UseStaticFiles();
             app.UseSerilogRequestLogging();
             app.UseRouting();
-
+            app.UseCors("AllowAnyOrigin");
             app.UseAuthentication();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Management Project API"); });
-
-            app.UseCustomExceptionHandler();
-
-            app.UseCors("Open");
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseCustomExceptionHandler();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapFallbackToFile("index.html");
+            });
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
         }
     }

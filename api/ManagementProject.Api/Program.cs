@@ -1,8 +1,9 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
-using ManagementProject.Identity.Entity;
 using ManagementProject.Identity.Seed;
 using ManagementProject.Persistence.Context;
+using ManagementProject.Persistence.Entity;
 using ManagementProject.Persistence.Seed;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -18,8 +19,11 @@ namespace ManagementProject.Api
     {
         public static async Task Main(string[] args)
         {
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
             var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true) // Use appsettings.{environment}.json
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true) // Use the default appsettings.json
                 .Build();
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)

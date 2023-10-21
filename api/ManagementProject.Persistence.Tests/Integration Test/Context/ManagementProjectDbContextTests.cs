@@ -23,7 +23,7 @@ namespace ManagementProject.Persistence.Tests.Integration_Test.Context
         public static void Setup(TestContext testContext)
         {
             var sqlServerOptions = new DbContextOptionsBuilder<ManagementProjectDbContext>()
-                           .UseSqlServer("Server=localhost;Database=ManagementProjectDb;Trusted_Connection=True;MultipleActiveResultSets=True;")
+                           .UseSqlServer("Server=localhost;Database=MementoCodingDB;Trusted_Connection=True;MultipleActiveResultSets=True;")
                            .Options;
             using var inMemoryContext = new ManagementProjectDbContext(_inMemoryOptions);
             using var sqlServerContext = new ManagementProjectDbContext(sqlServerOptions);

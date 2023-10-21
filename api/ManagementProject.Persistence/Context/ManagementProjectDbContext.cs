@@ -4,12 +4,14 @@ using ManagementProject.Domain.Common;
 using ManagementProject.Domain.Entities;
 using ManagementProject.Persistence.Configurations;
 using ManagementProject.Persistence.Contracts;
+using ManagementProject.Persistence.Entity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace ManagementProject.Persistence.Context
 {
-    public class ManagementProjectDbContext : DbContext
+    public class ManagementProjectDbContext : IdentityDbContext<ApplicationUser>
     {
         private readonly ILoggedInUserService? _loggedInUserService;
         private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -38,6 +40,7 @@ namespace ManagementProject.Persistence.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new SchoolConfiguration());
             modelBuilder.ApplyConfiguration(new StudentConfiguration());
         }

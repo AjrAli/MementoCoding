@@ -5,11 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using ManagementProject.Identity.Entity;
 using ManagementProject.Identity.JwtModel;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using ManagementProject.Persistence.Context;
+using ManagementProject.Persistence.Entity;
 using Microsoft.Extensions.Options;
 
 namespace ManagementProject.Identity
@@ -19,9 +20,7 @@ namespace ManagementProject.Identity
         public static void AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
-
-            services.AddDbContext<ManagementProjectIdentityDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("ManagementProjectIdentityDbConnectionString"),
-                b => b.MigrationsAssembly(typeof(ManagementProjectIdentityDbContext).Assembly.FullName)));
+            
 
             services.AddIdentity<ApplicationUser, IdentityRole>( config =>
             {
@@ -30,7 +29,7 @@ namespace ManagementProject.Identity
                 config.Password.RequireUppercase = false;
                 config.Password.RequireNonAlphanumeric = false;
             })
-                .AddEntityFrameworkStores<ManagementProjectIdentityDbContext>().AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<ManagementProjectDbContext>().AddDefaultTokenProviders();
 
             services.AddAuthentication(options =>
             {

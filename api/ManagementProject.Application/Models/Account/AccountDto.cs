@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ManagementProject.Application.Models.Account
 {
-    public class AccountDto
+    public record AccountDto
     {
         public string? Username { get; set; }
         public string? Password { get; set; }

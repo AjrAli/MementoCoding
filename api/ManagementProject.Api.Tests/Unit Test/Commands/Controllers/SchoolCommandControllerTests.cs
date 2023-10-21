@@ -49,18 +49,13 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                 .Options;
             _dbContextFilled = new ManagementProjectDbContext(inMemoryOptionsDb);
             _dbContextEmpty  = new ManagementProjectDbContext(inMemoryOptionsEmptyDb);
-            if (_dbContextFilled.Schools.Count() == 0)
-            {
-                _dbContextFilled.Schools?.AddRange(InitSchoolEntity());
-                _dbContextFilled.SaveChanges();   
-            }
-            else
-            {
-                _dbContextFilled.Schools?.RemoveRange(_dbContextFilled.Schools);
-                _dbContextFilled.Students?.RemoveRange(_dbContextFilled.Students);
-                _dbContextFilled.Schools?.AddRange(InitSchoolEntity());
-                _dbContextFilled.SaveChanges();
-            }
+        }
+        [TestInitialize]
+        public void  AddDataInDb()
+        {
+            if (_dbContextFilled.Schools?.Count() != 0) return;
+            _dbContextFilled.Schools.AddRange(InitSchoolEntity()); 
+            _dbContextFilled.SaveChanges();
         }
         [TestMethod]
         public async Task Create_School_ReturnSuccess()
@@ -69,7 +64,6 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
 
             var schoolDto = new SchoolDto()
             {
-                Id = 5,
                 Name = "test",
                 Town = "town",
                 Adress = "adres",
@@ -90,10 +84,10 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         public async Task Update_School_ReturnSuccess()
         {
             //Arrange
-
+            var id = _dbContextFilled.Schools.FirstOrDefault()?.Id ?? 0;
             var schoolDto = new SchoolDto()
             {
-                Id = 3,
+                Id = id,
                 Name = "test",
                 Town = "town",
                 Adress = "adres",
@@ -114,11 +108,12 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
         public async Task Delete_School_ReturnSuccess()
         {
             //Arrange
-            IMediator mediatorMock = MockMediatorDeleteSchoolCommand(1);
+            var id = _dbContextFilled.Schools.FirstOrDefault()?.Id ?? 0;
+            IMediator mediatorMock = MockMediatorDeleteSchoolCommand(id);
             var schoolControllerTest = new SchoolCommandController(mediatorMock, _logger);
 
             //Act
-            var resultSchoolCall = await schoolControllerTest.DeleteSchool(1);
+            var resultSchoolCall = await schoolControllerTest.DeleteSchool(id);
 
             //Assert
             var success = (((resultSchoolCall as OkObjectResult)?.Value) as DeleteSchoolCommandResponse)?.Success;
@@ -170,6 +165,20 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                 await schoolControllerTest.DeleteSchool(0);
             });
         }
+        [TestCleanup]
+        public void  ResetDb()
+        {
+            if (_dbContextFilled?.Students?.Count() > 0)
+            {
+                _dbContextFilled.Students.RemoveRange(_dbContextFilled.Students); 
+                _dbContextFilled.SaveChanges();
+            }
+            if (_dbContextFilled?.Schools?.Count() > 0)
+            {
+                _dbContextFilled.Schools.RemoveRange(_dbContextFilled.Schools); 
+                _dbContextFilled.SaveChanges();
+            }
+        }
         private IMediator MockMediatorCreateSchoolCommandAsync(SchoolDto dto)
         {
             var mediatorMock = Substitute.For<IMediator>();
@@ -220,7 +229,6 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
             {
                 new School()
                 {
-                    Id = 1,
                     Name = "test",
                     Town = "town",
                     Adress = "adres",
@@ -228,7 +236,6 @@ namespace ManagementProject.Api.Tests.Unit_Test.Commands.Controllers
                 },
                 new School()
                 {
-                    Id = 3,
                     Name = "test",
                     Town = "town",
                     Adress = "adres",

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ManagementProject.Application.Features.Schools.Queries.GetSchool
 {
-    public class GetSchoolDto : SchoolDto
+    public record GetSchoolDto : SchoolDto
     {
         public bool Haschildren { get; set; }
         public string? Parentname { get; set; }

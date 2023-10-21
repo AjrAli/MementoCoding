@@ -2,7 +2,7 @@
 
 namespace ManagementProject.Application.Features.Schools
 {
-    public class SchoolDto : IBaseDto
+    public record SchoolDto : IBaseDto
     {
         public long Id { get; set; }
         public string? Name { get; set; }

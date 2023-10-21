@@ -4,7 +4,16 @@
     <TargetFramework>net6.0</TargetFramework>
 	  <Nullable>enable</Nullable>
   </PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
+	  <EnvironmentName>Development</EnvironmentName>
+	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(Configuration)' != '' AND '$(Configuration)' != 'Debug' ">
+	  <EnvironmentName>Production</EnvironmentName>
+	</PropertyGroup>
+	<PropertyGroup>
+    <WebRoot>wwwroot</WebRoot>
+	</PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" Version="12.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.0" />
@@ -26,6 +35,7 @@
   <ItemGroup>
     <Folder Include="Logs\" />
     <Folder Include="logs\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,4 +44,10 @@
     <ProjectReference Include="..\ManagementProject.Identity\ManagementProject.Identity.csproj" />
   </ItemGroup>
 
+  <Target Name="BuildAngular" BeforeTargets="Build">
+    <Exec Command="if exist $(WebRoot) del /q /s $(WebRoot)\*" ContinueOnError="true" />
+    <Exec Command="npm ci" WorkingDirectory="../../app" />
+	<Exec Command="ng build --configuration=development" WorkingDirectory="../../app" />
+  </Target>
+  
 </Project>

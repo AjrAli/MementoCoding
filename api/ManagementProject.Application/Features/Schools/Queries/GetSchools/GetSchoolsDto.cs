@@ -2,7 +2,7 @@
 
 namespace ManagementProject.Application.Features.Schools.Queries.GetSchools
 {
-    public class GetSchoolsDto : SchoolDto
+    public record GetSchoolsDto : SchoolDto
     {
         public bool Haschildren { get; set; }
         public string? Parentname { get; set; }
