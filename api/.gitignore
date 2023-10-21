@@ -331,6 +331,7 @@ logs
 
 # Developer specific appsettings
 *appsettings.Local.json
+appsettings.Production.json
 designTimeSettings.Local.json
 AppSettings.Local.config
 Connectionstring.config
