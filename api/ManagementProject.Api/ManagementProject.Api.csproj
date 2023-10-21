@@ -48,8 +48,6 @@
     <Exec Command="if exist $(WebRoot) del /q /s $(WebRoot)\*" ContinueOnError="true" />
     <Exec Command="npm ci" WorkingDirectory="../../app" />
 	<Exec Command="ng build --configuration=development" WorkingDirectory="../../app" />
-	<!-- <Exec Condition="'$(EnvironmentName)' == 'Development'" Command="ng build --configuration=development" WorkingDirectory="../../app" /> -->
-    <!-- <Exec Condition="'$(EnvironmentName)' == 'Production'" Command="ng build --configuration=production" WorkingDirectory="../../app" /> -->
   </Target>
   
 </Project>
