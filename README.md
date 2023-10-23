@@ -61,7 +61,7 @@ d. Update launchSettings.json:
 	      "environmentVariables": {
 	        "ASPNETCORE_ENVIRONMENT": "Development"
 	      },
-	      "applicationUrl": "http://localhost:5000"
+	      "applicationUrl": "https://localhost:5001"
 	    }
 	  }
 	}
