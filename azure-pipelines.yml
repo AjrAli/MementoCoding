@@ -10,6 +10,22 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+  - task: NodeTool@0
+    displayName: 'Install Node.js'
+    inputs:
+      versionSpec: '18.x'
+    
+  - script: |
+      cd $(System.DefaultWorkingDirectory)/app
+      npm install
+      ng build
+    displayName: 'Build Angular Application'
+
+  - script: |
+      cd $(System.DefaultWorkingDirectory)/app
+      ng test --watch=false
+    displayName: 'Run Angular Unit Tests'
+    
   - task: UseDotNet@2
     inputs:
       version: '6.0.400'  # Remplacez par la version .NET désirée
@@ -33,19 +49,3 @@ steps:
       command: 'test'
       projects: '**/*Tests.csproj'
       arguments: '--configuration $(buildConfiguration)'
-  
-  - task: NodeTool@0
-    displayName: 'Install Node.js'
-    inputs:
-      versionSpec: '18.x'
-    
-  - script: |
-      cd $(System.DefaultWorkingDirectory)/app
-      npm install
-      ng build
-    displayName: 'Build Angular Application'
-
-  - script: |
-      cd $(System.DefaultWorkingDirectory)/app
-      ng test --watch=false
-    displayName: 'Run Angular Unit Tests'
