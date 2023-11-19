@@ -33,8 +33,8 @@ export class SchoolDetailsComponent implements OnInit {
     }
   }
   getStudents(skip?: number, take?: number): void {
-    this.queryOptions.top = take?.toString() || '0';
-    this.queryOptions.skip = skip?.toString() || '0';
+    this.queryOptions.top = take?.toString() ?? '0';
+    this.queryOptions.skip = skip?.toString() ?? '0';
     this.queryOptions.filter.push({key: 'SchoolId', value:this.school.id});
     this.studentService.getStudents(this.queryOptions).subscribe({
       next: (response: any) => {
@@ -51,7 +51,7 @@ export class SchoolDetailsComponent implements OnInit {
       },
       error: (error: ErrorResponse) => {
         this.students = undefined;
-        this.toastService.showError(error);
+        //this.toastService.showError(error);
       },
       complete: () => console.info('complete')
     });
