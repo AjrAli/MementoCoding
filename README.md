@@ -135,3 +135,9 @@ Enjoy using the MementoCoding Project!
  - UI app 
  
     -Angular 15
+    -Fontawesome
+    -Bootstrap
+    -Ngx-pagination
+    -Rxjs
+    -Ngx-toastr
+    -Jwt-decode + HttpInterceptor for JWT token
