@@ -6,16 +6,16 @@
                     <h3>Connection</h3>
                 </div>
                 <div class="card-body">
-                    <form (submit)="onSubmit()">
+                    <form [formGroup]="loginForm" (submit)="onSubmit()">
                         <div class="row mb-3">
                             <label for="username" class="form-label">Username</label>
-                            <input [(ngModel)]="username" type="text" class="form-control" id="username" required
-                                name="username">
+                            <input type="text" class="form-control" formControlName="username" required />
+                            <app-form-validation-error [control]="loginForm.get('username')"></app-form-validation-error>
                         </div>
                         <div class="row mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input [(ngModel)]="password" type="password" class="form-control" id="password" required
-                                name="password">
+                            <input type="password" class="form-control" formControlName="password" required />
+                            <app-form-validation-error [control]="loginForm.get('password')"></app-form-validation-error>
                         </div>
                         <div *ngIf="errorResponse" class="row  mb-3 text-danger">
                             {{errorResponse.message}}
@@ -24,7 +24,7 @@
                             <a class="btn btn-link" (click)="openAddModal()"> Don't have an account yet? Subscribe here!</a>
                         </div>
                         <div class="row mb-3">
-                            <button type="submit" class="btn btn-primary">Log in</button>
+                            <button type="submit" class="btn btn-primary" [disabled]="!loginForm.valid">Log in</button>
                         </div>
                     </form>
                 </div>

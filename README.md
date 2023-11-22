@@ -1,3 +1,9 @@
+Welcome to the MementoCoding Project!
+
+This project is a School Management System built using the latest technologies - .NET 6 and Angular 15. 
+The goal of this project is simply to show a modern and clean architecture using .Net 6 with differents modern libraries like MediatR, Swagger, Microsoft.AspNetCore.Identity, 
+System.IdentityModel.Tokens.Jwt, Serilog, FluentValidation and more but also with a small UI app using Angular 15 with angular-fontawesome, Bootstrap, ngx-pagination, rxjs, Ngx-toastr, jwt-decode + HttpInterceptor for JWT token.
+
 For a quick demo : https://mementocoding.be/home
 
 (
@@ -104,13 +110,23 @@ Enjoy using the MementoCoding Project!
 	
     -ASP.NET Web APIs
 	
+	-Serilog
+	
+	-FluentValidation
+	
+	-AutoMapper
+	
+	-NSubstitute(changed from Mock because safer)
+	
     -Entity Framework (EF) Core
 	
-    -ASP.NET Core Identity
+    -Microsoft.AspNetCore.Identity
+	
+	-System.IdentityModel.Tokens.Jwt
 	
     -Swagger
 	
-    -MediatR pattern
+    -MediatR
 	
     -CQRS pattern
 	

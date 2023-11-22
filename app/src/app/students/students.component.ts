@@ -35,8 +35,8 @@ export class StudentsComponent implements OnInit {
   }
 
   getStudents(skip?: number, take?: number): void {
-    this.queryOptions.top = take?.toString() || '0';
-    this.queryOptions.skip = skip?.toString() || '0';
+    this.queryOptions.top = take?.toString() ?? '0';
+    this.queryOptions.skip = skip?.toString() ?? '0';
     this.studentService.getStudents(this.queryOptions).subscribe({
       next: (response: any) => {
         if(!response || response.count === 0){
@@ -64,9 +64,8 @@ export class StudentsComponent implements OnInit {
       this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       return response;
     } catch (e) {
-      this.toastService.showError(e as ErrorResponse);
       this.toastService.showSimpleError('Failed to create student. Please try again later.');
-      throw e;
+      return e as ErrorResponse;
     }
   }
 
@@ -81,9 +80,8 @@ export class StudentsComponent implements OnInit {
       this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       return response;
     } catch (e) {
-      this.toastService.showError(e as ErrorResponse);
       this.toastService.showSimpleError('Failed to update student. Please try again later.');
-      throw e;
+      return e as ErrorResponse;
     }
   }
 
@@ -98,9 +96,8 @@ export class StudentsComponent implements OnInit {
       this.getStudents(this.pageDetails.skip, this.pageDetails.take);
       return response;
     } catch (e) {
-      this.toastService.showError(e as ErrorResponse);
       this.toastService.showSimpleError('Failed to delete student. Please try again later.');
-      throw e;
+      return e as ErrorResponse;
     }
   }
 

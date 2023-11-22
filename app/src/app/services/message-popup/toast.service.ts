@@ -13,7 +13,7 @@ export class ToastService {
   }
 
   showError(errorResponse: ErrorResponse): void {
-    const errorMessageArray: string[] = [errorResponse.message, ...(errorResponse.validationErrors || [])];
+    const errorMessageArray: string[] = [errorResponse?.message, ...(errorResponse?.validationErrors ?? [])];
 
     errorMessageArray.forEach((message) => {
       if (message) {

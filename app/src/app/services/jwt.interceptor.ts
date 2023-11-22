@@ -24,8 +24,8 @@ export class JwtInterceptor implements HttpInterceptor {
         // Passer la requête modifiée à la suite de l'intercepteur
         return next.handle(request).pipe(
             catchError((error: HttpErrorResponse) => {
-                this.toastService.showSimpleError(error.message);
                 if (error.status === 401) {
+                    this.toastService.showSimpleError(error.message);
                     // Supprimer le token invalide/expiré
                     localStorage.removeItem('authToken');
                     this.router.navigate(['/login']);

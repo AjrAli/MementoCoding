@@ -40,8 +40,8 @@ export class SearchComponent implements OnDestroy, OnInit {
     this.route.queryParams.subscribe({
       next: (params: any) => {
         if (params?.keyword) {
-          this.keyword = decodeURIComponent(params.keyword || '');
-          this.searchStateService.setSearchKeyword(params.keyword || '');
+          this.keyword = decodeURIComponent(params.keyword ?? '');
+          this.searchStateService.setSearchKeyword(params.keyword ?? '');
         }
         // Subscribe to changes in the search keyword in the SearchStateService
         this.searchStateService.searchKeyword$

@@ -3,8 +3,10 @@ import { AuthenticationService } from '../services/authentification/authenticati
 import { LoginComponent } from './login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormValidationErrorComponent } from '../shared/validation/form-validation-error/form-validation-error.component';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -12,8 +14,8 @@ describe('LoginComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LoginComponent ],
-      imports: [HttpClientModule, RouterTestingModule, FormsModule, ToastrModule.forRoot(), ToastrModule],
+      declarations: [ LoginComponent, FormValidationErrorComponent ],
+      imports: [HttpClientModule, RouterTestingModule, FormsModule, ReactiveFormsModule, HttpClientTestingModule, ToastrModule.forRoot(), ToastrModule],
       providers: [AuthenticationService]
     })
     .compileComponents();
