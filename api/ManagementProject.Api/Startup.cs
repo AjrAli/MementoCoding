@@ -12,10 +12,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ManagementProject.Api
 {
@@ -41,11 +43,12 @@ namespace ManagementProject.Api
 
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAnyOrigin", builder =>
+                options.AddPolicy("AllowOnlyAngularApp", builder =>
                 {
-                    builder.AllowAnyOrigin()  // Allow requests from any origin (website)
-                           .AllowAnyHeader()
-                           .AllowAnyMethod();
+                    builder.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+                    //builder.AllowAnyOrigin()  // Allow requests from any origin (website)
+                    //       .AllowAnyHeader()
+                    //       .AllowAnyMethod();
                 });
             });
         }
@@ -103,9 +106,15 @@ namespace ManagementProject.Api
                 app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Management Project API"); });
             }
             app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(env.ContentRootPath, @"Client")),
+                RequestPath = "/client"
+            });
             app.UseSerilogRequestLogging();
             app.UseRouting();
-            app.UseCors("AllowAnyOrigin");
+            app.UseCors("AllowOnlyAngularApp");
             app.UseAuthentication();
 
             app.UseAuthorization();
