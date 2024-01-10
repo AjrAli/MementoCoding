@@ -4,14 +4,6 @@ This project is a School Management System built using the latest technologies -
 The goal of this project is simply to show a modern and clean architecture using .Net 6 RESTful Web API with differents modern libraries like MediatR, Swagger, Microsoft.AspNetCore.Identity, 
 System.IdentityModel.Tokens.Jwt, Serilog, FluentValidation and more but also with a small UI app using Angular 15 with angular-fontawesome, Bootstrap, ngx-pagination, rxjs, Ngx-toastr, jwt-decode + HttpInterceptor for JWT token.
 
-For a quick demo : https://mementocoding.be/home
-
-(
-DEMO credentials : for Admin Role use these credentials 
-	login: admin 
-	& password: admin
-)
-
 
 Prerequisites:
 
@@ -125,6 +117,8 @@ Enjoy using the MementoCoding Project!
 	-System.IdentityModel.Tokens.Jwt
 	
     -Swagger
+	
+    -AspNetCore.OData
 	
     -MediatR
 	
